@@ -1,0 +1,12 @@
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Mathematica binary caches
+*.mx
+
+# Ignore unreleased development subpackages
+Kernel/GWPSS.wl
+
+# Ignore all scratch work in Notebooks...
+Notebooks/*
+# ...BUT explicitly allow these two specific examples to upload
