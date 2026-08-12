@@ -8,5 +8,7 @@
 Kernel/GWPSS.wl
 
 # Ignore all scratch work in Notebooks...
+Archive/*
+Develop/*
 Notebooks/*
 # ...BUT explicitly allow these two specific examples to upload
