@@ -51,7 +51,7 @@ BeginPackage["GWPTools`"]
 ClearAll[Evaluate[Context[] <> "*"]];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*Usage Declarations*)
 
 
@@ -349,14 +349,6 @@ GWP::usage = "GWP[args, opts] constructs a GWPObject representing a time-evolvin
 
 GWPObject::usage = "GWPObject[...] is the central data structure for the GWPTools package.\n" <>
   "Evaluate obj[\"Properties\"] or obj[\"PropertyClasses\"] to view the available dynamical fields, expectation values, and their logical groupings.";
-
-
-(* ::Subsection::Closed:: *)
-(*GWP Multi-D*)
-
-
-EvaluateSeparable::usage = "EvaluateSeparable[{F1, F2, ...}, ARG, t] applies a list of 1D functions to their respective spatial coordinates within an N-dimensional tensor ARG.";
-GWPNDAnalytics::usage = "GWPNDAnalytics[sysHead, ND, MASS] generates an Association of exact N-dimensional X-space and C-space evaluators for a separable GWP system.";
 
 
 (* ::Subsection::Closed:: *)
@@ -1607,64 +1599,6 @@ GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Bivariate"], data_] :=
 
 GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Temporal"], data_] := 
   Function[t, Symbol["GWP" <> key][data["System"][t][data["Parameters"]]]];
-
-
-(* ::Section::Closed:: *)
-(*GWP Multi-D*)
-
-
-EvaluateSeparable[F1DList_List, ARG_, t_] := Module[
-  {ND, rank, transposedArg, evalT},
-  
-  ND = Last[Dimensions[ARG]];
-  rank = TensorRank[ARG];
-  
-  (* Move the spatial coordinate index (last) to the outermost level (first) *)
-  (* For Rank 3: {1,2,3} -> {2,3,1}. Level 3 goes to 1. *)
-  transposedArg = Transpose[ARG, RotateLeft[Range[rank]]];
-  
-  (* Apply the corresponding 1D function to each N-1 dimensional coordinate slice *)
-  evalT = Table[F1DList[[i]][transposedArg[[i]], t], {i, ND}];
-  
-  (* Transpose the coordinate index back to the innermost level *)
-  (* For Rank 3: {1,2,3} -> {3,1,2}. Level 1 goes back to 3. *)
-  Transpose[evalT, RotateRight[Range[rank]]]
-];
-
-
-GWPNDAnalytics[sysHead_, ND_Integer, MASS_] := Module[
-  {cx1D, vx1D, fx1D, qfx1D, xc1D, vc1D, fc1D, qfc1D},
-  
-  (* --- 1. Pre-compile 1D Analytical Functions --- *)
-  (* X-Space functions *)
-  cx1D  = Table[Function[{x, t}, Evaluate[FullSimplify[GWPCX[x][sysHead[i][t]]]]+0*x], {i, ND}];
-  vx1D  = Table[Function[{x, t}, Evaluate[FullSimplify[GWPVX[x][sysHead[i][t]]]]+0*x], {i, ND}];
-  fx1D  = Table[Function[{x, t}, Evaluate[FullSimplify[GWPFEX[x][sysHead[i][t]]]]+0*x], {i, ND}];
-  qfx1D = Table[Function[{x, t}, Evaluate[FullSimplify[GWPQFX[x][sysHead[i][t]]]]+0*x], {i, ND}];
-  
-  (* C-Space functions *)
-  xc1D  = Table[Function[{c, t}, Evaluate[FullSimplify[GWPXC[c][sysHead[i][t]]]]+0*c], {i, ND}];
-  vc1D  = Table[Function[{c, t}, Evaluate[FullSimplify[GWPVC[c][sysHead[i][t]]]]+0*c], {i, ND}];
-  fc1D  = Table[Function[{c, t}, Evaluate[FullSimplify[GWPFEC[c][sysHead[i][t]]]]+0*c], {i, ND}];
-  qfc1D = Table[Function[{c, t}, Evaluate[FullSimplify[GWPQFC[c][sysHead[i][t]]]]+0*c], {i, ND}];
-
-  (* --- 2. Return N-Dimensional Wrappers --- *)
-  Association[
-    (* X-Space Evaluators *)
-    "CX"  -> Function[{XDAT, t}, EvaluateSeparable[cx1D, XDAT, t]],
-    "VX"  -> Function[{XDAT, t}, EvaluateSeparable[vx1D, XDAT, t]],
-    "FX"  -> Function[{XDAT, t}, EvaluateSeparable[fx1D, XDAT, t]],
-    "QFX" -> Function[{XDAT, t}, EvaluateSeparable[qfx1D, XDAT, t]],
-    "AX"  -> Function[{XDAT, t}, (EvaluateSeparable[fx1D, XDAT, t] + EvaluateSeparable[qfx1D, XDAT, t]) / MASS],
-    
-    (* C-Space Evaluators *)
-    "XC"  -> Function[{CDAT, t}, EvaluateSeparable[xc1D, CDAT, t]],
-    "VC"  -> Function[{CDAT, t}, EvaluateSeparable[vc1D, CDAT, t]],
-    "FC"  -> Function[{CDAT, t}, EvaluateSeparable[fc1D, CDAT, t]],
-    "QFC" -> Function[{CDAT, t}, EvaluateSeparable[qfc1D, CDAT, t]],
-    "AC"  -> Function[{CDAT, t}, (EvaluateSeparable[fc1D, CDAT, t] + EvaluateSeparable[qfc1D, CDAT, t]) / MASS]
-  ]
-];
 
 
 (* ::Section::Closed:: *)
