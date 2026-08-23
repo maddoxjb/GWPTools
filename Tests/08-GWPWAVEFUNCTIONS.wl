@@ -1,6 +1,13 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 08-GWPWAVEFUNCTIONS.wl                                      *)
+(* DESCRIPTION : Tests Wavefunctions section of GWPDeveloper.wl              *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND CONFIGURATION                              *)

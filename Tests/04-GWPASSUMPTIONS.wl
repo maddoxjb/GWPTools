@@ -1,6 +1,13 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 04-GWPASSUMPTIONS.wl                                        *)
+(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND METADATA STRINGS                           *)
@@ -61,22 +68,22 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Simplify[COND06, GWPASSUMPTIONS@GWPPARAM[{UX, COVXP}]], 
+  Simplify[COND06, GWPASSUMPTIONS@GWPPARAM[{"Covariance", UX, COVXP}]], 
   TestID -> "GWPASSUMPTIONS-06-UX", MetaInformation -> STR06
 ]
 
 VerificationTest[
-  Simplify[COND07, GWPASSUMPTIONS@GWPPARAM[{UX, COVXP}]], 
+  Simplify[COND07, GWPASSUMPTIONS@GWPPARAM[{"Covariance", UX, COVXP}]], 
   TestID -> "GWPASSUMPTIONS-07-UX-COVXP", MetaInformation -> STR07
 ]
 
 VerificationTest[
-  Simplify[COND08, GWPASSUMPTIONS@GWPPARAM[{UX, UP, 1}]], 
+  Simplify[COND08, GWPASSUMPTIONS@GWPPARAM[{"Uncertainty", UX, UP, 1}]], 
   TestID -> "GWPASSUMPTIONS-08-UX-UP", MetaInformation -> STR08
 ]
 
 VerificationTest[
-  Simplify[COND09, GWPASSUMPTIONS@GWPPARAM[{UX, UP, 1}, "HBAR" -> HBAR]], 
+  Simplify[COND09, GWPASSUMPTIONS@GWPPARAM[{"Uncertainty", UX, UP, 1}, "HBAR" -> HBAR]], 
   TestID -> "GWPASSUMPTIONS-09-Uncertainty", MetaInformation -> STR09
 ]
 

@@ -1,6 +1,17 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 02-GWPEXTRACT.wl                                            *)
+(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
+
+(* ========================================================== *)
+(* DEFINITIONS AND METADATA STRINGS                           *)
+(* ========================================================== *)
 
 (* Define the generic parameter sequence string and evaluate it *)
 ToExpression[STR1 = "PARAM=Sequence[RA,IA,RX,RP,RG,IG,NORM,HBAR,MASS,{V0,V1,V2},INIT]"];
@@ -67,8 +78,13 @@ VerificationTest[
 ]
 
 VerificationTest[
-  GWPINIT@PARAM == INIT, 
-  TestID -> "GWPEXTRACT-11-INIT"
+  GWPINPUT@PARAM == INIT, 
+  TestID -> "GWPEXTRACT-11-INPUT"
+]
+
+VerificationTest[
+  GWPINIT@PARAM == {RA, IA, RX, RP, RG, IG},
+  TestID -> "GWPEXTRACT-12-INIT"
 ]
 
 (* ========================================================== *)

@@ -4,7 +4,14 @@
 (**)
 
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 07-GWPSYSTEMS.wl                                            *)
+(* DESCRIPTION : Tests Potential Models section of GWPDeveloper.wl           *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND CONFIGURATION                              *)
@@ -18,7 +25,7 @@ ToExpression[STR00 = "$Assumptions=GWPASSUMPTIONS[PAR,\"Time\"->t]"];
 
 (* Dynamically load the system templates directly from the package API *)
 (* This pulls: {"FREE", "HO", "LINEAR[FK]", "HARMONIC[OMEGA]", ...} *)
-systemTemplates = GWP["SystemFunctions"];
+systemTemplates = GWP["PotentialModels"];
 
 components = {
   {"01-RA", "GWPRA", "GWPRATD"},

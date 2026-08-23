@@ -1,6 +1,17 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 01-GWPAPARAM.wl                                             *)
+(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
+
+(* ========================================================== *)
+(* DEFINITIONS AND METADATA STRINGS                           *)
+(* ========================================================== *)
 
 (* Store the function's definitions in a temporary variable and clear it *)
 storedGWP486 = DownValues[GWP486];

@@ -1,0 +1,873 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     36882,        865]
+NotebookOptionsPosition[     21515,        566]
+NotebookOutlinePosition[     28069,        696]
+CellTagsIndexPosition[     27978,        691]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell["GWPTools", "GuideTitle",
+ CellID->225533653,ExpressionUUID->"3146e473-8838-4c9c-a3f5-49ac234ee0b7"],
+
+Cell[CellGroupData[{
+
+Cell["", "GuideFunctionsSection",
+ CellID->1862874138,ExpressionUUID->"c9bf837f-c46b-422b-a8dc-e02de08b8340"],
+
+Cell["\<\
+An exact, fully analytical framework for modeling the quantum dynamics of a \
+Gaussian wavepacket (GWP) evolving under a quadratic external potential \
+energy field. GWPTools provides an optimized architecture for evaluating \
+time-dependent wavefunctions, densities, expectation values, and exact \
+quantum trajectories.\
+\>", "GuideAbstract",
+ CellChangeTimes->{{3.995569551366997*^9, 3.995569568639702*^9}, {
+  3.995569603238872*^9, 3.995569700984435*^9}, {3.995569754309477*^9, 
+  3.995569867651362*^9}, {3.995569943845188*^9, 3.995569944025754*^9}, {
+  3.995570366188736*^9, 3.9955703686249743`*^9}, {3.995580858324786*^9, 
+  3.995580903456266*^9}, {3.995655602128751*^9, 3.995655736428872*^9}, {
+  3.995656236550815*^9, 3.9956562397457113`*^9}},
+ CellID->235469016,ExpressionUUID->"b75a9f8c-b18d-4670-8415-fe7cf3a4cd59"],
+
+Cell[CellGroupData[{
+
+Cell["User Interface Functions", "GuideFunctionsSubsection",
+ CellChangeTimes->{{3.995573303050461*^9, 3.995573309656735*^9}},
+ CellID->536859292,ExpressionUUID->"09eacb19-7a99-4437-96c8-64d101286eff"],
+
+Cell[TextData[{
+ Cell[BoxData["GWP"], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"c40ac8e4-27e1-4161-a8df-4d4f38357a23",ExpressionUUID->
+  "972cf9ec-26b7-4070-8a5b-e0b0de2bf315"],
+ " \[LongDash] Initializes a time-evolving Gaussian wavepacket system."
+}], "GuideText",
+ CellChangeTimes->{{3.9955699177901793`*^9, 3.995569940975917*^9}, {
+   3.995569975905608*^9, 3.9955699761554527`*^9}, 3.995580951631892*^9},
+ CellID->1161547753,ExpressionUUID->"24d58da3-fe00-46c3-90e6-67a54e7e1b6a"],
+
+Cell[TextData[{
+ Cell[BoxData["GWPObject"], "InlineGuideFunction",
+  TaggingRules->{"PageType" -> "Function"},
+  CellTags->"c5c6736a-1ff4-4e4e-8fcf-2d9846cbae62",ExpressionUUID->
+  "ccea7836-22dd-468b-b4a0-bb10ec104317"],
+ " \[LongDash] The central dispatcher and data structure for seamlessly \
+querying all physical properties, dynamical fields, and expectation values."
+}], "GuideText",
+ CellChangeTimes->{{3.9955699803332157`*^9, 3.995570014467952*^9}, 
+   3.995580966034631*^9},
+ CellID->1506733441,ExpressionUUID->"ec51e7ce-a3f3-4d6d-a68b-728faa301321"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Developer Functions", "GuideFunctionsSubsection",
+ CellChangeTimes->{{3.9955717858106403`*^9, 3.9955717896042767`*^9}},
+ CellID->1938621229,ExpressionUUID->"f8b7ebf3-c450-4b65-a5fd-5c8d56305e4c"],
+
+Cell["\<\
+The core package is built on dozens of optimized backend evaluators. While \
+end-users should generally route calculations through GWP using the GWPObject \
+structure, these foundational symbols are exposed for advanced development.\
+\>", "GuideText",
+ CellChangeTimes->{{3.995571978955305*^9, 3.995572000798004*^9}, {
+   3.995573228544676*^9, 3.995573235201045*^9}, {3.995580299628215*^9, 
+   3.995580346199744*^9}, {3.995581015107731*^9, 3.995581039716939*^9}, {
+   3.995655506397851*^9, 3.995655518188488*^9}, 3.9956561494054823`*^9},
+ CellID->379483230,ExpressionUUID->"81da6e42-69bc-455f-a33d-12106a07133e"],
+
+Cell["\<\
+Function definitions and usage examples are provided in the Developer \
+Reference Manual.\
+\>", "GuideText",
+ CellChangeTimes->{
+  3.995581045232037*^9, 3.995581275305852*^9, {3.995655534891263*^9, 
+   3.995655547727371*^9}},
+ CellID->206292237,ExpressionUUID->"b188eb29-aa88-4a50-bed8-4246d51ee0d0"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Tutorials", "GuideTutorialsSection",
+ CellChangeTimes->{{3.995570209067998*^9, 3.9955702107483253`*^9}},
+ CellID->319623064,ExpressionUUID->"abe628c7-b631-4d86-a826-9d322f6cfa82"],
+
+Cell[TextData[ButtonBox["Developer Reference Manual",
+ BaseStyle->"Link",
+ ButtonData->
+  "paclet:GWPTools/tutorial/DeveloperReferenceManual"]], "GuideText",
+ CellChangeTimes->{{3.995580258538928*^9, 3.99558026583349*^9}, {
+  3.995580330049535*^9, 3.995580354196208*^9}, {3.995997028752042*^9, 
+  3.995997044575974*^9}},
+ CellID->910560524,ExpressionUUID->"4f778e37-fddf-4841-9505-eb6619faf6d0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "GuideMoreAboutSection",
+ CellChangeTimes->{{3.8430423939366693`*^9, 3.843042395176153*^9}},
+ CellID->546929136,ExpressionUUID->"c60a69c5-e93c-428d-918b-9b2160c776ae"],
+
+Cell["XXXX", "GuideMoreAbout",
+ CellID->1007979592,ExpressionUUID->"91c1cbb1-1eeb-412b-875d-9192e830f0a9"],
+
+Cell["XXXX", "GuideMoreAbout",
+ CellID->1761995208,ExpressionUUID->"a170275b-d282-4353-9e9f-b5445f1b8ca2"]
+}, Open  ]],
+
+Cell["Related Links", "GuideRelatedLinksSection",
+ CellID->53968726,ExpressionUUID->"9e837b07-cb79-43a4-ae7e-607c904bce27"],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->814278848,ExpressionUUID->"7187808b-37db-4599-a0ad-830417ab8e4b"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"03af511f-4c4a-4289-8fef-3eba39150ed6"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"bb8c150c-dc86-405c-938b-615edee1df9f"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "f56862e6-07cd-408f-a63d-5af908ea9b56"]
+}], "History",
+ CellID->1818799652,ExpressionUUID->"52e0350b-cd36-4d3f-811c-f6e07a465e11"],
+
+Cell[CellGroupData[{
+
+Cell["Categorization", "CategorizationSection",
+ CellID->1283519766,ExpressionUUID->"be10a111-63fd-4b9a-861e-dca2f6ed33ec"],
+
+Cell["Guide", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->643473047,ExpressionUUID->"f68b0e7c-3142-4c8e-8553-5deeae6dde65"],
+
+Cell["GWPTools", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->123854637,ExpressionUUID->"604a8701-f9d9-4eb3-831d-a1254b0b1ecb"],
+
+Cell["GWPTools`", "Categorization",
+ CellLabel->"Context",
+ CellID->713230116,ExpressionUUID->"2f1ec457-7219-48bd-a21f-76707310224d"],
+
+Cell["GWPTools/guide/GWPTools", "Categorization",
+ CellLabel->"URI",
+ CellID->4842058,ExpressionUUID->"742b7a8e-6454-45fe-b001-2965938f2ec6"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Keywords", "KeywordsSection",
+ CellID->1923573867,ExpressionUUID->"5d035d0e-35a1-4bfd-bd6c-531c379ed108"],
+
+Cell["XXXX", "Keywords",
+ CellID->1287160731,ExpressionUUID->"57fb2042-947a-49ce-be5d-086c1ffe1966"],
+
+Cell["\<\
+KeyExistsQ::invrl: 
+   The argument Missing[Nonexistent, 
+     PersistentObject[ServiceFramework`$connectionObjects, Local]] is not a
+     valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917616696*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1516028984,ExpressionUUID->"5cd3e0d1-9d02-46df-bbc2-f4a6d987a9bf"],
+
+Cell["\<\
+$Failed::rvalue: 
+   PersistentSymbol[ServiceFramework`$connectionObjects, 
+     PersistenceLocation[Local, 
+      file:///private/var/folders/dp/chzqkyr53gb1svr3bp0y9rs80000gn/T/\
+m0000012
+       17391/LocalObjects/Persistence]] is not a variable with a value, so \
+its
+     value cannot be changed.\
+\>", "Message",
+ CellChangeTimes->{3.995996917619214*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->5662433,ExpressionUUID->"7d203439-cf49-4db7-8701-b14f6bc09567"],
+
+Cell["\<\
+Values::invrl: The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917621538*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->679230963,ExpressionUUID->"e4c5a989-736d-4fc0-bed8-80a5ba82c87e"],
+
+Cell["\<\
+Keys::invrl: The argument Values[Missing[Nonexistent, 
+       PersistentObject[ServiceFramework`$connectionObjects, Local]][
+      serviceframework]] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917623612*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1959211336,ExpressionUUID->"3e8f93ba-6159-4566-be16-d80a16fac285"],
+
+Cell["\<\
+Complement::heads: 
+   Heads List and Values at positions 2 and 1 are expected to be the same.\
+\>", "Message",
+ CellChangeTimes->{3.995996917626055*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1098164701,ExpressionUUID->"a31c1986-d5e9-4f0a-9052-5f1db72d855f"],
+
+Cell["\<\
+KeyValueMap::invak: 
+   The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association.\
+\>", "Message",
+ CellChangeTimes->{3.995996917628628*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1379667389,ExpressionUUID->"c0ae542f-a27b-4b1f-86c8-208d3f1d7157"],
+
+Cell["\<\
+Lookup::invrl: The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917630636*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1688870264,ExpressionUUID->"d0453b7b-eadf-44f4-b6a0-58fe2fbd8ffb"],
+
+Cell["\<\
+Lookup::invrl: The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917632595*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1551164649,ExpressionUUID->"8457cc6c-e5cd-4dfd-8b86-88dfcc99894c"],
+
+Cell["\<\
+Lookup::luarg: \
+Lookup[ServiceFramework`Management`PackagePrivate`$connectionOb
+        jects[ServiceFramework`$AuthenticationProvider], LLMKit, 
+      Association[Default -> None]][Default] has an incorrect number of
+     arguments.\
+\>", "Message",
+ CellChangeTimes->{3.995996917634503*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->2120264810,ExpressionUUID->"2ce24354-1765-42c4-a7f8-dc497d86f453"],
+
+Cell["\<\
+Lookup::invrl: The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917636457*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->2094506999,ExpressionUUID->"f50ae32d-e2a0-4cb7-bb3d-65ab375a02df"],
+
+Cell["\<\
+General::stop: Further output of Lookup::invrl
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.995996917638398*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->827190569,ExpressionUUID->"2ea25b6b-7099-4818-9b64-588441e73976"],
+
+Cell["\<\
+KeyDrop::invrl: 
+   The argument \
+Lookup[ServiceFramework`Management`PackagePrivate`$connectionO
+       bjects[ServiceFramework`$AuthenticationProvider], LLMKit, 
+     Association[Default -> None]] is not a valid Association or a list of
+     rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917640359*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1930246152,ExpressionUUID->"bfa5296d-3def-49d1-becf-49621b6e51f1"],
+
+Cell["\<\
+AbsoluteTime::arg: 
+   Argument \
+Lookup[ServiceFramework`Management`PackagePrivate`$connectionObjec
+       ts[ServiceFramework`$AuthenticationProvider], LLMKit, 
+     Association[Default -> None]] cannot be interpreted as a date or time
+     input.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176427193`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1759105082,ExpressionUUID->"1c9a309c-acb9-4df6-8587-002a695b64ca"],
+
+Cell["\<\
+AbsoluteTime::str: 
+   String Default cannot be interpreted as a date in format Automatic.\
+\>", "Message",
+ CellChangeTimes->{3.99599691764482*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->871744925,ExpressionUUID->"0d9a2b6d-b068-43f1-9307-2fa35ac760c7"],
+
+Cell["\<\
+KeyDrop::invrl: 
+   The argument Default is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917646884*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1283514641,ExpressionUUID->"c948179f-c821-4ed4-950d-41459f69f47b"],
+
+Cell["\<\
+Keys::invrl: The argument KeyDrop[Default, 
+     Lookup[ServiceFramework`Management`PackagePrivate`$connectionObjects[
+       ServiceFramework`$AuthenticationProvider], LLMKit, 
+      Association[Default -> None]]] is not a valid Association or a list of
+     rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917649152*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->557337172,ExpressionUUID->"960f61a9-5e57-4012-85d4-e37dbc465969"],
+
+Cell["\<\
+KeyDrop::invrl: 
+   The argument Default is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176513987`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1989665237,ExpressionUUID->"251df210-df8e-4a35-acc5-f0e059c14ba8"],
+
+Cell["\<\
+General::stop: Further output of KeyDrop::invrl
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176535873`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1835770822,ExpressionUUID->"00c7363b-6d42-467b-836d-a01cf8d3daf2"],
+
+Cell["\<\
+KeyExistsQ::invrl: 
+   The argument Missing[Nonexistent, 
+     PersistentObject[ServiceFramework`$connectionObjects, Local]] is not a
+     valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917655594*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->902648905,ExpressionUUID->"9ca5f648-05d1-465f-b6e9-4823512cbb12"],
+
+Cell["\<\
+$Failed::rvalue: 
+   PersistentSymbol[ServiceFramework`$connectionObjects, 
+     PersistenceLocation[Local, 
+      file:///private/var/folders/dp/chzqkyr53gb1svr3bp0y9rs80000gn/T/\
+m0000012
+       17391/LocalObjects/Persistence]] is not a variable with a value, so \
+its
+     value cannot be changed.\
+\>", "Message",
+ CellChangeTimes->{3.995996917657578*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->995663927,ExpressionUUID->"0f640e06-3b42-435b-930f-323dc43e8ae2"],
+
+Cell["\<\
+Values::invrl: The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176600933`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->931043665,ExpressionUUID->"df560bd9-4308-46a2-8dcc-d0fec214b685"],
+
+Cell["\<\
+Keys::invrl: The argument Values[Missing[Nonexistent, 
+       PersistentObject[ServiceFramework`$connectionObjects, Local]][
+      serviceframework]] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176623096`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1485025613,ExpressionUUID->"cfafa272-ea1a-43f5-95f3-37cb3272335c"],
+
+Cell["\<\
+General::stop: Further output of Keys::invrl
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176642227`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->770532257,ExpressionUUID->"2a15fe1e-3cf4-43ac-bfcc-5f0237ec4a0a"],
+
+Cell["\<\
+Complement::heads: 
+   Heads List and Values at positions 2 and 1 are expected to be the same.\
+\>", "Message",
+ CellChangeTimes->{3.995996917666123*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1009251989,ExpressionUUID->"61c1e38b-3547-49a1-a509-b2dc7702293f"],
+
+Cell["\<\
+KeyValueMap::invak: 
+   The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176680737`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1672335117,ExpressionUUID->"1bd788fe-b2ba-4c18-addd-854f4ce145c0"],
+
+Cell["\<\
+KeyExistsQ::invrl: 
+   The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917669969*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->670339483,ExpressionUUID->"64c62f29-af85-469d-ba1d-05440a2abcb4"],
+
+Cell["\<\
+General::stop: Further output of KeyExistsQ::invrl
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176717777`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->696478619,ExpressionUUID->"05f9ccb5-d3a1-4edf-955d-9441ba9b0874"],
+
+Cell["\<\
+$Failed::rvalue: 
+   PersistentSymbol[ServiceFramework`$connectionObjects, 
+     PersistenceLocation[Local, 
+      file:///private/var/folders/dp/chzqkyr53gb1svr3bp0y9rs80000gn/T/\
+m0000012
+       17391/LocalObjects/Persistence]] is not a variable with a value, so \
+its
+     value cannot be changed.\
+\>", "Message",
+ CellChangeTimes->{3.995996917673629*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1930273383,ExpressionUUID->"59ebb45b-c093-40f9-b514-88e7fac919f3"],
+
+Cell["\<\
+General::stop: Further output of $Failed::rvalue
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.995996917675514*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->69292852,ExpressionUUID->"89c27bfd-ec31-4162-ba22-9edc5b517a96"],
+
+Cell["\<\
+AppendTo::rvalue: 
+   PersistentSymbol[ServiceFramework`$connectionObjects, 
+     PersistenceLocation[Local, 
+      file:///private/var/folders/dp/chzqkyr53gb1svr3bp0y9rs80000gn/T/\
+m0000012
+       17391/LocalObjects/Persistence]] is not a variable with a value, so \
+its
+     value cannot be changed.\
+\>", "Message",
+ CellChangeTimes->{3.995996917677306*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->668826890,ExpressionUUID->"cbc6bc69-39ff-4b50-8642-12c5117235dc"],
+
+Cell["\<\
+Values::invrl: The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association or a list of rules.\
+\>", "Message",
+ CellChangeTimes->{3.995996917679118*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1044131832,ExpressionUUID->"1e66d562-6653-43da-800b-2f5a6844d0d8"],
+
+Cell["\<\
+General::stop: Further output of Values::invrl
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.995996917680901*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1634820787,ExpressionUUID->"db2f5eea-7aeb-4c51-bffe-26a964c5098f"],
+
+Cell["\<\
+Complement::heads: 
+   Heads List and Values at positions 2 and 1 are expected to be the same.\
+\>", "Message",
+ CellChangeTimes->{3.995996917682706*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1527187391,ExpressionUUID->"4982e55e-0438-49de-ae99-ea5c2067350c"],
+
+Cell["\<\
+General::stop: Further output of Complement::heads
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.995996917684493*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->713931593,ExpressionUUID->"e36f7682-4cc7-4ce7-ac5d-35896e08f0fd"],
+
+Cell["\<\
+KeyValueMap::invak: 
+   The argument Missing[Nonexistent, 
+      PersistentObject[ServiceFramework`$connectionObjects, Local]][
+     serviceframework] is not a valid Association.\
+\>", "Message",
+ CellChangeTimes->{3.995996917686297*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1057147762,ExpressionUUID->"d2882895-99a1-40eb-918c-01574a8729d6"],
+
+Cell["\<\
+General::stop: Further output of KeyValueMap::invak
+     will be suppressed during this calculation.\
+\>", "Message",
+ CellChangeTimes->{3.9959969176880827`*^9},
+ CellTags->"NotebookAssistantChatbarCell",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1350224303,ExpressionUUID->"0f5da3cb-49d9-4f2f-b583-488931923b24"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{763, 770},
+WindowMargins->{{283, Automatic}, {Automatic, 4}},
+TaggingRules-><|"Paclet" -> "GWPTools"|>,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "GuidePageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"778eb88f-4a09-4c6a-a3f2-f9a1bde6d222"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "NotebookAssistantChatbarCell"->{
+  Cell[6908, 182, 408, 9, 70, "Message",ExpressionUUID->"5cd3e0d1-9d02-46df-bbc2-f4a6d987a9bf",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1516028984],
+  Cell[7319, 193, 529, 13, 70, "Message",ExpressionUUID->"7d203439-cf49-4db7-8701-b14f6bc09567",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->5662433],
+  Cell[7851, 208, 419, 8, 70, "Message",ExpressionUUID->"e4c5a989-736d-4fc0-bed8-80a5ba82c87e",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->679230963],
+  Cell[8273, 218, 428, 8, 70, "Message",ExpressionUUID->"3e8f93ba-6159-4566-be16-d80a16fac285",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1959211336],
+  Cell[8704, 228, 326, 7, 70, "Message",ExpressionUUID->"a31c1986-d5e9-4f0a-9052-5f1db72d855f",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1098164701],
+  Cell[9033, 237, 410, 9, 70, "Message",ExpressionUUID->"c0ae542f-a27b-4b1f-86c8-208d3f1d7157",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1379667389],
+  Cell[9446, 248, 420, 8, 70, "Message",ExpressionUUID->"d0453b7b-eadf-44f4-b6a0-58fe2fbd8ffb",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1688870264],
+  Cell[9869, 258, 420, 8, 70, "Message",ExpressionUUID->"8457cc6c-e5cd-4dfd-8b86-88dfcc99894c",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1551164649],
+  Cell[10292, 268, 466, 10, 70, "Message",ExpressionUUID->"2ce24354-1765-42c4-a7f8-dc497d86f453",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->2120264810],
+  Cell[10761, 280, 420, 8, 70, "Message",ExpressionUUID->"f50ae32d-e2a0-4cb7-bb3d-65ab375a02df",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->2094506999],
+  Cell[11184, 290, 326, 7, 70, "Message",ExpressionUUID->"2ea25b6b-7099-4818-9b64-588441e73976",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->827190569],
+  Cell[11513, 299, 482, 11, 70, "Message",ExpressionUUID->"bfa5296d-3def-49d1-becf-49621b6e51f1",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1930246152],
+  Cell[11998, 312, 483, 11, 70, "Message",ExpressionUUID->"1c9a309c-acb9-4df6-8587-002a695b64ca",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1759105082],
+  Cell[12484, 325, 320, 7, 70, "Message",ExpressionUUID->"0d9a2b6d-b068-43f1-9307-2fa35ac760c7",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->871744925],
+  Cell[12807, 334, 319, 7, 70, "Message",ExpressionUUID->"c948179f-c821-4ed4-950d-41459f69f47b",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1283514641],
+  Cell[13129, 343, 497, 10, 70, "Message",ExpressionUUID->"960f61a9-5e57-4012-85d4-e37dbc465969",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->557337172],
+  Cell[13629, 355, 321, 7, 70, "Message",ExpressionUUID->"251df210-df8e-4a35-acc5-f0e059c14ba8",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1989665237],
+  Cell[13953, 364, 330, 7, 70, "Message",ExpressionUUID->"00c7363b-6d42-467b-836d-a01cf8d3daf2",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1835770822],
+  Cell[14286, 373, 407, 9, 70, "Message",ExpressionUUID->"9ca5f648-05d1-465f-b6e9-4823512cbb12",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->902648905],
+  Cell[14696, 384, 531, 13, 70, "Message",ExpressionUUID->"0f640e06-3b42-435b-930f-323dc43e8ae2",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->995663927],
+  Cell[15230, 399, 421, 8, 70, "Message",ExpressionUUID->"df560bd9-4308-46a2-8dcc-d0fec214b685",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->931043665],
+  Cell[15654, 409, 430, 8, 70, "Message",ExpressionUUID->"cfafa272-ea1a-43f5-95f3-37cb3272335c",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1485025613],
+  Cell[16087, 419, 326, 7, 70, "Message",ExpressionUUID->"2a15fe1e-3cf4-43ac-bfcc-5f0237ec4a0a",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->770532257],
+  Cell[16416, 428, 326, 7, 70, "Message",ExpressionUUID->"61c1e38b-3547-49a1-a509-b2dc7702293f",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1009251989],
+  Cell[16745, 437, 412, 9, 70, "Message",ExpressionUUID->"1bd788fe-b2ba-4c18-addd-854f4ce145c0",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1672335117],
+  Cell[17160, 448, 427, 9, 70, "Message",ExpressionUUID->"64c62f29-af85-469d-ba1d-05440a2abcb4",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->670339483],
+  Cell[17590, 459, 332, 7, 70, "Message",ExpressionUUID->"05f9ccb5-d3a1-4edf-955d-9441ba9b0874",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->696478619],
+  Cell[17925, 468, 532, 13, 70, "Message",ExpressionUUID->"59ebb45b-c093-40f9-b514-88e7fac919f3",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1930273383],
+  Cell[18460, 483, 327, 7, 70, "Message",ExpressionUUID->"89c27bfd-ec31-4162-ba22-9edc5b517a96",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->69292852],
+  Cell[18790, 492, 532, 13, 70, "Message",ExpressionUUID->"cbc6bc69-39ff-4b50-8642-12c5117235dc",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->668826890],
+  Cell[19325, 507, 420, 8, 70, "Message",ExpressionUUID->"1e66d562-6653-43da-800b-2f5a6844d0d8",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1044131832],
+  Cell[19748, 517, 327, 7, 70, "Message",ExpressionUUID->"db2f5eea-7aeb-4c51-bffe-26a964c5098f",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1634820787],
+  Cell[20078, 526, 326, 7, 70, "Message",ExpressionUUID->"4982e55e-0438-49de-ae99-ea5c2067350c",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1527187391],
+  Cell[20407, 535, 330, 7, 70, "Message",ExpressionUUID->"e36f7682-4cc7-4ce7-ac5d-35896e08f0fd",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->713931593],
+  Cell[20740, 544, 410, 9, 70, "Message",ExpressionUUID->"d2882895-99a1-40eb-918c-01574a8729d6",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1057147762],
+  Cell[21153, 555, 334, 7, 70, "Message",ExpressionUUID->"0f5da3cb-49d9-4f2f-b583-488931923b24",
+   CellTags->"NotebookAssistantChatbarCell",
+   CellID->1350224303]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"NotebookAssistantChatbarCell", 21995, 579}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 105, 1, 86, "GuideTitle",ExpressionUUID->"3146e473-8838-4c9c-a3f5-49ac234ee0b7",
+ CellID->225533653],
+Cell[CellGroupData[{
+Cell[684, 25, 109, 1, 65, "GuideFunctionsSection",ExpressionUUID->"c9bf837f-c46b-422b-a8dc-e02de08b8340",
+ CellID->1862874138],
+Cell[796, 28, 836, 13, 80, "GuideAbstract",ExpressionUUID->"b75a9f8c-b18d-4670-8415-fe7cf3a4cd59",
+ CellID->235469016],
+Cell[CellGroupData[{
+Cell[1657, 45, 201, 2, 36, "GuideFunctionsSubsection",ExpressionUUID->"09eacb19-7a99-4437-96c8-64d101286eff",
+ CellID->536859292],
+Cell[1861, 49, 522, 9, 24, "GuideText",ExpressionUUID->"24d58da3-fe00-46c3-90e6-67a54e7e1b6a",
+ CellID->1161547753],
+Cell[2386, 60, 559, 10, 40, "GuideText",ExpressionUUID->"ec51e7ce-a3f3-4d6d-a68b-728faa301321",
+ CellID->1506733441]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2982, 75, 201, 2, 36, "GuideFunctionsSubsection",ExpressionUUID->"f8b7ebf3-c450-4b65-a5fd-5c8d56305e4c",
+ CellID->1938621229],
+Cell[3186, 79, 622, 9, 54, "GuideText",ExpressionUUID->"81da6e42-69bc-455f-a33d-12106a07133e",
+ CellID->379483230],
+Cell[3811, 90, 310, 7, 22, "GuideText",ExpressionUUID->"b188eb29-aa88-4a50-bed8-4246d51ee0d0",
+ CellID->206292237]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4170, 103, 185, 2, 73, "GuideTutorialsSection",ExpressionUUID->"abe628c7-b631-4d86-a826-9d322f6cfa82",
+ CellID->319623064],
+Cell[4358, 107, 395, 7, 22, "GuideText",ExpressionUUID->"4f778e37-fddf-4841-9505-eb6619faf6d0",
+ CellID->910560524]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4790, 119, 190, 2, 73, "GuideMoreAboutSection",ExpressionUUID->"c60a69c5-e93c-428d-918b-9b2160c776ae",
+ CellID->546929136],
+Cell[4983, 123, 106, 1, 23, "GuideMoreAbout",ExpressionUUID->"91c1cbb1-1eeb-412b-875d-9192e830f0a9",
+ CellID->1007979592],
+Cell[5092, 126, 106, 1, 23, "GuideMoreAbout",ExpressionUUID->"a170275b-d282-4353-9e9f-b5445f1b8ca2",
+ CellID->1761995208]
+}, Open  ]],
+Cell[5213, 130, 123, 1, 73, "GuideRelatedLinksSection",ExpressionUUID->"9e837b07-cb79-43a4-ae7e-607c904bce27",
+ CellID->53968726],
+Cell[CellGroupData[{
+Cell[5361, 135, 110, 1, 71, "MetadataSection",ExpressionUUID->"7187808b-37db-4599-a0ad-830417ab8e4b",
+ CellID->814278848],
+Cell[5474, 138, 477, 12, 25, "History",ExpressionUUID->"52e0350b-cd36-4d3f-811c-f6e07a465e11",
+ CellID->1818799652],
+Cell[CellGroupData[{
+Cell[5976, 154, 123, 1, 20, "CategorizationSection",ExpressionUUID->"be10a111-63fd-4b9a-861e-dca2f6ed33ec",
+ CellID->1283519766],
+Cell[6102, 157, 133, 2, 70, "Categorization",ExpressionUUID->"f68b0e7c-3142-4c8e-8553-5deeae6dde65",
+ CellID->643473047],
+Cell[6238, 161, 136, 2, 70, "Categorization",ExpressionUUID->"604a8701-f9d9-4eb3-831d-a1254b0b1ecb",
+ CellID->123854637],
+Cell[6377, 165, 133, 2, 70, "Categorization",ExpressionUUID->"2f1ec457-7219-48bd-a21f-76707310224d",
+ CellID->713230116],
+Cell[6513, 169, 141, 2, 70, "Categorization",ExpressionUUID->"742b7a8e-6454-45fe-b001-2965938f2ec6",
+ CellID->4842058]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[6691, 176, 111, 1, 20, "KeywordsSection",ExpressionUUID->"5d035d0e-35a1-4bfd-bd6c-531c379ed108",
+ CellID->1923573867],
+Cell[6805, 179, 100, 1, 70, "Keywords",ExpressionUUID->"57fb2042-947a-49ce-be5d-086c1ffe1966",
+ CellID->1287160731],
+Cell[6908, 182, 408, 9, 70, "Message",ExpressionUUID->"5cd3e0d1-9d02-46df-bbc2-f4a6d987a9bf",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1516028984],
+Cell[7319, 193, 529, 13, 70, "Message",ExpressionUUID->"7d203439-cf49-4db7-8701-b14f6bc09567",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->5662433],
+Cell[7851, 208, 419, 8, 70, "Message",ExpressionUUID->"e4c5a989-736d-4fc0-bed8-80a5ba82c87e",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->679230963],
+Cell[8273, 218, 428, 8, 70, "Message",ExpressionUUID->"3e8f93ba-6159-4566-be16-d80a16fac285",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1959211336],
+Cell[8704, 228, 326, 7, 70, "Message",ExpressionUUID->"a31c1986-d5e9-4f0a-9052-5f1db72d855f",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1098164701],
+Cell[9033, 237, 410, 9, 70, "Message",ExpressionUUID->"c0ae542f-a27b-4b1f-86c8-208d3f1d7157",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1379667389],
+Cell[9446, 248, 420, 8, 70, "Message",ExpressionUUID->"d0453b7b-eadf-44f4-b6a0-58fe2fbd8ffb",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1688870264],
+Cell[9869, 258, 420, 8, 70, "Message",ExpressionUUID->"8457cc6c-e5cd-4dfd-8b86-88dfcc99894c",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1551164649],
+Cell[10292, 268, 466, 10, 70, "Message",ExpressionUUID->"2ce24354-1765-42c4-a7f8-dc497d86f453",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->2120264810],
+Cell[10761, 280, 420, 8, 70, "Message",ExpressionUUID->"f50ae32d-e2a0-4cb7-bb3d-65ab375a02df",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->2094506999],
+Cell[11184, 290, 326, 7, 70, "Message",ExpressionUUID->"2ea25b6b-7099-4818-9b64-588441e73976",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->827190569],
+Cell[11513, 299, 482, 11, 70, "Message",ExpressionUUID->"bfa5296d-3def-49d1-becf-49621b6e51f1",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1930246152],
+Cell[11998, 312, 483, 11, 70, "Message",ExpressionUUID->"1c9a309c-acb9-4df6-8587-002a695b64ca",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1759105082],
+Cell[12484, 325, 320, 7, 70, "Message",ExpressionUUID->"0d9a2b6d-b068-43f1-9307-2fa35ac760c7",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->871744925],
+Cell[12807, 334, 319, 7, 70, "Message",ExpressionUUID->"c948179f-c821-4ed4-950d-41459f69f47b",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1283514641],
+Cell[13129, 343, 497, 10, 70, "Message",ExpressionUUID->"960f61a9-5e57-4012-85d4-e37dbc465969",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->557337172],
+Cell[13629, 355, 321, 7, 70, "Message",ExpressionUUID->"251df210-df8e-4a35-acc5-f0e059c14ba8",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1989665237],
+Cell[13953, 364, 330, 7, 70, "Message",ExpressionUUID->"00c7363b-6d42-467b-836d-a01cf8d3daf2",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1835770822],
+Cell[14286, 373, 407, 9, 70, "Message",ExpressionUUID->"9ca5f648-05d1-465f-b6e9-4823512cbb12",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->902648905],
+Cell[14696, 384, 531, 13, 70, "Message",ExpressionUUID->"0f640e06-3b42-435b-930f-323dc43e8ae2",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->995663927],
+Cell[15230, 399, 421, 8, 70, "Message",ExpressionUUID->"df560bd9-4308-46a2-8dcc-d0fec214b685",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->931043665],
+Cell[15654, 409, 430, 8, 70, "Message",ExpressionUUID->"cfafa272-ea1a-43f5-95f3-37cb3272335c",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1485025613],
+Cell[16087, 419, 326, 7, 70, "Message",ExpressionUUID->"2a15fe1e-3cf4-43ac-bfcc-5f0237ec4a0a",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->770532257],
+Cell[16416, 428, 326, 7, 70, "Message",ExpressionUUID->"61c1e38b-3547-49a1-a509-b2dc7702293f",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1009251989],
+Cell[16745, 437, 412, 9, 70, "Message",ExpressionUUID->"1bd788fe-b2ba-4c18-addd-854f4ce145c0",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1672335117],
+Cell[17160, 448, 427, 9, 70, "Message",ExpressionUUID->"64c62f29-af85-469d-ba1d-05440a2abcb4",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->670339483],
+Cell[17590, 459, 332, 7, 70, "Message",ExpressionUUID->"05f9ccb5-d3a1-4edf-955d-9441ba9b0874",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->696478619],
+Cell[17925, 468, 532, 13, 70, "Message",ExpressionUUID->"59ebb45b-c093-40f9-b514-88e7fac919f3",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1930273383],
+Cell[18460, 483, 327, 7, 70, "Message",ExpressionUUID->"89c27bfd-ec31-4162-ba22-9edc5b517a96",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->69292852],
+Cell[18790, 492, 532, 13, 70, "Message",ExpressionUUID->"cbc6bc69-39ff-4b50-8642-12c5117235dc",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->668826890],
+Cell[19325, 507, 420, 8, 70, "Message",ExpressionUUID->"1e66d562-6653-43da-800b-2f5a6844d0d8",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1044131832],
+Cell[19748, 517, 327, 7, 70, "Message",ExpressionUUID->"db2f5eea-7aeb-4c51-bffe-26a964c5098f",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1634820787],
+Cell[20078, 526, 326, 7, 70, "Message",ExpressionUUID->"4982e55e-0438-49de-ae99-ea5c2067350c",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1527187391],
+Cell[20407, 535, 330, 7, 70, "Message",ExpressionUUID->"e36f7682-4cc7-4ce7-ac5d-35896e08f0fd",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->713931593],
+Cell[20740, 544, 410, 9, 70, "Message",ExpressionUUID->"d2882895-99a1-40eb-918c-01574a8729d6",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1057147762],
+Cell[21153, 555, 334, 7, 70, "Message",ExpressionUUID->"0f5da3cb-49d9-4f2f-b583-488931923b24",
+ CellTags->"NotebookAssistantChatbarCell",
+ CellID->1350224303]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+

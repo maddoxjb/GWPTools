@@ -1,6 +1,13 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 09-GWPDENSITY.wl                                            *)
+(* DESCRIPTION : Tests Probabilities section of GWPDeveloper.wl              *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND CONFIGURATION                              *)

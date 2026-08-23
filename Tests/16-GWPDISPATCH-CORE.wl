@@ -1,18 +1,29 @@
 (* ::Package:: *)
 
-(* ::Package:: *)
-(**)
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 16-GWPDISPATCH-CORE.wl                                      *)
+(* DESCRIPTION : Verifies Tier-3 object dispatching and property routing.    *)
+(* ========================================================================= *)
 
+(* Load the Public API for object-level testing *)
+Needs["GWPTools`"]
+(* Load the Developer engine so the RHS can evaluate the exact math! *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* CORE DISPATCH VERIFICATION ENGINE *)                        
-(*  Assumes ARG, OPT, and SYS are pre-defined by the caller. *)  
+(* Assumes ARG, OPT, and SYS are pre-defined by the caller. *)  
 (* ========================================================== *)
 
+(* Capture the clean string name (e.g., "FREE") before modifying SYS *)
 sysTag = ToString[SYS];
 
-(* Instantiate the targeted object *)
-STR = "OBJ = GWP[ARG, OPT, \"SYSTEM\" -> SYS]";
+(* CRITICAL FIX: Force SYS out of the Global namespace into Developer *)
+SYS = ToExpression["GWPTools`GWPDeveloper`" <> sysTag];
+
+(* Instantiate the targeted object (Updated to use "Potential" instead of "SYSTEM") *)
+STR = "OBJ = GWP[ARG, OPT, \"Potential\" -> SYS]";
 Quiet[ToExpression[STR]];
 
 VerificationTest[True, TestID -> "Definition", MetaInformation -> "SYS="<>sysTag]
@@ -25,66 +36,60 @@ reg = GWPTools`Private`$GWPRegistry;
 (* ========================================================== *)
 Scan[
   Function[{row},
-    Module[{short, type, testID, STR, funcSym},
+    Module[{short, type, testID, STRCMD, head},
       short = row[[2]];
       type = row[[3]];
       testID = "GWPDISP-" <> type <> "-" <> short <> "-" <> sysTag;
       
-      (* Generate the symbol to mock (e.g., GWPPSIX) *)
-      funcSym = Symbol["GWP" <> short];
+      (* CRITICAL FIX: Explicitly bind the head to the Developer package *)
+      head = ToExpression["GWPTools`GWPDeveloper`GWP" <> short];
       
-      (* Use Hold/ReleaseHold to inject the symbol into Block dynamically. 
-         This entirely bypasses the Front-End red syntax highlighting error. *)
-      ReleaseHold[
-        Hold[
-          Block[{MOCK},
-            Switch[type,
-              "Static",
-              STR = "GWPCMD = GWP" <> short <> "@GWPPARAM[ARG,OPT]";
-              Quiet[ToExpression[STR]];
-              With[{s = short},
-                VerificationTest[OBJ[s] === GWPCMD, TestID -> testID, MetaInformation -> STR]
-              ],
-              
-              "Temporal",
-              STR = "GWPCMD = GWP" <> short <> "@SYS[t]@GWPPARAM[ARG,OPT]";
-              Quiet[ToExpression[STR]];
-              With[{s = short},
-                VerificationTest[OBJ[s][t] === GWPCMD, TestID -> testID, MetaInformation -> STR]
-              ],
-              
-              "Field",
-              STR = "GWPCMD = GWP" <> short <> "[var]@SYS[t]@GWPPARAM[ARG,OPT]";
-              Quiet[ToExpression[STR]];
-              With[{s = short},
-                VerificationTest[OBJ[s][var, t] === GWPCMD, TestID -> testID, MetaInformation -> STR]
-              ],
-              
-              "Bivariate",
-              STR = "GWPCMD = GWP" <> short <> "[var1,var2]@SYS[t]@GWPPARAM[ARG,OPT]";
-              Quiet[ToExpression[STR]];
-              With[{s = short},
-                VerificationTest[OBJ[s][var1, var2, t] === GWPCMD, TestID -> testID, MetaInformation -> STR]
-              ],
-              
-              "Moment",
-              STR = "GWPCMD = Table[GWP" <> short <> "[n]@SYS[t]@GWPPARAM[ARG,OPT],{n,0,6}]";
-              Quiet[ToExpression[STR]];
-              With[{s = short},
-                VerificationTest[Table[OBJ[s, n][t], {n, 0, 6}] === GWPCMD, TestID -> testID, MetaInformation -> STR]
-              ],
-              
-              "Recursive",
-              STR = "GWPCMD = Table[GWP" <> short <> "[n][var]@SYS[t]@GWPPARAM[ARG,OPT],{n,0,6}]";
-              Quiet[ToExpression[STR]];
-              With[{s = short},
-                VerificationTest[Table[OBJ[s, n][var, t], {n, 0, 6}] === GWPCMD, TestID -> testID, MetaInformation -> STR]
-              ],
-              
-              _, Nothing
-            ]
-          ]
-        ] /. MOCK -> funcSym
+      (* Verify the Object Dispatcher outputs identical functional structures to the Package.
+         Using fully qualified contexts for GWPPARAM to prevent the Read-Time Context Trap. *)
+      Switch[type,
+        "Static",
+        STRCMD = "GWPCMD = GWP" <> short <> "@GWPPARAM[ARG,OPT]";
+        ReleaseHold[
+          Hold[VerificationTest[OBJ[S] === H[GWPTools`GWPDeveloper`GWPPARAM[ARG, OPT]], True, TestID -> ID, MetaInformation -> M]] /. 
+          {S -> short, H -> head, ID -> testID, M -> STRCMD}
+        ],
+        
+        "Temporal",
+        STRCMD = "GWPCMD = GWP" <> short <> "@SYS[t]@GWPPARAM[ARG,OPT]";
+        ReleaseHold[
+          Hold[VerificationTest[OBJ[S][t] === H[SYS[t][GWPTools`GWPDeveloper`GWPPARAM[ARG, OPT]]], True, TestID -> ID, MetaInformation -> M]] /. 
+          {S -> short, H -> head, ID -> testID, M -> STRCMD}
+        ],
+        
+        "Field",
+        STRCMD = "GWPCMD = GWP" <> short <> "[var]@SYS[t]@GWPPARAM[ARG,OPT]";
+        ReleaseHold[
+          Hold[VerificationTest[OBJ[S][var, t] === H[var][SYS[t][GWPTools`GWPDeveloper`GWPPARAM[ARG, OPT]]], True, TestID -> ID, MetaInformation -> M]] /. 
+          {S -> short, H -> head, ID -> testID, M -> STRCMD}
+        ],
+        
+        "Bivariate",
+        STRCMD = "GWPCMD = GWP" <> short <> "[var1,var2]@SYS[t]@GWPPARAM[ARG,OPT]";
+        ReleaseHold[
+          Hold[VerificationTest[OBJ[S][var1, var2, t] === H[var1, var2][SYS[t][GWPTools`GWPDeveloper`GWPPARAM[ARG, OPT]]], True, TestID -> ID, MetaInformation -> M]] /. 
+          {S -> short, H -> head, ID -> testID, M -> STRCMD}
+        ],
+        
+        "Moment",
+        STRCMD = "GWPCMD = Table[GWP" <> short <> "[n]@SYS[t]@GWPPARAM[ARG,OPT],{n,0,2}]";
+        ReleaseHold[
+          Hold[VerificationTest[Table[OBJ[S, n][t], {n, 0, 2}] === Table[H[n][SYS[t][GWPTools`GWPDeveloper`GWPPARAM[ARG, OPT]]], {n, 0, 2}], True, TestID -> ID, MetaInformation -> M]] /. 
+          {S -> short, H -> head, ID -> testID, M -> STRCMD}
+        ],
+        
+        "Recursive",
+        STRCMD = "GWPCMD = Table[GWP" <> short <> "[n][var]@SYS[t]@GWPPARAM[ARG,OPT],{n,0,2}]";
+        ReleaseHold[
+          Hold[VerificationTest[Table[OBJ[S, n][var, t], {n, 0, 2}] === Table[H[n][var][SYS[t][GWPTools`GWPDeveloper`GWPPARAM[ARG, OPT]]], {n, 0, 2}], True, TestID -> ID, MetaInformation -> M]] /. 
+          {S -> short, H -> head, ID -> testID, M -> STRCMD}
+        ],
+        
+        _, Nothing
       ]
     ]
   ],
@@ -96,10 +101,10 @@ Scan[
 (* ========================================================== *)
 
 (* Clear dynamically generated strings and metadata tags *)
-ClearAll[STR, sysTag];
+ClearAll[STR, STRCMD, sysTag];
 
-(* Clear the global test object, command targets, and environment sequences *)
-ClearAll[OBJ, GWPCMD, ARG, OPT, SYS];
+(* Clear the global test object and environment sequences *)
+ClearAll[OBJ, ARG, OPT, SYS];
 
 (* Clear the abstract symbolic variables and proxy iterators used in the tests *)
 ClearAll[RA, IA, RX, IX, RP, IP, RG, IG, HBAR, MASS, t, n, var, var1, var2];

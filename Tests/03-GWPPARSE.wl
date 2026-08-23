@@ -1,6 +1,13 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 03-GWPPARSE.wl                                              *)
+(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND METADATA STRINGS                           *)
@@ -13,6 +20,14 @@ ToExpression[STR2 = "RIA2={1/(4*UX^2),0}"];
 ToExpression[STR3 = "RIA3={1/(4*UX^2),-1/2*COVXP/(HBAR*UX^2)}"];
 ToExpression[STR4 = "RIA4={1/(4*UX^2),+Sqrt[-1/16*1/UX^4+UP^2/(4*HBAR^2*UX^2)]}"];
 ToExpression[STR5 = "RIA5={1/(4*UX^2),-Sqrt[-1/16*1/UX^4+UP^2/(4*HBAR^2*UX^2)]}"];
+
+(* Position Parser Strings *)
+ToExpression[STR12 = "RIX1={RX,IX}"];
+
+(* Momentum Parser Strings *)
+ToExpression[STR13 = "RIP1={RP,IP}"];
+ToExpression[STR14 = "RIP2={Sqrt[2*MASS*EK],0}"];
+ToExpression[STR15 = "RIP3={-Sqrt[2*MASS*EK],0}"];
 
 (* Phase Parser Strings *)
 ToExpression[STR0a = "ARG2=Sequence[HBAR,RA1,RX1,RP1]"];
@@ -41,29 +56,60 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{UX, 0}, ARG1] - RIA2] == {0,0}, 
+  Simplify[GWPSHAPE[{"Covariance", UX, 0}, ARG1] - RIA2] == {0,0}, 
   TestID -> "GWPSHAPE-02-UX-0", 
   MetaInformation -> STR2
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{UX, COVXP}, ARG1] - RIA3] == {0,0}, 
+  Simplify[GWPSHAPE[{"Covariance", UX, COVXP}, ARG1] - RIA3] == {0,0}, 
   TestID -> "GWPSHAPE-03-UX-COVXP", 
   MetaInformation -> STR3
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{UX, UP, 1}, ARG1] - RIA4] == {0,0}, 
+  Simplify[GWPSHAPE[{"Uncertainty", UX, UP, 1}, ARG1] - RIA4] == {0,0}, 
   TestID -> "GWPSHAPE-04-UX-UP-posChirp", 
   MetaInformation -> STR4
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{UX, UP, -1}, ARG1] - RIA5] == {0,0}, 
+  Simplify[GWPSHAPE[{"Uncertainty", UX, UP, -1}, ARG1] - RIA5] == {0,0}, 
   TestID -> "GWPSHAPE-05-UX-UP-negChirp", 
   MetaInformation -> STR5
 ]
 
+(* ========================================================== *)
+(* POSITION PARSER VERIFICATION TESTS                         *)
+(* ========================================================== *)
+
+VerificationTest[
+  Simplify[GWPPOSITION[RX + I*IX] - RIX1] == {0,0}, 
+  TestID -> "GWPPOSITION-01-ReIm", 
+  MetaInformation -> STR12
+]
+
+(* ========================================================== *)
+(* MOMENTUM PARSER VERIFICATION TESTS                         *)
+(* ========================================================== *)
+
+VerificationTest[
+  Simplify[GWPMOMENTUM[RP + I*IP, MASS] - RIP1] == {0,0}, 
+  TestID -> "GWPMOMENTUM-01-ReIm", 
+  MetaInformation -> STR13
+]
+
+VerificationTest[
+  Simplify[GWPMOMENTUM[{"KineticEnergy", EK, 1}, MASS] - RIP2] == {0,0}, 
+  TestID -> "GWPMOMENTUM-02-KineticEnergy-pos", 
+  MetaInformation -> STR14
+]
+
+VerificationTest[
+  Simplify[GWPMOMENTUM[{"KineticEnergy", EK, -1}, MASS] - RIP3] == {0,0}, 
+  TestID -> "GWPMOMENTUM-03-KineticEnergy-neg", 
+  MetaInformation -> STR15
+]
 
 (* ========================================================== *)
 (* PHASE PARSER VERIFICATION TESTS                           *)
@@ -120,7 +166,9 @@ VerificationTest[
 ClearAll["STR*"];
 ClearAll["ARG*"];
 ClearAll["RIA*"];
+ClearAll["RIX*"];
+ClearAll["RIP*"];
 ClearAll["RIG*"];
 
 (* Clear the abstract symbolic variables used in the shape and phase tests *)
-ClearAll[HBAR, MASS, RA, IA, UX, COVXP, UP, RA1, RX1, RP1, RG, IG, S, MU, X0, P0, PHI, W, EN, TT];
+ClearAll[HBAR, MASS, RA, IA, UX, COVXP, UP, RA1, RX1, IX, RP1, IP, EK, RX, RP, RG, IG, S, MU, X0, P0, PHI, W, EN, TT];

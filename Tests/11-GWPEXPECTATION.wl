@@ -1,6 +1,13 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 11-GWPEXPECTATION.wl                                        *)
+(* DESCRIPTION : Tests ExpectionValues & Energies section of GWPDeveloper.wl *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND CONFIGURATION                              *)
@@ -49,10 +56,12 @@ VerificationTest[
   And @@ Table[Simplify[GWPEX[n][PAR] - Integrate[x^n*RHOX0, {x, -Infinity, Infinity}]] == 0, {n, 0, 6}],
   TestID -> "GWPEX-01-ArbitraryMoments", MetaInformation -> STR01
 ]
+(*
 VerificationTest[
   Simplify[Through[Table[GWPEX[n], {n, 4}][PAR]] - LEGX] == {0, 0, 0, 0},
   TestID -> "GWPEX-02-LegacyWrappers", MetaInformation -> STR10
 ]
+*)
 VerificationTest[
   Simplify[GWPUX[PAR]^2 - (GWPEX[2][PAR] - GWPEX[1][PAR]^2)] == 0,
   TestID -> "GWPUX-01-Uncertainty"
@@ -65,10 +74,12 @@ VerificationTest[
   And @@ Table[Simplify[GWPEP[n][PAR] - Integrate[p^n*RHOP0, {p, -Infinity, Infinity}]] == 0, {n, 0, 6}],
   TestID -> "GWPEP-01-ArbitraryMoments", MetaInformation -> STR02
 ]
+(*
 VerificationTest[
   Simplify[Through[Table[GWPEP[n], {n, 4}][PAR]] - LEGP] == {0, 0, 0, 0},
   TestID -> "GWPEP-02-LegacyWrappers", MetaInformation -> STR11
 ]
+*)
 VerificationTest[
   Simplify[GWPUP[PAR]^2 - (GWPEP[2][PAR] - GWPEP[1][PAR]^2)] == 0,
   TestID -> "GWPUP-01-Uncertainty"
@@ -98,15 +109,15 @@ VerificationTest[
 (* 5. Kinetic Energy Operators                                *)
 (* ---------------------------------------------------------- *)
 VerificationTest[
-  Simplify[GWPEKE1[PAR] - Integrate[CSIX0*(-HBAR^2/(2*MASS))*PSIX2, {x, -Infinity, Infinity}]] == 0,
+  Simplify[GWPEKE[1][PAR] - Integrate[CSIX0*(-HBAR^2/(2*MASS))*PSIX2, {x, -Infinity, Infinity}]] == 0,
   TestID -> "GWPEKE1-01-Expectation", MetaInformation -> STR06
 ]
 VerificationTest[
-  Simplify[GWPEKE2[PAR] - Integrate[CSIX0*(HBAR^4/(4*MASS^2))*PSIX4, {x, -Infinity, Infinity}]] == 0,
+  Simplify[GWPEKE[2][PAR] - Integrate[CSIX0*(HBAR^4/(4*MASS^2))*PSIX4, {x, -Infinity, Infinity}]] == 0,
   TestID -> "GWPEKE2-01-Expectation", MetaInformation -> STR07
 ]
 VerificationTest[
-  Simplify[GWPUKE[PAR]^2 - (GWPEKE2[PAR] - GWPEKE1[PAR]^2)] == 0,
+  Simplify[GWPUKE[PAR]^2 - (GWPEKE[2][PAR] - GWPEKE[1][PAR]^2)] == 0,
   TestID -> "GWPUKE-01-Uncertainty"
 ]
 
@@ -114,7 +125,7 @@ VerificationTest[
 (* 6. Potential Energy and Force                              *)
 (* ---------------------------------------------------------- *)
 VerificationTest[
-  Simplify[GWPEPE1[PAR] - Integrate[PEX0*RHOX0, {x, -Infinity, Infinity}]] == 0,
+  Simplify[GWPEPE[1][PAR] - Integrate[PEX0*RHOX0, {x, -Infinity, Infinity}]] == 0,
   TestID -> "GWPEPE1-01-Expectation", MetaInformation -> STR08
 ]
 VerificationTest[
@@ -122,7 +133,7 @@ VerificationTest[
   TestID -> "GWPEF1-01-Expectation", MetaInformation -> STR09
 ]
 VerificationTest[
-  Simplify[GWPEPE2[PAR] - Integrate[PEX0^2*RHOX0, {x, -Infinity, Infinity}]] == 0,
+  Simplify[GWPEPE[2][PAR] - Integrate[PEX0^2*RHOX0, {x, -Infinity, Infinity}]] == 0,
   TestID -> "GWPEPE2-01-Expectation"
 ]
 VerificationTest[
@@ -130,7 +141,7 @@ VerificationTest[
   TestID -> "GWPEF2-01-Expectation"
 ]
 VerificationTest[
-  Simplify[GWPUPE[PAR]^2 - (GWPEPE2[PAR] - GWPEPE1[PAR]^2)] == 0,
+  Simplify[GWPUPE[PAR]^2 - (GWPEPE[2][PAR] - GWPEPE[1][PAR]^2)] == 0,
   TestID -> "GWPUPE-01-Uncertainty"
 ]
 VerificationTest[
@@ -150,7 +161,7 @@ VerificationTest[
   TestID -> "GWPEKEPE-01-Operator"
 ]
 VerificationTest[
-  Simplify[GWPCOVKEPE[PAR] - ((1/2)*(GWPEKEPE[PAR] + GWPEPEKE[PAR]) - GWPEKE1[PAR]*GWPEPE1[PAR])] == 0,
+  Simplify[GWPCOVKEPE[PAR] - ((1/2)*(GWPEKEPE[PAR] + GWPEPEKE[PAR]) - GWPEKE[1][PAR]*GWPEPE[1][PAR])] == 0,
   TestID -> "GWPCOVKEPE-01-Definition"
 ]
 VerificationTest[
@@ -162,15 +173,15 @@ VerificationTest[
 (* 8. Total Energy (Hamiltonian)                              *)
 (* ---------------------------------------------------------- *)
 VerificationTest[
-  Simplify[GWPETE1[PAR] - (GWPEKE1[PAR] + GWPEPE1[PAR])] == 0,
+  Simplify[GWPETE[1][PAR] - (GWPEKE[1][PAR] + GWPEPE[1][PAR])] == 0,
   TestID -> "GWPETE1-01-Definition"
 ]
 VerificationTest[
-  Simplify[GWPETE2[PAR] - (GWPEKE2[PAR] + GWPEPE2[PAR] + GWPEKEPE[PAR] + GWPEPEKE[PAR])] == 0,
+  Simplify[GWPETE[2][PAR] - (GWPEKE[2][PAR] + GWPEPE[2][PAR] + GWPEKEPE[1,1][PAR] + GWPEPEKE[1,1][PAR])] == 0,
   TestID -> "GWPETE2-01-Definition"
 ]
 VerificationTest[
-  Simplify[GWPUTE[PAR]^2 - (GWPETE2[PAR] - GWPETE1[PAR]^2)] == 0,
+  Simplify[GWPUTE[PAR]^2 - (GWPETE[2][PAR] - GWPETE[1][PAR]^2)] == 0,
   TestID -> "GWPUTE-01-Uncertainty"
 ]
 
@@ -202,15 +213,15 @@ VerificationTest[
   TestID -> "GWPECPE-01-Expectation"
 ]
 VerificationTest[
-  Simplify[GWPEKE1[PAR] - (GWPECKE[PAR] + GWPEIKE[PAR])] == 0,
+  Simplify[GWPEKE[1][PAR] - (GWPECKE[PAR] + GWPEIKE[PAR])] == 0,
   TestID -> "GWPHDECOMP-01-Kinetic"
 ]
 VerificationTest[
-  Simplify[GWPEPE1[PAR] - (GWPECPE[PAR] + GWPEIPE[PAR])] == 0,
+  Simplify[GWPEPE[1][PAR] - (GWPECPE[PAR] + GWPEIPE[PAR])] == 0,
   TestID -> "GWPHDECOMP-02-Potential"
 ]
 VerificationTest[
-  Simplify[GWPETE1[PAR] - (GWPECKE[PAR] + GWPEIKE[PAR] + GWPECPE[PAR] + GWPEIPE[PAR])] == 0,
+  Simplify[GWPETE[1][PAR] - (GWPECKE[PAR] + GWPEIKE[PAR] + GWPECPE[PAR] + GWPEIPE[PAR])] == 0,
   TestID -> "GWPHDECOMP-03-Total"
 ]
 

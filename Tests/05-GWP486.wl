@@ -1,6 +1,13 @@
 (* ::Package:: *)
 
-Needs["GWPTools`"]
+(* ========================================================================= *)
+(* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
+(* FILE        : 05-GWP486.wl                                                *)
+(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* ========================================================================= *)
+
+(* Load the underlying developer math engine for raw testing *)
+Needs["GWPTools`GWPDeveloper`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND METADATA STRINGS                           *)
@@ -60,8 +67,8 @@ VerificationTest[
 ]
 
 VerificationTest[
-  GWPINIT@GWP486[ARG] == INITVAR, 
-  TestID -> "GWP486-11-INIT", MetaInformation -> STR07
+  GWPINPUT@GWP486[ARG] == INITVAR, 
+  TestID -> "GWP486-11-INPUT", MetaInformation -> STR07
 ]
 
 (* ========================================================== *)
