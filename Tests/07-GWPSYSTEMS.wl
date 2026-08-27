@@ -10,8 +10,8 @@
 (* DESCRIPTION : Tests Potential Models section of GWPDeveloper.wl           *)
 (* ========================================================================= *)
 
-(* Load the underlying developer math engine for raw testing *)
-Needs["GWPTools`GWPDeveloper`"]
+(* Load the Master Test Environment *)
+Needs["GWPTools`GWPDiagnostics`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND CONFIGURATION                              *)
@@ -23,9 +23,17 @@ $userAssumptions = $Assumptions;
 ToExpression[STR0 = "PAR=GWPPARAM[RA+I*IA,RX+I*IX,RP+I*IP,RG+I*IG,\"HBAR\"->HBAR,\"MASS\"->MASS]"];
 ToExpression[STR00 = "$Assumptions=GWPASSUMPTIONS[PAR,\"Time\"->t]"];
 
-(* Dynamically load the system templates directly from the package API *)
-(* This pulls: {"FREE", "HO", "LINEAR[FK]", "HARMONIC[OMEGA]", ...} *)
-systemTemplates = GWP["PotentialModels"];
+(* Explicitly define the internal mathematical potential signatures for the test generator *)
+systemTemplates = {
+  "FREE", 
+  "HO", 
+  "LINEAR[FK]", 
+  "HARMONIC[OMEGA]", 
+  "PARABOLIC[OMEGA]", 
+  "FHOLIN[OMEGA, AK]", 
+  "FHORES[OMEGA, AK]", 
+  "FHONON[OMEGA, AK, OMEGA1]"
+};
 
 components = {
   {"01-RA", "GWPRA", "GWPRATD"},

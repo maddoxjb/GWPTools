@@ -6,10 +6,8 @@
 (* DESCRIPTION : Tests GWP and GWPObject interface                           *)
 (* ========================================================================= *)
 
-(* Load the Public API for object-level testing *)
-Needs["GWPTools`"]
-(* Load the Developer engine so the RHS can evaluate the exact math! *)
-Needs["GWPTools`GWPDeveloper`"]
+(* Load the Master Test Environment *)
+Needs["GWPTools`GWPDiagnostics`"]
 
 (* ========================================================== *)
 (* 1. MANUAL VERIFICATION TESTS: STATE & CONSTRUCTOR          *)
@@ -17,7 +15,7 @@ Needs["GWPTools`GWPDeveloper`"]
 
 (* Instantiate a generic default object via string for metadata injection *)
 ToExpression[DEF01 = "OBJ=GWP[]"];
-ToExpression[DEF02 = "DEFPOT = GWPTools`Private`$GWPPotentialNames[OptionValue[GWP, \"Potential\"]]"];
+ToExpression[DEF02 = "DEFPOT = None"];
 ToExpression[DEF03 = "DEFSUM = OptionValue[GWP, \"Summary\"]"];
 
 VerificationTest[True, TestID -> "Definition", MetaInformation -> DEF01]

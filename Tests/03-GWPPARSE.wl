@@ -6,8 +6,8 @@
 (* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
 (* ========================================================================= *)
 
-(* Load the underlying developer math engine for raw testing *)
-Needs["GWPTools`GWPDeveloper`"]
+(* Load the Master Test Environment *)
+Needs["GWPTools`GWPDiagnostics`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND METADATA STRINGS                           *)
@@ -79,6 +79,20 @@ VerificationTest[
   MetaInformation -> STR5
 ]
 
+VerificationTest[
+  GWPSHAPE[{1, 2}, ARG1] === {$Failed, $Failed}, 
+  True, 
+  {GWPSHAPE::badform},
+  TestID -> "GWPSHAPE-06-RawList-Fail"
+]
+
+VerificationTest[
+  GWPSHAPE[{"Covariance", {UX}, COVXP}, ARG1] === {$Failed, $Failed}, 
+  True, 
+  {GWPSHAPE::badform},
+  TestID -> "GWPSHAPE-07-NestedList-Fail"
+]
+
 (* ========================================================== *)
 (* POSITION PARSER VERIFICATION TESTS                         *)
 (* ========================================================== *)
@@ -87,6 +101,13 @@ VerificationTest[
   Simplify[GWPPOSITION[RX + I*IX] - RIX1] == {0,0}, 
   TestID -> "GWPPOSITION-01-ReIm", 
   MetaInformation -> STR12
+]
+
+VerificationTest[
+  GWPPOSITION[{RX, IX}] === {$Failed, $Failed}, 
+  True, 
+  {GWPPOSITION::badform},
+  TestID -> "GWPPOSITION-02-RawList-Fail"
 ]
 
 (* ========================================================== *)
@@ -109,6 +130,20 @@ VerificationTest[
   Simplify[GWPMOMENTUM[{"KineticEnergy", EK, -1}, MASS] - RIP3] == {0,0}, 
   TestID -> "GWPMOMENTUM-03-KineticEnergy-neg", 
   MetaInformation -> STR15
+]
+
+VerificationTest[
+  GWPMOMENTUM[{RP, IP}, MASS] === {$Failed, $Failed}, 
+  True, 
+  {GWPMOMENTUM::badform},
+  TestID -> "GWPMOMENTUM-04-RawList-Fail"
+]
+
+VerificationTest[
+  GWPMOMENTUM[{"KineticEnergy", {EK}, 1}, MASS] === {$Failed, $Failed}, 
+  True, 
+  {GWPMOMENTUM::badform},
+  TestID -> "GWPMOMENTUM-05-NestedList-Fail"
 ]
 
 (* ========================================================== *)
@@ -155,6 +190,20 @@ VerificationTest[
   Simplify[GWPPHASE[{"Evolution", EN, TT}, ARG2] - RIG6] == {0,0}, 
   TestID -> "GWPPHASE-06-ET", 
   MetaInformation -> STR11
+]
+
+VerificationTest[
+  GWPPHASE[{RG, IG}, ARG2] === {$Failed, $Failed}, 
+  True, 
+  {GWPPHASE::badform},
+  TestID -> "GWPPHASE-07-RawList-Fail"
+]
+
+VerificationTest[
+  GWPPHASE[{"Action", {S}}, ARG2] === {$Failed, $Failed}, 
+  True, 
+  {GWPPHASE::badform},
+  TestID -> "GWPPHASE-08-NestedList-Fail"
 ]
 
 (* ========================================================== *)

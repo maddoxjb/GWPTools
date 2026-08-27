@@ -6,8 +6,8 @@
 (* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
 (* ========================================================================= *)
 
-(* Load the underlying developer math engine for raw testing *)
-Needs["GWPTools`GWPDeveloper`"]
+(* Load the Master Test Environment *)
+Needs["GWPTools`GWPDiagnostics`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND METADATA STRINGS                           *)
@@ -91,18 +91,31 @@ VerificationTest[
   TestID -> "GWPPARAM-10-AXPG-Opts"
 ]
 
+VerificationTest[
+  GWPPARAM[ARG0, "HBAR" -> {1, 2}] === $Failed, 
+  True, 
+  {GWPPARAM::posval},
+  TestID -> "GWPPARAM-11-HBAR-List-Fail"
+]
+
+VerificationTest[
+  GWPPARAM[ARG0, "MASS" -> {1, 2}] === $Failed, 
+  True, 
+  {GWPPARAM::posval},
+  TestID -> "GWPPARAM-12-MASS-List-Fail"
+]
+
+
+(* ========================================================== *)
+(* CLEANUP: PREVENT NAMESPACE POLLUTION (Snapshot Revert)     *)
+(* ========================================================== *)
+
 (* Put the definitions back! *)
 DownValues[GWP486] = storedGWP486;
-
-(* ========================================================== *)
-(* CLEANUP: PREVENT NAMESPACE POLLUTION                       *)
-(* ========================================================== *)
-
 (* Remove the temporary storage variable completely *)
 Remove[storedGWP486];
 
-(* Clear the values of dynamically generated strings and options, 
-   but leave the symbol names intact so TestReport can display them. *)
+(* Clear the values of dynamically generated strings and options *)
 ClearAll["STR*"];
 ClearAll["ARG*"];
 ClearAll[OPT];

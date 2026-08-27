@@ -6,8 +6,8 @@
 (* DESCRIPTION : Tests HYDRODYNAMICSX section of GWPDeveloper.wl             *)
 (* ========================================================================= *)
 
-(* Load the underlying developer math engine for raw testing *)
-Needs["GWPTools`GWPDeveloper`"]
+(* Load the Master Test Environment *)
+Needs["GWPTools`GWPDiagnostics`"]
 
 (* ========================================================== *)
 (* DEFINITIONS AND CONFIGURATION                              *)

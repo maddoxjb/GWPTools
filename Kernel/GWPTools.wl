@@ -9,7 +9,7 @@
 
 
 (* ========================================================================= *)
-(* PACKAGE     : GWPTools                                                    *)
+(* PACKAGE     : GWPTools`                                                   *)
 (* VERSION     : 1.0.0                                                       *)
 (* AUTHOR      : Jeremy B. Maddox                                            *)
 (* COPYRIGHT   : (c) 2026 Jeremy B. Maddox                                   *)
@@ -18,14 +18,12 @@
 (* CITATION    : If you use this software, please cite the companion paper:  *)
 (*               [Citation details to be added]                              *)
 (* DESCRIPTION : An advanced analytical framework for generalized single     *)
-(*               Gaussian Wavepackets (GWPs). Provides exact evaluation of   *)
-(*               kinematics, dual-basis hydrodynamics, Bohmian trajectories, *)
-(*               and energy density partitioning via a polymorphic API.      *)
+(*               Gaussian Wavepackets (GWPs).                                *)
+(*               This is the main Object-Oriented user API and dynamic       *)
+(*               dispatcher for the GWPTools framework.                      *)
 (* ========================================================================= *)
 
-
-(* --- Define Context --- *)
-BeginPackage["GWPTools`", {"GWPTools`GWPDeveloper`"}]
+BeginPackage["GWPTools`"]
 
 
 (* ::Section::Closed:: *)
@@ -45,15 +43,92 @@ GWPObject::usage = "GWPObject[...] represents a generalized Gaussian wavepacket 
 Begin["`Private`"]
 
 
-(* --- Package Environment Setup --- *)
-(* Capture the installation directory of the package at load time. *)
-(* The '2' tells it to step up one level from the 'Kernel' folder to the package root. *)
-$PackageDirectory = Quiet[
-  If[$InputFileName =!= "", 
-    DirectoryName[$InputFileName, 2], 
-    NotebookDirectory[]
-  ]
+(* --- Dispatcher Flag --- *)
+$DispatcherActive = True;
+
+(* --- Initialize Core Registries --- *)
+$GWPRegistry = {};
+
+
+(* ::Section:: *)
+(*Dynamic Registry*)
+
+
+(* --- Initialize Core Registries --- *)
+$GWPRegistry = {};
+$GWPPotentialModels = {};
+$GWPPotentialNames = <||>;
+$GWPPotentialHeads = <||>;
+$GWPPotentialSignatures = {};
+
+(* --- Signatures Registry --- *)
+$GWPSignatures = <|
+  "Static"      -> "f[params]",
+  "Temporal"    -> "f[params] -> Function[t]",
+  "Field"       -> "f[var][params] -> Function[{var, t}]",
+  "Recursive"   -> "f[n][var][params] -> Function[{var, t}]",
+  "Moment"      -> "f[n][params] -> Function[t]",
+  "CrossMoment" -> "f[m, n][params] -> Function[t]",
+  "Bivariate"   -> "f[v1, v2][params] -> Function[{v1, v2, t}]"
+|>;
+
+(* --- Property Extension Receiver --- *)
+GWPRegisterExtension[registryChunk_] := Module[{},
+  $GWPRegistry = DeleteDuplicates @ Join[$GWPRegistry, registryChunk];
+  
+  $GWPLongToShort = Association[#1 -> #2 & @@@ $GWPRegistry];
+  $GWPShortToLong = Association[#2 -> #1 & @@@ $GWPRegistry];
+  $GWPTypeMap     = Association[#2 -> #3 & @@@ $GWPRegistry];
+  
+  $GWPStructureClasses = GroupBy[$GWPRegistry, #[[3]] &, Map[#[[1]] &]];
+  $GWPPropertyClasses  = GroupBy[$GWPRegistry, #[[5]] &, Map[#[[1]] &]];
+  $GWPAllClasses       = Join[$GWPStructureClasses, $GWPPropertyClasses];
+  
+  (* Master dictionaries now rebuild dynamically when an extension loads! *)
+  $GWPInformation = Association[
+    #[[1]] -> <|
+      "ShortKey"       -> #[[2]],
+      "DynamicClass"   -> #[[3]],
+      "StaticClass"    -> #[[4]],
+      "PropertyClass"  -> #[[5]],
+      "Signature"      -> $GWPSignatures[#[[3]]]
+    |> & /@ $GWPRegistry
+  ];
+  
+  $GWPClassInformation = Association @ KeyValueMap[
+    Function[{className, props},
+      Module[{isStruct = KeyExistsQ[$GWPStructureClasses, className]},
+        className -> <|
+          "ClassType" -> If[isStruct, "StructureClass", "PropertyClass"],
+          "PropertyCount" -> Length[props],
+          If[isStruct,
+            "Signature" -> $GWPSignatures[className],
+            "ContainedStructures" -> Sort[DeleteDuplicates[Lookup[$GWPInformation, props][[All, "DynamicClass"]]]]
+          ],
+          "Properties" -> props,
+          "ShortKeys"  -> Lookup[$GWPLongToShort, props]
+        |>
+      ]
+    ],
+    $GWPAllClasses
+  ];
 ];
+
+(* --- Potential Extension Receiver --- *)
+GWPRegisterPotentials[models_, names_, heads_, signatures_] := Module[{},
+  $GWPPotentialModels = DeleteDuplicates @ Join[$GWPPotentialModels, models];
+  $GWPPotentialNames  = Join[$GWPPotentialNames, names];
+  $GWPPotentialHeads  = Join[$GWPPotentialHeads, heads];
+  
+  If[$GWPPotentialSignatures === {},
+    $GWPPotentialSignatures = signatures,
+    $GWPPotentialSignatures = $GWPPotentialSignatures | signatures
+  ];
+];
+
+
+(* Load the Engine (which natively loads GWPDeveloper) *)
+Needs["GWPTools`GWPEngine`"];
 
 
 (* ::Section:: *)
@@ -86,66 +161,17 @@ $PackageDirectory = Quiet[
 (* ========================================================================= *)
 
 
-(* ::Subsection:: *)
-(*Potential Model Resolution*)
-
-
-(* --- Potential Model Resolution & Dispatch --- *)
-(* This section defines the external potential energy models available to    *)
-(* the GWPObject and dictates how user inputs are validated and routed.      *)
-(*                                                                           *)
-(* - $GWPPotentialModels     : A reference list of the raw internal          *)
-(*                             signatures (e.g., "HO", "LINEAR[FK]").        *)
-(* - $GWPPotentialNames      : An Association mapping human-readable strings *)
-(*                             (e.g., "HarmonicOscillator") to their         *)
-(*                             internal package counterparts.                *)
-(* - $GWPPotentialSignatures : A strictly typed pattern registry             *)
-(*                             (e.g., FREE | HO | LINEAR[_]) used by the     *)
-(*                             Core Constructor to instantly validate inputs.*)
-(*                                                                           *)
-(* RESOLUTION FLOW:                                                          *)
-(* When a user evaluates GWP["Potential" -> sys]:                            *)
-(* 1. If sys is a known string name (e.g., "FreeParticle"), it maps directly *)
-(*    to the underlying package function (e.g., FREE).                       *)
-(* 2. If sys is a direct mathematical signature (e.g., "LINEAR[2]"), it      *)
-(*    validates against the pattern registry and passes it directly to the   *)
-(*    physics engine.                                                        *)
-
-
-(* --- Potential Model Signatures --- *)
-$GWPPotentialModels = {
-   "FREE", 
-   "HO", 
-   "LINEAR[FK]", 
-   "HARMONIC[OMEGA]", 
-   "PARABOLIC[OMEGA]", 
-   "FHOLIN[OMEGA, AK]", 
-   "FHORES[OMEGA, AK]", 
-   "FHONON[OMEGA, AK, OMEGA1]"
-};
-
-(* --- Named Potentials with Predefined Parameters --- *)
-$GWPPotentialNames = <|
-   "FreeParticle" -> FREE,
-   "HarmonicOscillator" -> HO,
-   "LinearPotential" -> LINEAR[1]
-|>;
-
-(* --- Internal Pattern Registry for Validation --- *)
-$GWPPotentialSignatures = FREE | HO | LINEAR[_] | HARMONIC[_] | PARABOLIC[_] | FHOLIN[_, _] | FHORES[_, _] | FHONON[_, _, _];
-
-
 (* ::Subsection::Closed:: *)
 (*Core Constructor*)
 
 
 (* --- Error Messages --- *)
-GWP::badsum = "The summary mode `1` is not recognized. Valid modes are Automatic, \"PhaseSpace\", \"Energy\", or None.";
+GWP::badsum = "The summary mode `1` is not recognized. Valid modes are Automatic or None.";
 GWP::badpot = "The potential `1` is not recognized. Evaluate GWP[\"PotentialNames\"] or GWP[\"PotentialModels\"] for valid options.";
 
 (* --- Core GWPObject Constructor --- *)
 Options[GWP] = {
-  "Potential" -> "FreeParticle", 
+  "Potential" -> None, 
   "HBAR" -> 1, 
   "MASS" -> 1,
   "Summary" -> Automatic
@@ -169,22 +195,31 @@ GWP[initialParams___, opts : OptionsPattern[]] /; !MatchQ[First[{initialParams},
     sumMode = OptionValue["Summary"];
     
     (* Validate the "Summary" Option *)
-    If[!MemberQ[{Automatic, "PhaseSpace", "Energy", None}, sumMode],
+    If[!MemberQ[{Automatic, None}, sumMode],
       Message[GWP::badsum, sumMode];
       Return[$Failed]
     ];
     
+    (* Intercept Parameterized List Inputs (e.g., {"Harmonic", 2.0}) *)
+    If[ListQ[rawSys] && Length[rawSys] > 0 && StringQ[First[rawSys]],
+      If[KeyExistsQ[$GWPPotentialHeads, First[rawSys]],
+        rawSys = Apply[$GWPPotentialHeads[First[rawSys]], Rest[rawSys]]
+      ]
+    ];
+    
     (* Validate the "Potential" Option *)
-    If[StringQ[rawSys],
-      (* Validate String Names *)
-      If[!KeyExistsQ[$GWPPotentialNames, rawSys],
-        Message[GWP::badpot, rawSys];
-        Return[$Failed]
-      ],
-      (* Validate the Potential Model Signature *)
-      If[!MatchQ[rawSys, $GWPPotentialSignatures],
-        Message[GWP::badpot, rawSys];
-        Return[$Failed]
+    If[rawSys =!= None,
+      If[StringQ[rawSys],
+        (* Validate String Names *)
+        If[!KeyExistsQ[$GWPPotentialNames, rawSys],
+          Message[GWP::badpot, rawSys];
+          Return[$Failed]
+        ],
+        (* Validate the Potential Model Signature *)
+        If[!MatchQ[rawSys, $GWPPotentialSignatures],
+          Message[GWP::badpot, rawSys];
+          Return[$Failed]
+        ]
       ]
     ];
     
@@ -202,280 +237,15 @@ GWP[initialParams___, opts : OptionsPattern[]] /; !MatchQ[First[{initialParams},
     (* Construct the Object *)
     GWPObject[<|
       "Parameters" -> {params}, 
-      "Potential" -> finalSys, 
+      "Potential" -> OptionValue["Potential"],
+      "PotentialModel" -> finalSys, 
       "Created" -> Now,
       "Summary" -> sumMode
     |>]
 ];
 
 
-(* ::Subsection::Closed:: *)
-(*Property Resolution and Dispatch*)
-
-
-(* --- Master Registry: Property Resolution & Dispatch Mapping --- *)
-(* This registry defines the properties accessible via the GWPObject.        *)
-(* Each entry follows the exact format:                                      *)
-(* {"LongName", "ShortKey", "DispatchType", "PropertyClass"}                 *)
-(*                                                                           *)
-(* - "LongName"      : The human-readable string used in obj["LongName"].    *)
-(* - "ShortKey"      : Maps to the underlying package function ("GWP" <> key).*)
-(* - "DispatchType"  : Dictates how the Dispatcher formats the output function*)
-(*                     (Assigned via internal cSTATIC, cFIELD, etc. constants)*)
-(* - "PropertyClass" : The programmatic group name (e.g., "HydrodynamicsX"). *)
-(*                                                                           *)
-(* SIGNATURE LEGEND:                                                         *)
-(* * Static    (cSTATIC)     : f[params]         -> Evaluated instantly          *)
-(* * Temporal  (cTEMP)       : f[params]         -> Returns Function[t]          *)
-(* * Field     (cFIELD)      : f[var][params]    -> Returns Function[{var, t}]   *)
-(* * Recursive (cREC)        : f[n][var][params] -> Returns Function[{var, t}]   *)
-(* * Moment    (cMOM)        : f[n][params]      -> Returns Function[t]          *)
-(* * CrossMoment (cCROSSMOM) : f[m,n][params]-> Returns Function[t]              *)
-(* * Bivariate (cBIV)        : f[v1, v2][params] -> Returns Function[{v1, v2, t}]*)
-
-
-(* ::Subsubsection::Closed:: *)
-(*StaticParameters*)
-
-
-$regStatic = Append[#, "StaticParameters"] & /@ {
-    {"Normalization",         "NORM",        cSTATIC},
-    {"ReducedPlanckConstant", "HBAR",        cSTATIC},
-    {"Mass",                  "MASS",        cSTATIC},
-    {"InputParameters",       "INPUT",       cSTATIC},
-    {"InitialParameters",     "INIT",        cSTATIC},
-    {"Assumptions",           "ASSUMPTIONS", cSTATIC}
-  };
-
-
-(* ::Subsubsection::Closed:: *)
-(*DynamicParameters*)
-
-
-$regDynamic = Append[#, "DynamicParameters"] & /@ {
-  {"RealShape",             "RA",      cTEMP},
-  {"ImaginaryShape",        "IA",      cTEMP},
-  {"PositionCenter",        "RX",      cTEMP},
-  {"MomentumCenter",        "RP",      cTEMP},
-  {"RealPhase",             "RG",      cTEMP},
-  {"ImaginaryPhase",        "IG",      cTEMP},
-  {"PotentialCoefficients", "PECOEFF", cTEMP} 
-};
-
-
-(*
-   {"RealShapeTimeDerivative", "RATD", cTEMP},
-   {"ImaginaryShapeTimeDerivative", "IATD", cTEMP},
-   {"PositionCenterTimeDerivative", "RXTD", cTEMP},
-   {"MomentumCenterTimeDerivative", "RPTD", cTEMP},
-   {"RealPhaseTimeDerivative", "RGTD", cTEMP},
-   {"ImaginaryPhaseTimeDerivative", "IGTD", cTEMP}
-*)
-
-
-(* ::Subsubsection::Closed:: *)
-(*Wavefunctions*)
-
-
-$regWave = Append[#, "Wavefunctions"] & /@ {
-  {"WavefunctionX",          "PSIX", cREC},
-  {"ConjugateWavefunctionX", "CSIX", cREC},
-  {"WavefunctionP",          "PSIP", cREC},
-  {"ConjugateWavefunctionP", "CSIP", cREC},
-  {"RealWavefunctionX",      "RSIX", cFIELD},
-  {"ImaginaryWavefunctionX", "ISIX", cFIELD},
-  {"RealWavefunctionP",      "RSIP", cFIELD},
-  {"ImaginaryWavefunctionP", "ISIP", cFIELD}
-};
-
-
-(* ::Subsubsection::Closed:: *)
-(*Probabilities*)
-
-
-$regProb = Append[#, "Probabilities"] & /@ {
-  (* Probability Density Functions (PDF) *)
-  {"DensityX",                  "RHOX",  cREC},
-  {"DensityP",                  "RHOP",  cREC},
-  {"DensityE",                  "RHOE",  cFIELD},
-  
-  (* Cumulative Distribution Functions (CDF) *)
-  {"CumulativeDistributionX",   "CX",    cFIELD},
-  {"CumulativeDistributionP",   "CP",    cFIELD},
-  {"CumulativeDistributionE",   "CE",    cFIELD},
-  
-  (* Definite Probabilities *)
-  {"ProbabilityX",              "PROBX", cBIV},
-  {"ProbabilityP",              "PROBP", cBIV},
-  {"ProbabilityE",              "PROBE", cBIV}
-};
-
-
-(* ::Subsubsection::Closed:: *)
-(*ExpectationValues*)
-
-
-$regExp = Append[#, "ExpectationValues"] & /@ {
-  (* Standard Expectations *)
-  {"PositionExpectation",                "EX",    cMOM},
-  {"MomentumExpectation",                "EP",    cMOM},
-  {"PositionUncertainty",                "UX",    cTEMP},
-  {"MomentumUncertainty",                "UP",    cTEMP},
-  {"PositionMomentumProductExpectation", "EXP",   cCROSSMOM}, 
-  {"MomentumPositionProductExpectation", "EPX",   cCROSSMOM}, 
-  {"PositionMomentumCovariance",         "COVXP", cTEMP}, 
-  {"PositionMomentumCorrelation",        "CORXP", cTEMP},
-  
-  (* Force Observables *)
-  {"ForceExpectation",                   "EF1",   cTEMP},
-  {"ForceSquaredExpectation",            "EF2",   cTEMP},
-  {"ForceUncertainty",                   "UF",    cTEMP},
-  
-  (* Information Theory / Statistical Expectations *)
-  {"FisherInformationX",                 "EFIX",  cTEMP},
-  {"FisherInformationP",                 "EFIP",  cTEMP}
-};
-
-
-(* ::Subsubsection::Closed:: *)
-(*Energies*)
-
-
-$regEng = Append[#, "Energies"] & /@ {
-  (* Energy Expectation *)
-  {"KineticEnergyExpectation",                   "EKE",    cMOM},  
-  {"PotentialEnergyExpectation",                 "EPE",    cMOM},  
-  {"TotalEnergyExpectation",                     "ETE",    cMOM},
-  
-  (* Energy Uncertainty *)
-  {"KineticEnergyUncertainty",                   "UKE",     cTEMP},
-  {"PotentialEnergyUncertainty",                 "UPE",     cTEMP},  
-  {"TotalEnergyUncertainty",                     "UTE",     cTEMP},
-  
-  (* Cross Terms (Kinetic & Potential) *)
-  {"KineticPotentialEnergyProductExpectation",   "EKEPE",   cCROSSMOM}, 
-  {"PotentialKineticEnergyProductExpectation",   "EPEKE",   cCROSSMOM}, 
-  {"KineticPotentialEnergyCovariance",           "COVKEPE", cTEMP}, 
-  {"KineticPotentialEnergyCorrelation",          "CORKEPE", cTEMP},
-  
-  (* Hydrodynamic Energy Decompositions *)
-  {"InternalKineticEnergyExpectation",           "EIKE",    cTEMP},
-  {"ConvectiveKineticEnergyExpectation",         "ECKE",    cTEMP},
-  {"InternalPotentialEnergyExpectation",         "EIPE",    cTEMP},
-  {"ConvectivePotentialEnergyExpectation",       "ECPE",    cTEMP}
-};
-
-
-(* ::Subsubsection::Closed:: *)
-(*HydrodynamicsX*)
-
-
-$regHydroX = Append[#, "HydrodynamicsX"] & /@ {
-  {"AmplitudeX",                "AX",   cFIELD},
-  {"PhaseX",                    "SX",   cFIELD},
-  {"MomentumFieldX",            "PX",   cFIELD},
-  {"VelocityX",                 "VX",   cFIELD},
-  {"OsmoticVelocityX",          "OVX",  cFIELD},
-  {"CurrentX",                  "JX",   cFIELD},
-  
-  (* The classical vs quantum potentials *)
-  {"QuantumPotentialX",         "QPX",  cFIELD},
-  {"QuantumForceX",             "QFX",  cFIELD},
-  {"ExternalPotentialX",        "PEX",  cREC},
-  {"ExternalForceX",            "FEX",  cREC},
-  {"QuantumStressX",            "QSX",  cFIELD},
-  
-  {"FisherInformationDensityX", "FIX",  cFIELD},
-  {"ConvectiveKineticDensityX", "CKEX", cFIELD},
-  {"InternalKineticDensityX",   "IKEX", cFIELD},
-  {"TotalKineticDensityX",      "TKEX", cFIELD},
-  {"TotalPotentialDensityX",    "TPEX", cFIELD},
-  {"TotalEnergyDensityX",       "TEDX", cFIELD}
-};
-
-
-(* ::Subsubsection::Closed:: *)
-(*HydrodynamicsP*)
-
-
-$regHydroP = Append[#, "HydrodynamicsP"] & /@ {
-  {"AmplitudeP",                  "AP",   cFIELD},
-  {"PhaseP",                      "SP",   cFIELD},
-  {"PositionFieldP",              "XP",   cFIELD},
-  {"ForceFlowP",                  "VP",   cFIELD},
-  {"OsmoticFlowP",                "OVP",  cFIELD},
-  {"CurrentP",                    "JP",   cFIELD},
-  {"QuantumPotentialP",           "QPP",  cFIELD},
-  {"QuantumForceP",               "QFP",  cFIELD},
-  {"QuantumStressP",              "QSP",  cFIELD},
-  
-  {"FisherInformationDensityP",   "FIP",  cFIELD},
-  {"ConvectivePotentialDensityP", "CPEP", cFIELD},
-  {"InternalPotentialDensityP",   "IPEP", cFIELD},
-  {"TotalPotentialDensityP",      "TPEP", cFIELD},
-  {"TotalKineticDensityP",        "TKEP", cFIELD},
-  {"TotalEnergyDensityP",         "TEDP", cFIELD}
-};
-
-
-(* ::Subsubsection::Closed:: *)
-(*BohmianTrajectories*)
-
-
-$regTraj = Append[#, "BohmianTrajectories"] & /@ {
-  {"TrajectoryField",             "XC",   cREC},
-  {"MomentumTrajectoryField",     "PC",   cREC},
-  
-  (* Core C-Space Fields *)
-  {"AmplitudeC",                  "AC",   cFIELD},
-  {"PhaseC",                      "SC",   cFIELD},
-  {"DensityC",                    "RHOC", cFIELD},
-  {"VelocityC",                   "VC",   cFIELD},
-  {"OsmoticVelocityC",            "OVC",  cFIELD},
-  {"CurrentC",                    "JC",   cFIELD},
-  
-  (* Forces & Potentials *)
-  {"QuantumPotentialC",           "QPC",  cFIELD},
-  {"QuantumForceC",               "QFC",  cFIELD},
-  {"ExternalPotentialC",          "PEC",  cREC},   
-  {"ExternalForceC",              "FEC",  cREC},   
-  {"QuantumStressC",              "QSC",  cFIELD},
-  
-  (* C-Space Energy & Information Densities *)
-  {"FisherInformationDensityC",   "FIC",  cFIELD},
-  {"ConvectiveKineticDensityC",   "CKEC", cFIELD},
-  {"InternalKineticDensityC",     "IKEC", cFIELD},
-  {"TotalKineticDensityC",        "TKEC", cFIELD},
-  {"TotalPotentialDensityC",      "TPEC", cFIELD},
-  {"TotalEnergyDensityC",         "TEDC", cFIELD}
-};
-
-
-(* ::Subsubsection::Closed:: *)
-(*Registry Assembly*)
-
-
-(* Registry Assembly *)
-
-$GWPRegistry = Join[
-  $regStatic, $regDynamic, 
-  $regWave, $regProb,
-  $regExp, $regEng, 
-  $regHydroX, $regHydroP, $regTraj
-] /. {
-  cSTATIC   -> "Static",
-  cTEMP     -> "Temporal",
-  cFIELD    -> "Field",
-  cREC      -> "Recursive",
-  cMOM      -> "Moment",
-  cCROSSMOM -> "CrossMoment",
-  cBIV      -> "Bivariate"
-};
-
-Clear[$regStatic, $regDynamic, $regWave, $regProb, $regExp, $regEng, $regHydroX, $regHydroP, $regTraj];
-
-
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Map Builders*)
 
 
@@ -485,48 +255,10 @@ $GWPShortToLong = Association[#2 -> #1 & @@@ $GWPRegistry];
 $GWPTypeMap     = Association[#2 -> #3 & @@@ $GWPRegistry];
 
 $GWPStructureClasses = GroupBy[$GWPRegistry, #[[3]] &, Map[#[[1]] &]];
-$GWPPropertyClasses  = GroupBy[$GWPRegistry, #[[4]] &, Map[#[[1]] &]];
+(* Update index to #[[5]] for the Property Categories *)
+$GWPPropertyClasses  = GroupBy[$GWPRegistry, #[[5]] &, Map[#[[1]] &]];
 $GWPAllClasses       = Join[$GWPStructureClasses, $GWPPropertyClasses];
 
-(* --- Signatures Registry --- *)
-$GWPSignatures = <|
-  "Static"      -> "f[params]",
-  "Temporal"    -> "f[params] -> Function[t]",
-  "Field"       -> "f[var][params] -> Function[{var, t}]",
-  "Recursive"   -> "f[n][var][params] -> Function[{var, t}]",
-  "Moment"      -> "f[n][params] -> Function[t]",
-  "CrossMoment" -> "f[m, n][params] -> Function[t]",
-  "Bivariate"   -> "f[v1, v2][params] -> Function[{v1, v2, t}]"
-|>;
-
-(* --- Comprehensive Property Record --- *)
-$GWPInformation = Association[
-  #[[1]] -> <|
-    "ShortKey"       -> #[[2]],
-    "StructureClass" -> #[[3]],
-    "PropertyClass"  -> #[[4]],
-    "Signature"      -> $GWPSignatures[#[[3]]]
-  |> & /@ $GWPRegistry
-];
-
-(* --- Comprehensive Class Record --- *)
-$GWPClassInformation = Association @ KeyValueMap[
-  Function[{className, props},
-    Module[{isStruct = KeyExistsQ[$GWPStructureClasses, className]},
-      className -> <|
-        "ClassType" -> If[isStruct, "StructureClass", "PropertyClass"],
-        "PropertyCount" -> Length[props],
-        If[isStruct,
-          "Signature" -> $GWPSignatures[className],
-          "ContainedStructures" -> Sort[DeleteDuplicates[Lookup[$GWPInformation, props][[All, "StructureClass"]]]]
-        ],
-        "Properties" -> props,
-        "ShortKeys"  -> Lookup[$GWPLongToShort, props]
-      |>
-    ]
-  ],
-  $GWPAllClasses
-];
 
 GWPTypeQ[key_, type_] := (Lookup[$GWPTypeMap, key, None] === type);
 
@@ -542,77 +274,42 @@ $GWPLogo = Graphics[{
     Thickness[0.04], Darker[Cyan], Line[Table[{x, 0.2 Sin[15 x] Exp[-4 x^2] - 0.1}, {x, -0.8, 0.8, 0.02}]]
   }, ImageSize -> 32, PlotRange -> {{-1.1, 1.1}, {-0.3, 1.1}}];
 
-GWPObject /: MakeBoxes[obj : GWPObject[data_?AssociationQ], format_] := Module[
-  {params, pot, assum, init, h, m, initial, x1, p1, ux, up, covxp, phasespace, ecke, eike, eke, ecpe, eipe, epe, ete, energies, mode},
-  
-  (* Safely extract the raw parameter Sequence *)
-  params = pot[0]@@data["Parameters"];
-  pot = data["Potential"];
+(* 1. Fast-path for None mode *)
+GWPObject /: MakeBoxes[obj : GWPObject[data_?AssociationQ], format_] /; Lookup[data, "Summary", Automatic] === None := 
+  ToBoxes[Row[{"GWPObject", "[", "\[Ellipsis]", "]"}], format];
 
-  assum = GWPASSUMPTIONS[params];
- 
-  (* InitialParameters info *)
-  init = InputForm@GWPINPUT[params];
-  m    = GWPMASS[params];
-  h    = GWPHBAR[params];
+(* 2. Main Formatting Block *)
+GWPObject /: MakeBoxes[obj : GWPObject[data_?AssociationQ], format_] := Module[
+  {potModel, potDisplay, paramsList, init, h, m, initial},
+  
+  potDisplay = data["Potential"];
+  potModel = data["PotentialModel"];
+  paramsList = data["Parameters"]; 
+  
+  (* Safely extract the static data (8: HBAR, 9: MASS, 11: INIT) *)
+  If[Length[paramsList] >= 11,
+    h = paramsList[[8]];
+    m = paramsList[[9]];
+    init = paramsList[[11]];
+  ,
+    h = "Unknown"; m = "Unknown"; init = "Unknown";
+  ];
+  
   initial = {
-        {Style["Input Parameters",Bold],Style["Values",Bold]},   
-        {"Parameters: ", init},
-        {"Potential: ", pot}, 
-        {"Mass: ", m}, 
-        {"HBar: ", h}
-      };
-      
-  (* PhaseSpace info *)
-  x1 = InputForm@GWPRX[params];
-  p1 = InputForm@GWPRP[params];  
-  ux  = InputForm@Simplify[GWPUX[params],assum];
-  up  = InputForm@Simplify[GWPUP[params],assum];
-  covxp  = InputForm@Simplify[GWPCOVXP[params],assum];  
-  phasespace={ 
-        {Style["Phase space",Bold],Style["Values",Bold]},   
-        {"Position center: ", x1}, 
-        {"Momentum center: ", p1},
-        {"Position uncertainty: ", ux}, 
-        {"Momentum uncertainty: ", up},
-        {"Covariance: ", covxp}
-      };
-         
-  (* Energies info *)    
-  eike = InputForm@Simplify[GWPEIKE[params], assum];  
-  ecke = InputForm@Simplify[GWPECKE[params], assum];  
-  eke  = InputForm@Simplify[GWPEKE1[params], assum];
-  eipe = InputForm@Simplify[GWPEIPE[params], assum];  
-  ecpe = InputForm@Simplify[GWPECPE[params], assum];  
-  epe  = InputForm@Simplify[GWPEPE1[params], assum];
-  ete  = InputForm@Simplify[GWPETE1[params], assum];  
-  energies = {
-      {Style["Energies",Bold],Style["Values",Bold]},   
-      {"Classical KE: ", ecke},
-      {"Classical PE: ", ecpe},
-      {"Internal KE: ", eike},
-      {"Internal PE: ", eipe},
-      {"Total KE: ", eke},
-      {"Total PE: ", epe},
-      {"Total Energy: ", ete}
+    {Style["System Attributes", Bold], Style["Values", Bold]},   
+    {"Input: ", InputForm[init]}, 
+    {"Potential: ", potDisplay},
+    {"Mass: ", m}, 
+    {"HBar: ", h}
   };
   
-  (* Determine the requested UI mode *)
-  mode = Lookup[data, "Summary", Automatic];
-  
-  Switch[mode,    
-	(* None Mode: Bypasses UI entirely. Returns a raw, lightweight string. *)
-    None,
-    ToBoxes["GWPObject[\[Ellipsis]]", format],
-    (* PhaseSpace Mode: Kinematics exposed, inputs hidden *)
-    "PhaseSpace",
-    BoxForm`ArrangeSummaryBox["GWPObject", obj, $GWPLogo, phasespace, initial, format],
-    (* KineticEnergy Mode: Kinetic energy exposed, inputs hidden *)
-    "Energy",
-    BoxForm`ArrangeSummaryBox["GWPObject", obj, $GWPLogo, energies, initial, format],            
-    (* Automatic / Fallback: Inputs and Energy exposed, Kinematics hidden *)
-    _,
-    BoxForm`ArrangeSummaryBox["GWPObject", obj, $GWPLogo, initial, {}, format]
+  BoxForm`ArrangeSummaryBox[
+    "GWPObject", 
+    obj, 
+    $GWPLogo, 
+    initial,  (* Always visible *)
+    {},       (* Hidden by default *)
+    format
   ]
 ];
 
@@ -727,17 +424,40 @@ GWP[query_String, arg_String] /; MemberQ[{"PropertyRules", "ShortKeys", "Signatu
 (*Tier-2 Meta Data and Main Dispatcher*)
 
 
+(* --- Meta Data Error Messages --- *)
+GWPObject::reqpot = "The property \"`1`\" requires an active dynamic potential. Rebuild the wavepacket using GWP[..., \"Potential\" -> \"HO\"].";
+
 (* --- Metadata Retrieval --- *)
-(* Instantly returns internal data keys like "Parameters", "Potential", "Summary", "Created" *)
 GWPObject[data_][prop_String] /; KeyExistsQ[data, prop] := data[prop];
 
 (* --- The Main Dispatcher --- *)
-GWPObject[data_][query_String, args___] := Module[{key},
-  Which[
+GWPObject[data_][query_String, args___] := Module[
+  {key, info, macro, dynamicClass, staticClass, targetClass},
+  
+  (* Inside GWPObject[data_][query_String, args___] *)
+   Which[
     (* 1. Is it a registered property? *)
     KeyExistsQ[$GWPLongToShort, query] || KeyExistsQ[$GWPTypeMap, query],
-    key = Lookup[$GWPLongToShort, query, query];
-    GWPPropertyDispatch[key, data, args],
+  
+    (* MUST be $GWPShortToLong *)
+    key = Lookup[$GWPShortToLong, query, query]; 
+    info = $GWPInformation[key];
+    
+    macro        = info["ShortKey"];
+    dynamicClass = info["DynamicClass"];
+    staticClass  = info["StaticClass"];
+    
+    (* Route based on whether the object has an active potential *)
+    targetClass = If[data["Potential"] === None, staticClass, dynamicClass];
+    
+    (* Graceful Failure Check *)
+    If[targetClass === None,
+      Message[GWPObject::reqpot, query];
+      $Failed
+    ,
+      (* Execute Tier-3 Dispatch passing the targetClass and macro explicitly *)
+      GWPPropertyDispatch[targetClass, macro, data, args]
+    ],
     
     (* 2. Is it a 0-argument property class request? *)
     Length[{args}] == 0 && KeyExistsQ[$GWPAllClasses, query],
@@ -761,46 +481,74 @@ GWPObject::badargs = "Invalid arguments provided for property `1`. Check the exp
 
 (* --- Signature Dispatching (Tier 3) --- *)
 
-(* --- Static --- *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Static"], data_, opts___] := 
-  Symbol["GWP" <> key][Sequence @@ data["Parameters"], opts];
+(* ========================================== *)
+(* DYNAMIC CLASSES (Active Potential)         *)
+(* ========================================== *)
 
-(* --- Recursive --- *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Recursive"], data_, n_Integer : 0] /; n >= 0 := 
-  Function[{var, t}, Symbol["GWP" <> key][n][var][data["Potential"][t][Sequence @@ data["Parameters"]]]];
+GWPPropertyDispatch["Static", macro_, data_, opts___] := 
+  Symbol["GWPTools`GWPDeveloper`GWP" <> macro][Sequence @@ data["Parameters"], opts];
 
-(* --- Moment --- *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Moment"], data_, n_Integer : 1] /; n >= 0 := 
-  Function[t, Symbol["GWP" <> key][n][data["Potential"][t][Sequence @@ data["Parameters"]]]];
+GWPPropertyDispatch["Recursive", macro_, data_, n_Integer : 0] /; n >= 0 := 
+  Function[{var, t}, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][n][var][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
 
-(* --- CrossMoment --- *)
-(* Default to 0 arguments: Routes to the fast, hardcoded 1st-order string *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "CrossMoment"], data_] := 
-  Function[t, Symbol["GWP" <> key][data["Potential"][t][Sequence @@ data["Parameters"]]]];
-(* With m and n arguments: Routes to the arbitrary [m, n] engine *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "CrossMoment"], data_, m_Integer, n_Integer] /; m >= 0 && n >= 0 := 
-  Function[t, Symbol["GWP" <> key][m, n][data["Potential"][t][Sequence @@ data["Parameters"]]]];
+GWPPropertyDispatch["Moment", macro_, data_, n_Integer : 1] /; n >= 0 := 
+  Function[t, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][n][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
 
-(* --- Field --- *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Field"], data_] := 
-  Function[{var, t}, Symbol["GWP" <> key][var][data["Potential"][t][Sequence @@ data["Parameters"]]]];
+GWPPropertyDispatch["CrossMoment", macro_, data_] := 
+  Function[t, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
+  
+GWPPropertyDispatch["CrossMoment", macro_, data_, m_Integer, n_Integer] /; m >= 0 && n >= 0 := 
+  Function[t, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][m, n][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
 
-(* --- Bivariate --- *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Bivariate"], data_] := 
-  Function[{v1, v2, t}, Symbol["GWP" <> key][v1, v2][data["Potential"][t][Sequence @@ data["Parameters"]]]];
+GWPPropertyDispatch["Field", macro_, data_] := 
+  Function[{var, t}, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][var][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
 
-(* --- Temporal --- *)
-GWPPropertyDispatch[key_ /; GWPTypeQ[key, "Temporal"], data_] := 
-  Function[t, Symbol["GWP" <> key][data["Potential"][t][Sequence @@ data["Parameters"]]]];
+GWPPropertyDispatch["Bivariate", macro_, data_] := 
+  Function[{v1, v2, t}, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][v1, v2][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
 
-(* --- Fallbacks --- *)
-GWPPropertyDispatch[key_ /; (GWPTypeQ[key, "Recursive"] || GWPTypeQ[key, "Moment"]), data_, badArg_Integer ? Negative] := (
+GWPPropertyDispatch["Temporal", macro_, data_] := 
+  Function[t, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
+
+
+(* ========================================== *)
+(* STATIC CLASSES (Potential -> None)         *)
+(* ========================================== *)
+
+GWPPropertyDispatch["Static", macro_, data_, opts___] := 
+  Symbol["GWPTools`GWPDeveloper`GWP" <> macro][Sequence @@ data["Parameters"], opts];
+
+GWPPropertyDispatch["Spatial", macro_, data_] := 
+  Function[{var}, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][var][Sequence @@ data["Parameters"]]];
+
+GWPPropertyDispatch["RecursiveSpatial", macro_, data_, n_Integer : 0] /; n >= 0 := 
+  Function[{var}, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][n][var][Sequence @@ data["Parameters"]]];
+
+GWPPropertyDispatch["BivariateSpatial", macro_, data_] := 
+  Function[{var1, var2}, Symbol["GWPTools`GWPDeveloper`GWP" <> macro][var1, var2][Sequence @@ data["Parameters"]]];
+
+GWPPropertyDispatch["StaticValue", macro_, data_] := 
+  Symbol["GWPTools`GWPDeveloper`GWP" <> macro][Sequence @@ data["Parameters"]];
+
+GWPPropertyDispatch["StaticMoment", macro_, data_, n_Integer : 1] /; n >= 0 := 
+  Symbol["GWPTools`GWPDeveloper`GWP" <> macro][n][Sequence @@ data["Parameters"]];
+
+GWPPropertyDispatch["StaticCrossMoment", macro_, data_] := 
+  Symbol["GWPTools`GWPDeveloper`GWP" <> macro][Sequence @@ data["Parameters"]];
+  
+GWPPropertyDispatch["StaticCrossMoment", macro_, data_, m_Integer, n_Integer] /; m >= 0 && n >= 0 := 
+  Symbol["GWPTools`GWPDeveloper`GWP" <> macro][m, n][Sequence @@ data["Parameters"]];
+
+(* ========================================== *)
+(* FALLBACKS                                  *)
+(* ========================================== *)
+
+GWPPropertyDispatch[class_, macro_, data_, badArg_Integer ? Negative] /; MemberQ[{"Recursive", "Moment", "RecursiveSpatial", "StaticMoment"}, class] := (
   Message[GWPObject::badorder, badArg];
   $Failed
 );
 
-GWPPropertyDispatch[key_, data_, badArgs___] := (
-  Message[GWPObject::badargs, key];
+GWPPropertyDispatch[class_, macro_, data_, badArgs___] := (
+  Message[GWPObject::badargs, macro];
   $Failed
 );
 
@@ -809,11 +557,13 @@ GWPPropertyDispatch[key_, data_, badArgs___] := (
 (*End*)
 
 
-End[]
+(* --- End "GWPTools`Private`" --- *)
+End[];
 
 
 (* Hide internal code for all Public functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`*"]], {ReadProtected}];
 
 
-EndPackage[]
+(* --- End "GWPTools`" --- *)
+EndPackage[];
