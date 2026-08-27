@@ -48,7 +48,7 @@ EndPackage[]
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*BeginPackage*)
 
 
@@ -74,7 +74,7 @@ GWPSSARG=Sequence[PARAM11_,PARAM22_,PARAM12_,RC_,IC_,NORM_,NORM2_];
 GWPSSVAL=Sequence[PARAM11,PARAM22,PARAM12,RC,IC,NORM,NORM2];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Parameters*)
 
 
@@ -122,7 +122,7 @@ GWPRS12[GWPARG]=NORM*(Sqrt[Pi]*Cos[((4*HBAR*RG + (IA*RP^2)/(IA^2 + RA^2))/HBAR^2
 GWPIS12[GWPARG]=NORM*(Sqrt[Pi]*Sin[((4*HBAR*RG + (IA*RP^2)/(IA^2 + RA^2))/HBAR^2 - 2*ArcTan[RA,IA])/4])/(E^((4*HBAR*IG + (RA*RP^2)/(IA^2 + RA^2))/(4*HBAR^2))*(IA^2 + RA^2)^(1/4));
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*Wavefunction and density*)
 
 
@@ -243,7 +243,7 @@ RHO3=GWPSSRHOX[3][x][PARAM11,PARAM22,PARAM12,RC,IC,NORM,NORM2];
 FAC*(RHO3/RHO0-2*RHO1*RHO2/RHO0^2+(RHO1/RHO0)^3)];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*System*)
 
 

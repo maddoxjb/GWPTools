@@ -473,6 +473,7 @@ GWPPHASE[G1_, HBAR_, RA_, RX_, RP_] := Replace[G1, {
 (* ::Subsection::Closed:: *)
 (*Parameter Parsers*)
 
+
 (* --- Error Messages --- *)
 GWPSHAPE::badform = "The shape parameter format `1` is invalid. Provide a scalar, {\"Covariance\", UX, COVXP}, or {\"Uncertainty\", UX, UP, Sign}.";
 GWPPOSITION::badform = "The position parameter format `1` is invalid. Provide a scalar or complex number.";
