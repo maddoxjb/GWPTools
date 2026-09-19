@@ -2,8 +2,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 03-GWPPARSE.wl                                              *)
-(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* FILE        : 1D-MATH-PARSE.wl                                            *)
+(* DESCRIPTION : Tests Parameters section of GWPEngine1D.wl                  *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -50,47 +50,47 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[RA + I*IA, ARG1] - RIA1] == {0,0}, 
-  TestID -> "GWPSHAPE-01-ReIm", 
+  Simplify[GWP1DSHAPE[RA + I*IA, ARG1] - RIA1] == {0,0}, 
+  TestID -> "GWP1DSHAPE-01-ReIm", 
   MetaInformation -> STR1
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{"Covariance", UX, 0}, ARG1] - RIA2] == {0,0}, 
-  TestID -> "GWPSHAPE-02-UX-0", 
+  Simplify[GWP1DSHAPE[{"Covariance", UX, 0}, ARG1] - RIA2] == {0,0}, 
+  TestID -> "GWP1DSHAPE-02-UX-0", 
   MetaInformation -> STR2
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{"Covariance", UX, COVXP}, ARG1] - RIA3] == {0,0}, 
-  TestID -> "GWPSHAPE-03-UX-COVXP", 
+  Simplify[GWP1DSHAPE[{"Covariance", UX, COVXP}, ARG1] - RIA3] == {0,0}, 
+  TestID -> "GWP1DSHAPE-03-UX-COVXP", 
   MetaInformation -> STR3
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{"Uncertainty", UX, UP, 1}, ARG1] - RIA4] == {0,0}, 
-  TestID -> "GWPSHAPE-04-UX-UP-posChirp", 
+  Simplify[GWP1DSHAPE[{"Uncertainty", UX, UP, 1}, ARG1] - RIA4] == {0,0}, 
+  TestID -> "GWP1DSHAPE-04-UX-UP-posChirp", 
   MetaInformation -> STR4
 ]
 
 VerificationTest[
-  Simplify[GWPSHAPE[{"Uncertainty", UX, UP, -1}, ARG1] - RIA5] == {0,0}, 
-  TestID -> "GWPSHAPE-05-UX-UP-negChirp", 
+  Simplify[GWP1DSHAPE[{"Uncertainty", UX, UP, -1}, ARG1] - RIA5] == {0,0}, 
+  TestID -> "GWP1DSHAPE-05-UX-UP-negChirp", 
   MetaInformation -> STR5
 ]
 
 VerificationTest[
-  GWPSHAPE[{1, 2}, ARG1] === {$Failed, $Failed}, 
+  GWP1DSHAPE[{1, 2}, ARG1] === {$Failed, $Failed}, 
   True, 
-  {GWPSHAPE::badform},
-  TestID -> "GWPSHAPE-06-RawList-Fail"
+  {GWP1DSHAPE::badform},
+  TestID -> "GWP1DSHAPE-06-RawList-Fail"
 ]
 
 VerificationTest[
-  GWPSHAPE[{"Covariance", {UX}, COVXP}, ARG1] === {$Failed, $Failed}, 
+  GWP1DSHAPE[{"Covariance", {UX}, COVXP}, ARG1] === {$Failed, $Failed}, 
   True, 
-  {GWPSHAPE::badform},
-  TestID -> "GWPSHAPE-07-NestedList-Fail"
+  {GWP1DSHAPE::badform},
+  TestID -> "GWP1DSHAPE-07-NestedList-Fail"
 ]
 
 (* ========================================================== *)
@@ -98,16 +98,16 @@ VerificationTest[
 (* ========================================================== *)
 
 VerificationTest[
-  Simplify[GWPPOSITION[RX + I*IX] - RIX1] == {0,0}, 
-  TestID -> "GWPPOSITION-01-ReIm", 
+  Simplify[GWP1DPOSITION[RX + I*IX] - RIX1] == {0,0}, 
+  TestID -> "GWP1DPOSITION-01-ReIm", 
   MetaInformation -> STR12
 ]
 
 VerificationTest[
-  GWPPOSITION[{RX, IX}] === {$Failed, $Failed}, 
+  GWP1DPOSITION[{RX, IX}] === {$Failed, $Failed}, 
   True, 
-  {GWPPOSITION::badform},
-  TestID -> "GWPPOSITION-02-RawList-Fail"
+  {GWP1DPOSITION::badform},
+  TestID -> "GWP1DPOSITION-02-RawList-Fail"
 ]
 
 (* ========================================================== *)
@@ -115,35 +115,35 @@ VerificationTest[
 (* ========================================================== *)
 
 VerificationTest[
-  Simplify[GWPMOMENTUM[RP + I*IP, MASS] - RIP1] == {0,0}, 
-  TestID -> "GWPMOMENTUM-01-ReIm", 
+  Simplify[GWP1DMOMENTUM[RP + I*IP, MASS] - RIP1] == {0,0}, 
+  TestID -> "GWP1DMOMENTUM-01-ReIm", 
   MetaInformation -> STR13
 ]
 
 VerificationTest[
-  Simplify[GWPMOMENTUM[{"KineticEnergy", EK, 1}, MASS] - RIP2] == {0,0}, 
-  TestID -> "GWPMOMENTUM-02-KineticEnergy-pos", 
+  Simplify[GWP1DMOMENTUM[{"KineticEnergy", EK, 1}, MASS] - RIP2] == {0,0}, 
+  TestID -> "GWP1DMOMENTUM-02-KineticEnergy-pos", 
   MetaInformation -> STR14
 ]
 
 VerificationTest[
-  Simplify[GWPMOMENTUM[{"KineticEnergy", EK, -1}, MASS] - RIP3] == {0,0}, 
-  TestID -> "GWPMOMENTUM-03-KineticEnergy-neg", 
+  Simplify[GWP1DMOMENTUM[{"KineticEnergy", EK, -1}, MASS] - RIP3] == {0,0}, 
+  TestID -> "GWP1DMOMENTUM-03-KineticEnergy-neg", 
   MetaInformation -> STR15
 ]
 
 VerificationTest[
-  GWPMOMENTUM[{RP, IP}, MASS] === {$Failed, $Failed}, 
+  GWP1DMOMENTUM[{RP, IP}, MASS] === {$Failed, $Failed}, 
   True, 
-  {GWPMOMENTUM::badform},
-  TestID -> "GWPMOMENTUM-04-RawList-Fail"
+  {GWP1DMOMENTUM::badform},
+  TestID -> "GWP1DMOMENTUM-04-RawList-Fail"
 ]
 
 VerificationTest[
-  GWPMOMENTUM[{"KineticEnergy", {EK}, 1}, MASS] === {$Failed, $Failed}, 
+  GWP1DMOMENTUM[{"KineticEnergy", {EK}, 1}, MASS] === {$Failed, $Failed}, 
   True, 
-  {GWPMOMENTUM::badform},
-  TestID -> "GWPMOMENTUM-05-NestedList-Fail"
+  {GWP1DMOMENTUM::badform},
+  TestID -> "GWP1DMOMENTUM-05-NestedList-Fail"
 ]
 
 (* ========================================================== *)
@@ -157,53 +157,53 @@ VerificationTest[
 ]
 
 VerificationTest[
-  Simplify[GWPPHASE[RG + I*IG, ARG2] - RIG1] == {0,0}, 
-  TestID -> "GWPPHASE-01-ReIm", 
+  Simplify[GWP1DPHASE[RG + I*IG, ARG2] - RIG1] == {0,0}, 
+  TestID -> "GWP1DPHASE-01-ReIm", 
   MetaInformation -> STR6
 ]
 
 VerificationTest[
-  Simplify[GWPPHASE[{"Action", S}, ARG2] - RIG2] == {0,0}, 
-  TestID -> "GWPPHASE-02-Action-NoMaslov", 
+  Simplify[GWP1DPHASE[{"Action", S}, ARG2] - RIG2] == {0,0}, 
+  TestID -> "GWP1DPHASE-02-Action-NoMaslov", 
   MetaInformation -> STR7
 ]
 
 VerificationTest[
-  Simplify[GWPPHASE[{"Action", S, MU}, ARG2] - RIG3] == {0,0}, 
-  TestID -> "GWPPHASE-03-Action-Maslov", 
+  Simplify[GWP1DPHASE[{"Action", S, MU}, ARG2] - RIG3] == {0,0}, 
+  TestID -> "GWP1DPHASE-03-Action-Maslov", 
   MetaInformation -> STR8
 ]
 
 VerificationTest[
-  Simplify[GWPPHASE[{"Displacement", X0, P0}, ARG2] - RIG4] == {0,0}, 
-  TestID -> "GWPPHASE-04-Displacement", 
+  Simplify[GWP1DPHASE[{"Displacement", X0, P0}, ARG2] - RIG4] == {0,0}, 
+  TestID -> "GWP1DPHASE-04-Displacement", 
   MetaInformation -> STR9
 ]
 
 VerificationTest[
-  Simplify[GWPPHASE[{"Coefficient", PHI, W}, ARG2] - RIG5] == {0,0}, 
-  TestID -> "GWPPHASE-05-PHI-W", 
+  Simplify[GWP1DPHASE[{"Coefficient", PHI, W}, ARG2] - RIG5] == {0,0}, 
+  TestID -> "GWP1DPHASE-05-PHI-W", 
   MetaInformation -> STR10
 ]
 
 VerificationTest[
-  Simplify[GWPPHASE[{"Evolution", EN, TT}, ARG2] - RIG6] == {0,0}, 
-  TestID -> "GWPPHASE-06-ET", 
+  Simplify[GWP1DPHASE[{"Evolution", EN, TT}, ARG2] - RIG6] == {0,0}, 
+  TestID -> "GWP1DPHASE-06-ET", 
   MetaInformation -> STR11
 ]
 
 VerificationTest[
-  GWPPHASE[{RG, IG}, ARG2] === {$Failed, $Failed}, 
+  GWP1DPHASE[{RG, IG}, ARG2] === {$Failed, $Failed}, 
   True, 
-  {GWPPHASE::badform},
-  TestID -> "GWPPHASE-07-RawList-Fail"
+  {GWP1DPHASE::badform},
+  TestID -> "GWP1DPHASE-07-RawList-Fail"
 ]
 
 VerificationTest[
-  GWPPHASE[{"Action", {S}}, ARG2] === {$Failed, $Failed}, 
+  GWP1DPHASE[{"Action", {S}}, ARG2] === {$Failed, $Failed}, 
   True, 
-  {GWPPHASE::badform},
-  TestID -> "GWPPHASE-08-NestedList-Fail"
+  {GWP1DPHASE::badform},
+  TestID -> "GWP1DPHASE-08-NestedList-Fail"
 ]
 
 (* ========================================================== *)

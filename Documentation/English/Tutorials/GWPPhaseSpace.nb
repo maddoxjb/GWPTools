@@ -1,0 +1,3215 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[    129358,       3205]
+NotebookOptionsPosition[    113052,       2832]
+NotebookOutlinePosition[    113567,       2850]
+CellTagsIndexPosition[    113524,       2847]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["GWPPhaseSpace", "Title",
+ CellID->979287279,ExpressionUUID->"af3a2553-2f92-4bda-9cf4-c49b5d601f91"],
+
+Cell["\<\
+The Phase Space extension provides a comprehensive suite of tools for \
+analyzing continuous-variable quantum systems in phase space. It extends the \
+core GWPTools framework to evaluate spatial and momentum density matrices, \
+alongside quasi-probability distributions including the Wigner function and \
+Husimi Q-distribution. Additionally, it calculates essential quantum \
+information metrics such as state purity, Wehrl entropy, and von Neumann \
+entropy. Operating as a dynamic master orchestrator, the package \
+automatically detects active core mathematical engines and loads their \
+corresponding exact analytical implementations to guarantee optimal backend \
+performance.\
+\>", "Text",
+ CellChangeTimes->{{3.9988468840803137`*^9, 3.998846886611725*^9}},
+ CellID->1366658017,ExpressionUUID->"a62b7ec2-2af3-4e56-9423-51878d7a8052"],
+
+Cell["\<\
+Future development will focus on adding functionality to support different \
+GWP types, such as superposition states, multi-dimensional wavepackets, and \
+dissipative systems.\
+\>", "Text",
+ CellID->2083687054,ExpressionUUID->"78137920-c935-43eb-96a3-90d45a1caf6c"],
+
+Cell[CellGroupData[{
+
+Cell["Initialization", "Section",
+ CellID->1699281473,ExpressionUUID->"27640a85-d271-41df-8369-0d1e757cad16"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+To evaluate the examples in this technical note, load the required contexts:\
+\>", "Text",
+ CellID->438695258,ExpressionUUID->"213dbc55-655d-4bcb-82af-b76eed6b429f"],
+
+Cell[BoxData[{
+ RowBox[{"Needs", "[", "\"\<GWPTools`\>\"", "]"}], "\n", 
+ RowBox[{"Needs", "[", "\"\<GWPTools`GWPPhaseSpace`\>\"", "]"}], "\n", 
+ RowBox[{"Needs", "[", "\"\<GWPTools`GWPDeveloper`\>\"", "]"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->839841055,ExpressionUUID->"80ef1376-4494-466f-90d2-219cd16f80f8"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Frontend Registration & Introspection", "Section",
+ CellID->1946083301,ExpressionUUID->"4e00e705-69df-45df-a50d-a7935def7c0c"],
+
+Cell["\<\
+As an extension package, GWPPhaseSpace dynamically supports multiple GWP \
+Types based on which core engines are currently active in the kernel. At \
+present, it supports the \"1D\" and \"SS1D\" mathematical engines. Querying \
+the introspection parameter bus reveals the available physics properties and \
+macro keys provided by the \"PhaseSpace\" class for a given type:\
+\>", "Text",
+ CellID->1646096097,ExpressionUUID->"31ded197-c3b7-4607-95cd-3459636565c3"],
+
+Cell[CellGroupData[{
+
+Cell["1D Phase Space Class", "Subsection",
+ CellID->2052761625,ExpressionUUID->"ce057643-1c55-4ae2-b898-6c3ee802bba2"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Dataset", "[", 
+  RowBox[{
+   RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", 
+   RowBox[{"\"\<Records\>\"", ",", " ", "\"\<PhaseSpace\>\""}], "]"}], 
+  "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1439842320,ExpressionUUID->"4cb7cb51-6d83-44a9-9fea-855eaf0e04f8"],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[
+   DynamicModuleBox[{TypeSystem`NestedGrid`PackagePrivate`$state$$ = <|
+    "InitialData" -> {<|
+       "Property" -> "DensityMatrixX", "ShortKey" -> "DMX", "Class" -> 
+        "PhaseSpace", "DynamicClass" -> "Bivariate", "StaticClass" -> 
+        "BivariateSpatial"|>, <|
+       "Property" -> "DensityMatrixP", "ShortKey" -> "DMP", "Class" -> 
+        "PhaseSpace", "DynamicClass" -> "Bivariate", "StaticClass" -> 
+        "BivariateSpatial"|>, <|
+       "Property" -> "WignerFunction", "ShortKey" -> "WIG", "Class" -> 
+        "PhaseSpace", "DynamicClass" -> "Bivariate", "StaticClass" -> 
+        "BivariateSpatial"|>, <|
+       "Property" -> "HusimiQ", "ShortKey" -> "HUSIMI", "Class" -> 
+        "PhaseSpace", "DynamicClass" -> "ParameterizedBivariate", 
+        "StaticClass" -> "ParameterizedBivariateSpatial"|>, <|
+       "Property" -> "WehrlEntropy", "ShortKey" -> "WEHRL", "Class" -> 
+        "PhaseSpace", "DynamicClass" -> "ParameterizedTemporal", 
+        "StaticClass" -> "ParameterizedStaticValue"|>, <|
+       "Property" -> "Purity", "ShortKey" -> "PURITY", "Class" -> 
+        "PhaseSpace", "DynamicClass" -> "Static", "StaticClass" -> 
+        "StaticValue"|>, <|
+       "Property" -> "VonNeumannEntropy", "ShortKey" -> "VONNEUMANN", "Class" -> 
+        "PhaseSpace", "DynamicClass" -> "Static", "StaticClass" -> 
+        "StaticValue"|>}, "AllowEmbedding" -> True, "InitialShape" -> 
+     TypeSystem`PackageScope`HeaderShape[<|{All, "Property"} -> 
+        1, {All, "ShortKey"} -> 1, {All, "Class"} -> 1, {All, "DynamicClass"} -> 
+        1, {All, "StaticClass"} -> 1|>, 
+       TypeSystem`PackageScope`Limited[
+        TypeSystem`PackageScope`ColumnShape[
+         TypeSystem`PackageScope`Limited[
+          
+          TypeSystem`PackageScope`RowShape[<|
+           "Property" -> TypeSystem`PackageScope`AtomShape[190.4], "ShortKey" -> 
+            TypeSystem`PackageScope`AtomShape[112.00000000000001`], "Class" -> 
+            TypeSystem`PackageScope`AtomShape[105.], "DynamicClass" -> 
+            TypeSystem`PackageScope`AtomShape[231.], "StaticClass" -> 
+            TypeSystem`PackageScope`AtomShape[304.5]|>], 
+          DirectedInfinity[1], 5, {All}]], 7, 
+        DirectedInfinity[1], {}]], "InitialType" -> TypeSystem`Vector[
+       TypeSystem`Struct[{
+        "Property", "ShortKey", "Class", "DynamicClass", "StaticClass"}, {
+         TypeSystem`Atom[String], 
+         TypeSystem`Atom[String], 
+         TypeSystem`Atom[
+          TypeSystem`Enumeration["PhaseSpace"]], 
+         TypeSystem`Atom[
+          TypeSystem`Enumeration[
+          "Bivariate", "ParameterizedBivariate", "ParameterizedTemporal", 
+           "Static"]], 
+         TypeSystem`Atom[
+          TypeSystem`Enumeration[
+          "BivariateSpatial", "ParameterizedBivariateSpatial", 
+           "ParameterizedStaticValue", "StaticValue"]]}], 7], "Meta" -> <||>, 
+     "RowTarget" -> 20, "ColumnTarget" -> 10, "Shape" -> 
+     TypeSystem`PackageScope`HeaderShape[<|{All, "Property"} -> 
+        1, {All, "ShortKey"} -> 1, {All, "Class"} -> 1, {All, "DynamicClass"} -> 
+        1, {All, "StaticClass"} -> 1|>, 
+       TypeSystem`PackageScope`Limited[
+        TypeSystem`PackageScope`ColumnShape[
+         TypeSystem`PackageScope`Limited[
+          
+          TypeSystem`PackageScope`RowShape[<|
+           "Property" -> TypeSystem`PackageScope`AtomShape[190.4], "ShortKey" -> 
+            TypeSystem`PackageScope`AtomShape[112.00000000000001`], "Class" -> 
+            TypeSystem`PackageScope`AtomShape[105.], "DynamicClass" -> 
+            TypeSystem`PackageScope`AtomShape[231.], "StaticClass" -> 
+            TypeSystem`PackageScope`AtomShape[304.5]|>], 
+          DirectedInfinity[1], 5, {All}]], 7, 
+        DirectedInfinity[1], {}]], "Type" -> TypeSystem`Vector[
+       TypeSystem`Struct[{
+        "Property", "ShortKey", "Class", "DynamicClass", "StaticClass"}, {
+         TypeSystem`Atom[String], 
+         TypeSystem`Atom[String], 
+         TypeSystem`Atom[
+          TypeSystem`Enumeration["PhaseSpace"]], 
+         TypeSystem`Atom[
+          TypeSystem`Enumeration[
+          "Bivariate", "ParameterizedBivariate", "ParameterizedTemporal", 
+           "Static"]], 
+         TypeSystem`Atom[
+          TypeSystem`Enumeration[
+          "BivariateSpatial", "ParameterizedBivariateSpatial", 
+           "ParameterizedStaticValue", "StaticValue"]]}], 7], "Path" -> {}, 
+     "DisplayedRowCount" -> 7, "DisplayedColumnCount" -> 5, "DataRowCount" -> 
+     7, "DataColumnCount" -> 5, "SortPaths" -> {}, "SortDirections" -> {}, 
+     "HiddenItemsMap" -> Null, "UpdateType" -> 1|>, 
+    TypeSystem`NestedGrid`PackagePrivate`$outputID$$, 
+    TypeSystem`NestedGrid`PackagePrivate`$path$$ = {}, 
+    TypeSystem`NestedGrid`PackagePrivate`$vPos$$ = 1, 
+    TypeSystem`NestedGrid`PackagePrivate`$hPos$$ = 1, 
+    TypeSystem`NestedGrid`PackagePrivate`$grid$$ = 
+    DynamicModule[{
+     TypeSystem`NestedGrid`PackagePrivate`renderedGrid = Deploy[
+        Style[
+         Grid[{{
+            Item[
+             Pane[
+              Annotation[
+               EventHandler[
+                MouseAppearance[
+                 Mouseover["Property", 
+                  Style[
+                  "Property", FontColor -> 
+                   RGBColor[
+                    0.2749633796890805, 0.536987306253161, 
+                    0.791992189065661]]], "LinkHand"], {"MouseClicked", 1} :> 
+                If[
+                  TypeSystem`NestedGrid`PackagePrivate`checkInteractivity[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                  TypeSystem`NestedGrid`PackagePrivate`updateState[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]][{
+                   All, "Property"}, 1]]], 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{
+                All, "Property"}, "ColumnHeader", True], "Mouse"], 
+              ImageSize -> {{1, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], Background -> 
+             RGBColor[
+              0.9500473017990948, 0.9500473017990948, 0.9500473017990948], 
+             Alignment -> {Left, Baseline}], 
+            Item[
+             Pane[
+              Annotation[
+               EventHandler[
+                MouseAppearance[
+                 Mouseover["ShortKey", 
+                  Style[
+                  "ShortKey", FontColor -> 
+                   RGBColor[
+                    0.2749633796890805, 0.536987306253161, 
+                    0.791992189065661]]], "LinkHand"], {"MouseClicked", 1} :> 
+                If[
+                  TypeSystem`NestedGrid`PackagePrivate`checkInteractivity[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                  TypeSystem`NestedGrid`PackagePrivate`updateState[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]][{
+                   All, "ShortKey"}, 1]]], 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{
+                All, "ShortKey"}, "ColumnHeader", True], "Mouse"], 
+              ImageSize -> {{1, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], Background -> 
+             RGBColor[
+              0.9500473017990948, 0.9500473017990948, 0.9500473017990948], 
+             Alignment -> {Left, Baseline}], 
+            Item[
+             Pane[
+              Annotation[
+               EventHandler[
+                MouseAppearance[
+                 Mouseover["Class", 
+                  Style[
+                  "Class", FontColor -> 
+                   RGBColor[
+                    0.2749633796890805, 0.536987306253161, 
+                    0.791992189065661]]], "LinkHand"], {"MouseClicked", 1} :> 
+                If[
+                  TypeSystem`NestedGrid`PackagePrivate`checkInteractivity[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                  TypeSystem`NestedGrid`PackagePrivate`updateState[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]][{
+                   All, "Class"}, 1]]], 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{
+                All, "Class"}, "ColumnHeader", True], "Mouse"], 
+              ImageSize -> {{1, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], Background -> 
+             RGBColor[
+              0.9500473017990948, 0.9500473017990948, 0.9500473017990948], 
+             Alignment -> {Left, Baseline}], 
+            Item[
+             Pane[
+              Annotation[
+               EventHandler[
+                MouseAppearance[
+                 Mouseover["DynamicClass", 
+                  Style[
+                  "DynamicClass", FontColor -> 
+                   RGBColor[
+                    0.2749633796890805, 0.536987306253161, 
+                    0.791992189065661]]], "LinkHand"], {"MouseClicked", 1} :> 
+                If[
+                  TypeSystem`NestedGrid`PackagePrivate`checkInteractivity[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                  TypeSystem`NestedGrid`PackagePrivate`updateState[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]][{
+                   All, "DynamicClass"}, 1]]], 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{
+                All, "DynamicClass"}, "ColumnHeader", True], "Mouse"], 
+              ImageSize -> {{1, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], Background -> 
+             RGBColor[
+              0.9500473017990948, 0.9500473017990948, 0.9500473017990948], 
+             Alignment -> {Left, Baseline}], 
+            Item[
+             Pane[
+              Annotation[
+               EventHandler[
+                MouseAppearance[
+                 Mouseover["StaticClass", 
+                  Style[
+                  "StaticClass", FontColor -> 
+                   RGBColor[
+                    0.2749633796890805, 0.536987306253161, 
+                    0.791992189065661]]], "LinkHand"], {"MouseClicked", 1} :> 
+                If[
+                  TypeSystem`NestedGrid`PackagePrivate`checkInteractivity[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                  TypeSystem`NestedGrid`PackagePrivate`updateState[
+                  TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                   TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]][{
+                   All, "StaticClass"}, 1]]], 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{
+                All, "StaticClass"}, "ColumnHeader", True], "Mouse"], 
+              ImageSize -> {{1, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], Background -> 
+             RGBColor[
+              0.9500473017990948, 0.9500473017990948, 0.9500473017990948], 
+             Alignment -> {Left, Baseline}]}, {
+            Item[
+             Pane[
+              Annotation["DensityMatrixX", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{1, 
+                 Key["Property"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{190.4, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["DMX", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{1, 
+                 Key["ShortKey"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{112.00000000000001`, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PhaseSpace", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{1, 
+                 Key["Class"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{105., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["Bivariate", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{1, 
+                 Key["DynamicClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{231., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["BivariateSpatial", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{1, 
+                 Key["StaticClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{304.5, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}]}, {
+            Item[
+             Pane[
+              Annotation["DensityMatrixP", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{2, 
+                 Key["Property"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{190.4, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["DMP", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{2, 
+                 Key["ShortKey"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{112.00000000000001`, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PhaseSpace", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{2, 
+                 Key["Class"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{105., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["Bivariate", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{2, 
+                 Key["DynamicClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{231., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["BivariateSpatial", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{2, 
+                 Key["StaticClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{304.5, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}]}, {
+            Item[
+             Pane[
+              Annotation["WignerFunction", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{3, 
+                 Key["Property"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{190.4, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["WIG", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{3, 
+                 Key["ShortKey"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{112.00000000000001`, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PhaseSpace", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{3, 
+                 Key["Class"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{105., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["Bivariate", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{3, 
+                 Key["DynamicClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{231., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["BivariateSpatial", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{3, 
+                 Key["StaticClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{304.5, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}]}, {
+            Item[
+             Pane[
+              Annotation["HusimiQ", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{4, 
+                 Key["Property"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{190.4, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["HUSIMI", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{4, 
+                 Key["ShortKey"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{112.00000000000001`, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PhaseSpace", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{4, 
+                 Key["Class"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{105., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["ParameterizedBivariate", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{4, 
+                 Key["DynamicClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{231., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["ParameterizedBivariateSpatial", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{4, 
+                 Key["StaticClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{304.5, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}]}, {
+            Item[
+             Pane[
+              Annotation["WehrlEntropy", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{5, 
+                 Key["Property"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{190.4, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["WEHRL", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{5, 
+                 Key["ShortKey"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{112.00000000000001`, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PhaseSpace", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{5, 
+                 Key["Class"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{105., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["ParameterizedTemporal", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{5, 
+                 Key["DynamicClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{231., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["ParameterizedStaticValue", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{5, 
+                 Key["StaticClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{304.5, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}]}, {
+            Item[
+             Pane[
+              Annotation["Purity", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{6, 
+                 Key["Property"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{190.4, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PURITY", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{6, 
+                 Key["ShortKey"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{112.00000000000001`, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PhaseSpace", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{6, 
+                 Key["Class"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{105., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["Static", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{6, 
+                 Key["DynamicClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{231., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["StaticValue", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{6, 
+                 Key["StaticClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{304.5, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}]}, {
+            Item[
+             Pane[
+              Annotation["VonNeumannEntropy", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{7, 
+                 Key["Property"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{190.4, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["VONNEUMANN", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{7, 
+                 Key["ShortKey"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{112.00000000000001`, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["PhaseSpace", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{7, 
+                 Key["Class"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{105., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["Static", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{7, 
+                 Key["DynamicClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{231., Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}], 
+            Item[
+             Pane[
+              Annotation["StaticValue", 
+               TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{7, 
+                 Key["StaticClass"]}, "Item", False], "Mouse"], 
+              ImageSize -> {{304.5, Full}, Automatic}, 
+              ImageMargins -> {{5, 3}, {4, 5}}], 
+             ItemSize -> {Full, Automatic}]}}, 
+          BaseStyle -> {
+           ContextMenu -> 
+            Dynamic[TypeSystem`NestedGrid`PackagePrivate`$contextMenuTrigger; 
+              Which[TypeSystem`NestedGrid`PackagePrivate`$lastOutputID =!= 
+                TypeSystem`NestedGrid`PackagePrivate`localHold[
+                 TypeSystem`NestedGrid`PackagePrivate`$outputID$$], {}, 
+                TypeSystem`NestedGrid`PackagePrivate`$contextMenuTrigger === 
+                TypeSystem`NestedGrid`PackagePrivate`$lastContextMenuTrigger, 
+                TypeSystem`NestedGrid`PackagePrivate`$lastContextMenu, True, 
+                TypeSystem`NestedGrid`PackagePrivate`$lastContextMenuTrigger = 
+                 TypeSystem`NestedGrid`PackagePrivate`$contextMenuTrigger; 
+                TypeSystem`NestedGrid`PackagePrivate`$lastContextMenu = 
+                 Block[{TypeSystem`NestedGrid`PackagePrivate`$globalScrollPos = \
+{TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$hPos$$}}, 
+                   
+                   With[{TypeSystem`NestedGrid`PackagePrivate`lastPath$ = 
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPath, 
+                    TypeSystem`NestedGrid`PackagePrivate`lastPathType$ = 
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPathType, 
+                    TypeSystem`NestedGrid`PackagePrivate`isLeafHeader$ = 
+                    TypeSystem`NestedGrid`PackagePrivate`$\
+lastPathIsLeafHeader, TypeSystem`NestedGrid`PackagePrivate`headerHidden$ = And[
+                    MatchQ[TypeSystem`NestedGrid`PackagePrivate`$lastPathType, 
+                    Alternatives["RowHeader", "ColumnHeader"]], 
+                    TypeSystem`NestedGrid`PackagePrivate`headerHiddenQ[
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPath, 
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$]], 
+                    TypeSystem`NestedGrid`PackagePrivate`allHidden$ = 
+                    TypeSystem`NestedGrid`PackagePrivate`allHiddenQ[
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPath, 
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                    TypeSystem`NestedGrid`PackagePrivate`anyHidden$ = 
+                    TypeSystem`NestedGrid`PackagePrivate`anyHiddenQ[
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPath, 
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                    TypeSystem`NestedGrid`PackagePrivate`sortDirection$ = 
+                    TypeSystem`NestedGrid`PackagePrivate`columnSortDirection[
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPath, 
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$[
+                    "SortPaths"], 
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$[
+                    "SortDirections"]], 
+                    TypeSystem`NestedGrid`PackagePrivate`haveData$ = Not[
+                    FailureQ[
+                    TypeSystem`NestedGrid`PackagePrivate`datasetInitialData[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$]]], 
+                    TypeSystem`NestedGrid`PackagePrivate`isKeyDummy$ = Not[
+                    FreeQ[
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPath, Keys]]}, 
+                    Join[{
+                    If[
+                    Or[
+                    Not[TypeSystem`NestedGrid`PackagePrivate`haveData$], 
+                    Not[TypeSystem`NestedGrid`PackagePrivate`anyHidden$], 
+                    TypeSystem`NestedGrid`PackagePrivate`isKeyDummy$], 
+                    Nothing, 
+                    MenuItem[
+                    "Show " <> 
+                    Which[TypeSystem`NestedGrid`PackagePrivate`lastPathType$ == 
+                    "Item", "", 
+                    TypeSystem`NestedGrid`PackagePrivate`lastPathType$ == 
+                    "RowHeader", "Row", 
+                    TypeSystem`NestedGrid`PackagePrivate`lastPathType$ == 
+                    "ColumnHeader", "Column", True, ""], 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`updateHiddenItems[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]][
+                    TypeSystem`NestedGrid`PackagePrivate`lastPath$, 
+                    "remove"]], MenuEvaluator -> Automatic]], 
+                    If[
+                    Or[
+                    Not[TypeSystem`NestedGrid`PackagePrivate`haveData$], 
+                    TypeSystem`NestedGrid`PackagePrivate`pathEmptyQ[
+                    TypeSystem`NestedGrid`PackagePrivate`$lastPath, 
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$], 
+                    TypeSystem`NestedGrid`PackagePrivate`isKeyDummy$, 
+                    And[
+                    TypeSystem`NestedGrid`PackagePrivate`allHidden$, 
+                    TypeSystem`NestedGrid`PackagePrivate`headerHidden$]], 
+                    Nothing, 
+                    MenuItem[
+                    "Hide " <> 
+                    Which[TypeSystem`NestedGrid`PackagePrivate`lastPathType$ == 
+                    "Item", "", 
+                    TypeSystem`NestedGrid`PackagePrivate`lastPathType$ == 
+                    "RowHeader", "Row", 
+                    TypeSystem`NestedGrid`PackagePrivate`lastPathType$ == 
+                    "ColumnHeader", "Column", True, ""], 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`updateHiddenItems[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]][
+                    TypeSystem`NestedGrid`PackagePrivate`lastPath$, "add"]], 
+                    MenuEvaluator -> Automatic]], Delimiter}, 
+                    If[
+                    And[TypeSystem`NestedGrid`PackagePrivate`haveData$, 
+                    MatchQ[TypeSystem`NestedGrid`PackagePrivate`lastPathType$, 
+                    Alternatives["ColumnHeader", "KeyDummy"]], 
+                    TypeSystem`NestedGrid`PackagePrivate`isLeafHeader$, 
+                    Not[TypeSystem`NestedGrid`PackagePrivate`allHidden$]], {
+                    If[
+                    TypeSystem`NestedGrid`PackagePrivate`sortDirection$ =!= 
+                    "Ascending", 
+                    MenuItem["Sort", 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`updateSort[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][
+                    TypeSystem`NestedGrid`PackagePrivate`lastPath$, 
+                    "Ascending"]], MenuEvaluator -> Automatic], Nothing], 
+                    If[
+                    TypeSystem`NestedGrid`PackagePrivate`sortDirection$ =!= 
+                    "Descending", 
+                    MenuItem["Reverse Sort", 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`updateSort[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][
+                    TypeSystem`NestedGrid`PackagePrivate`lastPath$, 
+                    "Descending"]], MenuEvaluator -> Automatic], Nothing], 
+                    If[
+                    TypeSystem`NestedGrid`PackagePrivate`sortDirection$ =!= 
+                    None, 
+                    MenuItem["Unsort", 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`updateSort[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`localHold[
+                    TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][
+                    TypeSystem`NestedGrid`PackagePrivate`lastPath$, None]], 
+                    MenuEvaluator -> Automatic], Nothing], Delimiter}, {}], {
+                    MenuItem["Copy Position to Clipboard", 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`toCurrentPosition[
+                    TypeSystem`NestedGrid`PackagePrivate`copyClip]], 
+                    MenuEvaluator -> Automatic], 
+                    If[TypeSystem`NestedGrid`PackagePrivate`haveData$, 
+                    MenuItem["Copy Data to Clipboard", 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`toCurrentData[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`copyClip]], 
+                    MenuEvaluator -> Automatic], Nothing], Delimiter, 
+                    MenuItem["Paste Position in New Cell", 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`toCurrentPosition[
+                    TypeSystem`NestedGrid`PackagePrivate`cellPaste]], 
+                    MenuEvaluator -> Automatic], 
+                    If[TypeSystem`NestedGrid`PackagePrivate`haveData$, 
+                    MenuItem["Paste Data in New Cell", 
+                    KernelExecute[
+                    TypeSystem`NestedGrid`PackagePrivate`toCurrentData[
+                    TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+                    TypeSystem`NestedGrid`PackagePrivate`cellPaste]], 
+                    MenuEvaluator -> Automatic], Nothing]}]]]]], FontFamily -> 
+            "Source Sans Pro", FontSize -> 14, FontWeight -> Plain}, Dividers -> 
+          All, FrameStyle -> 
+          RGBColor[0.749003690406716, 0.749003690406716, 0.749003690406716], 
+          Spacings -> {0, 0}, Alignment -> Left, 
+          BaseStyle -> {
+           FontFamily -> "Source Sans Pro", FontSize -> 14, FontWeight -> 
+            Plain}], LineBreakWithin -> False, ContextMenu -> {}, NumberMarks -> 
+         False, ShowAutoStyles -> False]], 
+      TypeSystem`NestedGrid`PackagePrivate`initialQ = True}, 
+     Dynamic[
+      TypeSystem`NestedGrid`PackagePrivate`setupViewPath[
+      TypeSystem`NestedGrid`PackagePrivate`$path$$, If[
+         Not[TypeSystem`NestedGrid`PackagePrivate`initialQ], 
+         Module[{
+          TypeSystem`NestedGrid`PackagePrivate`tmpGrid$ = $Failed, 
+           TypeSystem`NestedGrid`PackagePrivate`tmpData$ = 
+           TypeSystem`NestedGrid`PackagePrivate`datasetData[
+            TypeSystem`NestedGrid`PackagePrivate`$state$$]}, 
+          TypeSystem`NestedGrid`PackagePrivate`tmpGrid$ = If[
+             FailureQ[TypeSystem`NestedGrid`PackagePrivate`tmpData$], 
+             TypeSystem`NestedGrid`PackagePrivate`renderedGrid, 
+             TypeSystem`NestedGrid`PackagePrivate`renderGrid[
+             TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+              TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+              TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+              TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+              TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+              TypeSystem`NestedGrid`PackagePrivate`localHold[
+              TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][
+             TypeSystem`NestedGrid`PackagePrivate`tmpData$]]; If[
+            Not[
+             FailureQ[TypeSystem`NestedGrid`PackagePrivate`tmpGrid$]], 
+            TypeSystem`NestedGrid`PackagePrivate`renderedGrid = 
+            TypeSystem`NestedGrid`PackagePrivate`tmpGrid$]; Null]]; 
+       TypeSystem`NestedGrid`PackagePrivate`initialQ = False; 
+       TypeSystem`NestedGrid`PackagePrivate`$vPos$$; 
+       TypeSystem`NestedGrid`PackagePrivate`$hPos$$; If[
+         FailureQ[TypeSystem`NestedGrid`PackagePrivate`renderedGrid], 
+         TypeSystem`SparseGrid[
+          TypeSystem`H["(data no longer present)"]], 
+         TypeSystem`NestedGrid`PackagePrivate`renderedGrid]], 
+      TrackedSymbols :> {
+       TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+        TypeSystem`NestedGrid`PackagePrivate`$hPos$$}], 
+     DynamicModuleValues :> {}], 
+    TypeSystem`NestedGrid`PackagePrivate`$topBar$$ = Dynamic[
+     TypeSystem`NestedGrid`PackagePrivate`makeFramedBar[
+      TypeSystem`PackageScope`SubViewPathbar[
+      TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+       TypeSystem`NestedGrid`PackagePrivate`updateState[
+       TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+        TypeSystem`NestedGrid`PackagePrivate`$path$$, 
+        TypeSystem`NestedGrid`PackagePrivate`$vPos$$, 
+        TypeSystem`NestedGrid`PackagePrivate`$hPos$$, 
+        TypeSystem`NestedGrid`PackagePrivate`$grid$$, 
+        TypeSystem`NestedGrid`PackagePrivate`localHold[
+        TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]]], 
+     TrackedSymbols :> {TypeSystem`NestedGrid`PackagePrivate`$path$$}], 
+    TypeSystem`NestedGrid`PackagePrivate`$bottomBar$$ = Dynamic[
+     Replace[
+      Replace[
+      TypeSystem`NestedGrid`PackagePrivate`mouseAnnotation$$, {
+       TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+          TypeSystem`NestedGrid`PackagePrivate`localHold[
+          TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][Null, 
+          Blank[]] -> "", TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
+          TypeSystem`NestedGrid`PackagePrivate`localHold[
+          TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][
+          Pattern[TypeSystem`NestedGrid`PackagePrivate`path$, 
+           Blank[]], 
+          Pattern[TypeSystem`NestedGrid`PackagePrivate`pathType$, 
+           Blank[]], 
+          Pattern[TypeSystem`NestedGrid`PackagePrivate`isLeafHeader$, 
+           Blank[]]] :> (
+         Increment[TypeSystem`NestedGrid`PackagePrivate`$contextMenuTrigger]; 
+         TypeSystem`NestedGrid`PackagePrivate`$lastPath = 
+          TypeSystem`NestedGrid`PackagePrivate`path$; 
+         TypeSystem`NestedGrid`PackagePrivate`$lastPathType = 
+          TypeSystem`NestedGrid`PackagePrivate`pathType$; 
+         TypeSystem`NestedGrid`PackagePrivate`$lastPathIsLeafHeader = 
+          TypeSystem`NestedGrid`PackagePrivate`isLeafHeader$; 
+         TypeSystem`NestedGrid`PackagePrivate`$lastOutputID = 
+          TypeSystem`NestedGrid`PackagePrivate`localHold[
+           TypeSystem`NestedGrid`PackagePrivate`$outputID$$]; 
+         TypeSystem`NestedGrid`PackagePrivate`makePathTrail[
+          TypeSystem`NestedGrid`PackagePrivate`path$, 
+           TypeSystem`NestedGrid`PackagePrivate`makePathElements]), Null :> 
+        Spacer[10], Blank[] :> Spacer[10]}], 
+      Pattern[TypeSystem`NestedGrid`PackagePrivate`bar, 
+        Except[
+         Alternatives[
+          Blank[Spacer], ""]]] :> 
+      TypeSystem`NestedGrid`PackagePrivate`makeFramedPathbar[
+       TypeSystem`NestedGrid`PackagePrivate`bar]], 
+     TrackedSymbols :> {
+      TypeSystem`NestedGrid`PackagePrivate`mouseAnnotation$$}], 
+    TypeSystem`NestedGrid`PackagePrivate`mouseAnnotation$$ = Null}, 
+    DynamicWrapperBox[
+     DynamicBox[ToBoxes[
+       Dataset`DatasetContent[
+       2, "Path" -> Hold[TypeSystem`NestedGrid`PackagePrivate`$path$$], 
+        "Grid" -> Hold[TypeSystem`NestedGrid`PackagePrivate`$grid$$], "State" -> 
+        Hold[TypeSystem`NestedGrid`PackagePrivate`$state$$], "VPos" -> 
+        Hold[TypeSystem`NestedGrid`PackagePrivate`$vPos$$], "HPos" -> 
+        Hold[TypeSystem`NestedGrid`PackagePrivate`$hPos$$], "TopBar" -> 
+        Hold[TypeSystem`NestedGrid`PackagePrivate`$topBar$$], "BottomBar" -> 
+        Hold[TypeSystem`NestedGrid`PackagePrivate`$bottomBar$$], "OutputID" -> 
+        Hold[
+          TypeSystem`NestedGrid`PackagePrivate`localHold[
+          TypeSystem`NestedGrid`PackagePrivate`$outputID$$]]], StandardForm],
+      ImageSizeCache->{
+       983.9000000000001, {104.245849609375, 109.536865234375}},
+      TrackedSymbols:>{
+       TypeSystem`NestedGrid`PackagePrivate`$state$$, 
+        TypeSystem`NestedGrid`PackagePrivate`$grid$$}], 
+     TypeSystem`NestedGrid`PackagePrivate`mouseAnnotation$$ = 
+     MouseAnnotation[],
+     ImageSizeCache->{
+      983.9000000000001, {104.245849609375, 109.536865234375}}],
+    BaseStyle->{
+     LineBreakWithin -> False, 
+      LightDarkAutoColorRules -> <|"MarkedColors" -> True|>},
+    DynamicModuleValues:>{},
+    Initialization:>(TypeSystem`NestedGrid`PackagePrivate`$outputID$$ = 
+     CreateUUID[]),
+    UnsavedVariables:>{TypeSystem`NestedGrid`PackagePrivate`$outputID$$}],
+   Deploy,
+   DefaultBaseStyle->"Deploy"],
+  Dataset`InterpretDataset[1],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellChangeTimes->{3.998236850156087*^9, 3.998237394005239*^9, 
+  3.998237488872347*^9, 3.99885302940408*^9},
+ CellLabel->"Out[4]=",
+ CellID->375594903,ExpressionUUID->"5f010300-43bc-4211-8fd6-508b97d38e4f"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Examples", "Subsection",
+ CellID->1584137844,ExpressionUUID->"0ca0af4d-41e8-4f52-8f3d-1df7a962a0df"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Static 1D spatial density matrix using default GWP parameters.\
+\>", "MathCaption",
+ CellID->102488602,ExpressionUUID->"139d0517-8d1e-4c2f-b3a5-8c1773322c76"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", "\"\<DMX\>\"", "]"}], "[", 
+  RowBox[{"x", ",", " ", "y"}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->244048920,ExpressionUUID->"ea004395-cbee-4366-aa3e-de5e27dcd0cd"],
+
+Cell[BoxData[
+ FractionBox[
+  SuperscriptBox["\[ExponentialE]", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox[
+      SuperscriptBox["x", "2"], "4"]}], "-", 
+    FractionBox[
+     SuperscriptBox["y", "2"], "4"]}]], 
+  SqrtBox[
+   RowBox[{"2", " ", "\[Pi]"}]]]], "Output",
+ CellChangeTimes->{3.998236860176263*^9, 3.998237395789364*^9, 
+  3.998237491020368*^9, 3.998853029523678*^9},
+ CellLabel->"Out[5]=",
+ CellID->1169096188,ExpressionUUID->"d8f829a6-b9dd-4fb6-b3d8-196eec54a041"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Static 1D momentum density matrix using default GWP parameters.\
+\>", "MathCaption",
+ CellID->36432670,ExpressionUUID->"bf681d67-b8f2-4d64-97c0-fe932ed0199e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", "\"\<DMP\>\"", "]"}], "[", 
+  RowBox[{"p1", ",", " ", "p2"}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->291045295,ExpressionUUID->"4a08b311-a3ee-4604-8775-073d65c84cce"],
+
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox["\[ExponentialE]", 
+   RowBox[{
+    RowBox[{"-", 
+     SuperscriptBox["p1", "2"]}], "-", 
+    SuperscriptBox["p2", "2"]}]], " ", 
+  SqrtBox[
+   FractionBox["2", "\[Pi]"]]}]], "Output",
+ CellChangeTimes->{3.998236862540345*^9, 3.99823739689172*^9, 
+  3.998237492981083*^9, 3.9988530295332813`*^9},
+ CellLabel->"Out[6]=",
+ CellID->1671745313,ExpressionUUID->"7708fe9e-6bbf-47ce-b0a8-897ad29b537d"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Dynamic 1D density matrix for the free particle using default GWP parameters.\
+\
+\>", "MathCaption",
+ CellID->1778008846,ExpressionUUID->"6fcf4f04-de52-4343-ae23-364630fd80d7"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", 
+    RowBox[{"\"\<Potential\>\"", " ", "->", " ", "\"\<Free\>\""}], "]"}], 
+   "[", "\"\<DMX\>\"", "]"}], "[", 
+  RowBox[{"x", ",", " ", "y", ",", " ", "t"}], "]"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->759726717,ExpressionUUID->"c00437d2-da38-483d-9b7c-d94e2dbc2caf"],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox["1", 
+          RowBox[{"4", " ", 
+           RowBox[{"(", 
+            RowBox[{"1", "+", 
+             FractionBox[
+              SuperscriptBox["t", "2"], "4"]}], ")"}]}]]}], "+", 
+        FractionBox[
+         RowBox[{"\[ImaginaryI]", " ", "t"}], 
+         RowBox[{"8", " ", 
+          RowBox[{"(", 
+           RowBox[{"1", "+", 
+            FractionBox[
+             SuperscriptBox["t", "2"], "4"]}], ")"}]}]]}], ")"}], " ", 
+      SuperscriptBox["x", "2"]}], "-", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        FractionBox["1", 
+         RowBox[{"4", " ", 
+          RowBox[{"(", 
+           RowBox[{"1", "+", 
+            FractionBox[
+             SuperscriptBox["t", "2"], "4"]}], ")"}]}]], "+", 
+        FractionBox[
+         RowBox[{"\[ImaginaryI]", " ", "t"}], 
+         RowBox[{"8", " ", 
+          RowBox[{"(", 
+           RowBox[{"1", "+", 
+            FractionBox[
+             SuperscriptBox["t", "2"], "4"]}], ")"}]}]]}], ")"}], " ", 
+      SuperscriptBox["y", "2"]}]}]], " ", 
+   SqrtBox[
+    FractionBox["1", 
+     RowBox[{"1", "+", 
+      FractionBox[
+       SuperscriptBox["t", "2"], "4"]}]]]}], 
+  SqrtBox[
+   RowBox[{"2", " ", "\[Pi]"}]]]], "Output",
+ CellChangeTimes->{3.99823686427853*^9, 3.998237398362856*^9, 
+  3.998237494909255*^9, 3.998853029552717*^9},
+ CellLabel->"Out[7]=",
+ CellID->1494921890,ExpressionUUID->"1aeefe52-5928-457d-8664-5cb1baee078d"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Wigner function for a 1D coherent state of the standard harmonic oscillator.\
+\>", "MathCaption",
+ CellID->1936651204,ExpressionUUID->"badef7bc-5e97-428c-ae1d-d670b367df92"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", 
+    RowBox[{
+     RowBox[{"1", "/", "2"}], ",", " ", "1", ",", " ", 
+     RowBox[{"\"\<Potential\>\"", " ", "->", " ", "\"\<HO\>\""}]}], "]"}], 
+   "[", "\"\<WIG\>\"", "]"}], "[", 
+  RowBox[{"x", ",", " ", "p", ",", " ", "t"}], "]"}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->2034631696,ExpressionUUID->"c4e43955-8f0f-456b-b3a7-15b93cc8a79f"],
+
+Cell[BoxData[
+ FractionBox[
+  SuperscriptBox["\[ExponentialE]", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox[
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"x", "-", 
+         RowBox[{"Cos", "[", "t", "]"}]}], ")"}], "2"], 
+      RowBox[{
+       SuperscriptBox[
+        RowBox[{"Cos", "[", "t", "]"}], "2"], "+", 
+       SuperscriptBox[
+        RowBox[{"Sin", "[", "t", "]"}], "2"]}]]}], "-", 
+    RowBox[{
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"p", "+", 
+        RowBox[{"Sin", "[", "t", "]"}]}], ")"}], "2"], " ", 
+     RowBox[{"(", 
+      RowBox[{
+       SuperscriptBox[
+        RowBox[{"Cos", "[", "t", "]"}], "2"], "+", 
+       SuperscriptBox[
+        RowBox[{"Sin", "[", "t", "]"}], "2"]}], ")"}]}]}]], 
+  "\[Pi]"]], "Output",
+ CellChangeTimes->{3.99823686622775*^9, 3.998237399982029*^9, 
+  3.998237498622593*^9, 3.998853029577073*^9},
+ CellLabel->"Out[8]=",
+ CellID->1741018977,ExpressionUUID->"f55ea4bb-de8b-44ab-8c60-58b60a4d735c"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Static 1D Husimi-Q distribution functions with different values for the \
+coherent state position uncertainty.\
+\>", "MathCaption",
+ CellID->1672803491,ExpressionUUID->"9c76e3f2-03e9-4412-ac28-5188633b705b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", 
+     RowBox[{"\"\<HUSIMI\>\"", ",", " ", "#"}], "]"}], "[", 
+    RowBox[{"x", ",", " ", "y"}], "]"}], "&"}], "/@", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"1", "/", "2"}], ",", "1", ",", "2"}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.998236879341823*^9, 3.998236899336034*^9}, {
+  3.998237024172802*^9, 3.998237030061667*^9}},
+ CellLabel->"In[9]:=",
+ CellID->2099850360,ExpressionUUID->"f519be22-a7ee-4dae-9bf4-811bab27b76e"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox[
+    RowBox[{
+     SqrtBox["2"], " ", 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["16", "9"]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         FractionBox[
+          RowBox[{"3", " ", 
+           SuperscriptBox["x", "2"]}], "16"], "+", 
+         FractionBox[
+          RowBox[{"3", " ", 
+           SuperscriptBox["y", "2"]}], "8"]}], ")"}]}]]}], 
+    RowBox[{"3", " ", "\[Pi]"}]], ",", 
+   FractionBox[
+    RowBox[{"2", " ", 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["16", "25"]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         FractionBox[
+          RowBox[{"5", " ", 
+           SuperscriptBox["x", "2"]}], "8"], "+", 
+         FractionBox[
+          RowBox[{"5", " ", 
+           SuperscriptBox["y", "2"]}], "8"]}], ")"}]}]]}], 
+    RowBox[{"5", " ", "\[Pi]"}]], ",", 
+   FractionBox[
+    RowBox[{"2", " ", 
+     SqrtBox["2"], " ", 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["16", "81"]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         FractionBox[
+          RowBox[{"9", " ", 
+           SuperscriptBox["x", "2"]}], "4"], "+", 
+         FractionBox[
+          RowBox[{"9", " ", 
+           SuperscriptBox["y", "2"]}], "8"]}], ")"}]}]]}], 
+    RowBox[{"9", " ", "\[Pi]"}]]}], "}"}]], "Output",
+ CellChangeTimes->{{3.998236868185038*^9, 3.998236900538249*^9}, {
+   3.998237025351314*^9, 3.998237032582316*^9}, 3.998237401533403*^9, 
+   3.9982375012015743`*^9, 3.998853029589869*^9},
+ CellLabel->"Out[9]=",
+ CellID->1841256064,ExpressionUUID->"27395967-80e6-4a96-b605-e9341e0f62e2"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+The purity is 1 and von Neumann entropy is zero for a pure 1D GWP.\
+\>", "MathCaption",
+ CellID->438745722,ExpressionUUID->"59e5f292-3cef-436e-ac1e-bf1203d45a08"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", "\"\<PURITY\>\"", 
+  "]"}]], "Input",
+ CellLabel->"In[10]:=",
+ CellID->1687989503,ExpressionUUID->"903f3d3c-aaf7-47de-9f8d-c68f63e88ae1"],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{3.998236905237513*^9, 3.9982374030655727`*^9, 
+  3.99823750262648*^9, 3.998853029611326*^9},
+ CellLabel->"Out[10]=",
+ CellID->751314378,ExpressionUUID->"c652cd9a-0d22-4974-8c08-44f962c11ce3"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", "\"\<VONNEUMANN\>\"", 
+  "]"}]], "Input",
+ CellLabel->"In[11]:=",
+ CellID->1780600051,ExpressionUUID->"047e3828-2253-4ade-b9d9-c0c1e8f03b94"],
+
+Cell[BoxData["0"], "Output",
+ CellChangeTimes->{3.998236906684127*^9, 3.998237403954741*^9, 
+  3.998237503512459*^9, 3.998853029621236*^9},
+ CellLabel->"Out[11]=",
+ CellID->136906686,ExpressionUUID->"39d9f934-5e86-4678-bea1-691703691bf4"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+The Wehrl entropy is non-zero and depends on the shape parameter of the \
+reference coherent state, which is 1/2 by default.\
+\>", "MathCaption",
+ CellID->1360436212,ExpressionUUID->"6ffdbaa7-37f7-4022-9029-0b30863f32e4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", 
+  RowBox[{"\"\<WEHRL\>\"", ",", " ", "s"}], "]"}]], "Input",
+ CellChangeTimes->{{3.998236919040259*^9, 3.998236931979114*^9}, {
+  3.998236980670064*^9, 3.998236980848699*^9}},
+ CellLabel->"In[12]:=",
+ CellID->593025475,ExpressionUUID->"d3379397-d62b-4f6f-8ffe-e54ba9480bfb"],
+
+Cell[BoxData[
+ RowBox[{"1", "+", 
+  RowBox[{"Log", "[", 
+   FractionBox[
+    SuperscriptBox[
+     RowBox[{"(", 
+      RowBox[{
+       FractionBox["1", "4"], "+", "s"}], ")"}], "2"], "s"], 
+   "]"}]}]], "Output",
+ CellChangeTimes->{{3.998236908777286*^9, 3.9982369324257593`*^9}, 
+   3.998236981627787*^9, 3.998237034710403*^9, 3.998237405718032*^9, 
+   3.9982375051632977`*^9, 3.998853029642325*^9},
+ CellLabel->"Out[12]=",
+ CellID->1035685665,ExpressionUUID->"b6c79931-2c6c-436e-8435-71f5264dec6c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP", "[", "\"\<1D\>\"", "]"}], "[", "\"\<WEHRL\>\"", 
+  "]"}]], "Input",
+ CellLabel->"In[13]:=",
+ CellID->507552598,ExpressionUUID->"27086474-fcd1-453b-ad54-999e926cb563"],
+
+Cell[BoxData[
+ RowBox[{"1", "+", 
+  RowBox[{"Log", "[", 
+   FractionBox["9", "8"], "]"}]}]], "Output",
+ CellChangeTimes->{
+  3.998236916071314*^9, {3.998237045322742*^9, 3.9982370695864153`*^9}, 
+   3.998237410821919*^9, 3.998237512129745*^9, 3.9988530296519403`*^9},
+ CellLabel->"Out[13]=",
+ CellID->1414012720,ExpressionUUID->"6b1a69d5-cd49-441f-bb75-6c8b6960d079"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Backend Mathematical Engines (Developer)", "Section",
+ CellID->631468702,ExpressionUUID->"7fdce6d2-41bb-40fc-98ce-5d5088e99b9f"],
+
+Cell["\<\
+The underlying backend functions utilize raw mathematical symbols to ensure \
+maximum evaluation speed. The Phase Space engines enforce strict pattern \
+matching: if parameterized properties (like Husimi or Wehrl) are not provided \
+with a continuous shape scalar, they automatically fall back to the default \
+coherent state width of s = 1/2. Below are the canonical evaluations and \
+argument patterns for the 1-Dimensional spatial engine.\
+\>", "Text",
+ CellID->230291040,ExpressionUUID->"dd3dbcc2-a7e6-401b-945b-b306db1618cc"],
+
+Cell[CellGroupData[{
+
+Cell["Phase Space & Density Matrices", "Subsection",
+ CellID->735977386,ExpressionUUID->"41c5037b-b32b-44d5-bd63-4000db163eb6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GWPUsageTable", "[", 
+  RowBox[{"{", 
+   RowBox[{
+   "GWP1DDMX", ",", " ", "GWP1DDMP", ",", " ", "GWP1DWIG", ",", " ", 
+    "GWP1DHUSIMI"}], "}"}], "]"}]], "Input",
+ CellLabel->"In[14]:=",
+ CellID->66119782,ExpressionUUID->"184e6633-5a83-437d-998d-ec56cfc703c2"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox[
+        StyleBox["\<\"Signature\"\>",
+         StripOnInput->False,
+         FontSize->14,
+         FontWeight->Bold], TextForm]], "InlineText",ExpressionUUID->
+       "8bb2beff-693c-4356-9a7f-94b48580dc97"],
+      Text[
+       Style["Signature", Bold, 14]]], 
+     InterpretationBox[Cell[BoxData[
+       FormBox[
+        StyleBox["\<\"Description\"\>",
+         StripOnInput->False,
+         FontSize->14,
+         FontWeight->Bold], TextForm]], "InlineText",ExpressionUUID->
+       "073c2f29-51b3-4e02-bf92-9807df626b6b"],
+      Text[
+       Style["Description", Bold, 14]]]},
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox["\<\"GWP1DDMX[x, y][param]\"\>", TextForm]], "InlineText",
+       ExpressionUUID->"38e8d361-cdc1-4634-9baa-7645cb46d6a1"],
+      Text["GWP1DDMX[x, y][param]"]], 
+     PaneBox[
+      InterpretationBox[Cell[BoxData[
+        FormBox[
+         StyleBox["\<\"Evaluates the spatial density matrix.\"\>",
+          StripOnInput->False,
+          TextAlignment->Left,
+          LineIndent->0], TextForm]], "InlineText",ExpressionUUID->
+        "c7c20638-ac35-4d6b-bbac-8bd36680335d"],
+       Text[
+        Style[
+        "Evaluates the spatial density matrix.", TextAlignment -> Left, 
+         LineIndent -> 0]]],
+      ImageSize->{
+        UpTo[425], Automatic}]},
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox["\<\"GWP1DDMP[p1, p2][param]\"\>", TextForm]], "InlineText",
+       ExpressionUUID->"cdea9f38-fbda-4bcb-b670-b85f35d547d0"],
+      Text["GWP1DDMP[p1, p2][param]"]], 
+     PaneBox[
+      InterpretationBox[Cell[BoxData[
+        FormBox[
+         StyleBox["\<\"Evaluates the momentum space density matrix.\"\>",
+          StripOnInput->False,
+          TextAlignment->Left,
+          LineIndent->0], TextForm]], "InlineText",ExpressionUUID->
+        "e2e4ee74-e5e8-4d4a-b941-979a017a85ab"],
+       Text[
+        Style[
+        "Evaluates the momentum space density matrix.", TextAlignment -> Left,
+          LineIndent -> 0]]],
+      ImageSize->{
+        UpTo[425], Automatic}]},
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox["\<\"GWP1DWIG[x, p][param]\"\>", TextForm]], "InlineText",
+       ExpressionUUID->"283742b4-e93c-4f64-89a5-c66f0d6f6544"],
+      Text["GWP1DWIG[x, p][param]"]], 
+     PaneBox[
+      InterpretationBox[Cell[BoxData[
+        FormBox[
+         StyleBox["\<\"Evaluates the Wigner phase space distribution.\"\>",
+          StripOnInput->False,
+          TextAlignment->Left,
+          LineIndent->0], TextForm]], "InlineText",ExpressionUUID->
+        "cde7561c-2caa-4cdb-84ce-9906f6eb5c5c"],
+       Text[
+        Style[
+        "Evaluates the Wigner phase space distribution.", TextAlignment -> 
+         Left, LineIndent -> 0]]],
+      ImageSize->{
+        UpTo[425], Automatic}]},
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox["\<\"GWP1DHUSIMI[x, p, s][param]\"\>", TextForm]], 
+       "InlineText",ExpressionUUID->"5ef2482b-0871-44f3-9834-3dc9bac91b12"],
+      Text["GWP1DHUSIMI[x, p, s][param]"]], 
+     PaneBox[
+      InterpretationBox[Cell[BoxData[
+        FormBox[
+         StyleBox["\<\"Evaluates the Husimi Q-distribution.\"\>",
+          StripOnInput->False,
+          TextAlignment->Left,
+          LineIndent->0], TextForm]], "InlineText",ExpressionUUID->
+        "06ae2f72-d4a4-4768-9ec6-da386031feaa"],
+       Text[
+        Style[
+        "Evaluates the Husimi Q-distribution.", TextAlignment -> Left, 
+         LineIndent -> 0]]],
+      ImageSize->{
+        UpTo[425], Automatic}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+   GridBoxBackground->{
+    "Columns" -> {{None}}, "RowsIndexed" -> {1 -> GrayLevel[0.95]}},
+   GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+   GridBoxSpacings->{"Columns" -> {{2}}, "Rows" -> {{1.5}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.998237520484206*^9, 3.99885302978988*^9},
+ CellLabel->"Out[14]=",
+ CellID->1257747338,ExpressionUUID->"31270458-4ab9-4dad-bb52-c757fd42fbf8"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Phase Space Metrics", "Subsection",
+ CellID->1026130575,ExpressionUUID->"b75e061d-046a-43e5-96ec-e36630e4baa1"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Because the standard 1D engine models pure Gaussian states, the purity and \
+von Neumann entropy evaluate trivially to 1 and 0, respectively. The Wehrl \
+entropy depends explicitly on the reference coherent state width:\
+\>", "Text",
+ CellID->1882888615,ExpressionUUID->"51b8119f-02c7-4c0b-8cbc-1241f64544ad"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GWPUsageTable", "[", 
+  RowBox[{"{", 
+   RowBox[{
+   "GWP1DWEHRL", ",", " ", "GWP1DPURITY", ",", " ", "GWP1DVONNEUMANN"}], 
+   "}"}], "]"}]], "Input",
+ CellLabel->"In[15]:=",
+ CellID->389930113,ExpressionUUID->"bdaf77ca-d9ad-45e7-aeca-ef0e443c45d0"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox[
+        StyleBox["\<\"Signature\"\>",
+         StripOnInput->False,
+         FontSize->14,
+         FontWeight->Bold], TextForm]], "InlineText",ExpressionUUID->
+       "538c997d-3944-494c-aeb8-3ec3ef2d0c17"],
+      Text[
+       Style["Signature", Bold, 14]]], 
+     InterpretationBox[Cell[BoxData[
+       FormBox[
+        StyleBox["\<\"Description\"\>",
+         StripOnInput->False,
+         FontSize->14,
+         FontWeight->Bold], TextForm]], "InlineText",ExpressionUUID->
+       "9a01e745-cace-4f61-8a3f-a49b2728a02c"],
+      Text[
+       Style["Description", Bold, 14]]]},
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox["\<\"GWP1DWEHRL[s][param]\"\>", TextForm]], "InlineText",
+       ExpressionUUID->"c03ca69e-0708-49a5-965e-6b094ee18f77"],
+      Text["GWP1DWEHRL[s][param]"]], 
+     PaneBox[
+      InterpretationBox[Cell[BoxData[
+        FormBox[
+         StyleBox["\<\"Evaluates the Wehrl entropy.\"\>",
+          StripOnInput->False,
+          TextAlignment->Left,
+          LineIndent->0], TextForm]], "InlineText",ExpressionUUID->
+        "05481f63-271a-4281-973e-20ea797ed1b4"],
+       Text[
+        Style[
+        "Evaluates the Wehrl entropy.", TextAlignment -> Left, LineIndent -> 
+         0]]],
+      ImageSize->{
+        UpTo[425], Automatic}]},
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox["\<\"GWP1DPURITY[param]\"\>", TextForm]], "InlineText",
+       ExpressionUUID->"4bd9ed33-5f38-4928-b0dd-85d1aad688f3"],
+      Text["GWP1DPURITY[param]"]], 
+     PaneBox[
+      InterpretationBox[Cell[BoxData[
+        FormBox[
+         StyleBox["\<\"Evaluates the state purity.\"\>",
+          StripOnInput->False,
+          TextAlignment->Left,
+          LineIndent->0], TextForm]], "InlineText",ExpressionUUID->
+        "bdc92f28-b646-4038-a58d-bcc6727e097c"],
+       Text[
+        Style[
+        "Evaluates the state purity.", TextAlignment -> Left, LineIndent -> 
+         0]]],
+      ImageSize->{
+        UpTo[425], Automatic}]},
+    {
+     InterpretationBox[Cell[BoxData[
+       FormBox["\<\"GWP1DVONNEUMANN[param]\"\>", TextForm]], "InlineText",
+       ExpressionUUID->"1202269e-d974-468e-ae82-a49ea9418519"],
+      Text["GWP1DVONNEUMANN[param]"]], 
+     PaneBox[
+      InterpretationBox[Cell[BoxData[
+        FormBox[
+         StyleBox["\<\"Evaluates the von Neumann entropy.\"\>",
+          StripOnInput->False,
+          TextAlignment->Left,
+          LineIndent->0], TextForm]], "InlineText",ExpressionUUID->
+        "9cd5b0b9-2323-42b6-9fef-2075467c3d59"],
+       Text[
+        Style[
+        "Evaluates the von Neumann entropy.", TextAlignment -> Left, 
+         LineIndent -> 0]]],
+      ImageSize->{
+        UpTo[425], Automatic}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Top}}},
+   GridBoxBackground->{
+    "Columns" -> {{None}}, "RowsIndexed" -> {1 -> GrayLevel[0.95]}},
+   GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+   GridBoxSpacings->{"Columns" -> {{2}}, "Rows" -> {{1.5}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.9982375225751743`*^9, 3.998853029896817*^9},
+ CellLabel->"Out[15]=",
+ CellID->1277972345,ExpressionUUID->"2916056a-865c-4f24-899f-15e15d78f7cb"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Examples", "Subsection",
+ CellID->1582802194,ExpressionUUID->"68024ddd-4c61-40a9-932f-aadb81fd7468"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Evaluate the static 1D density matrices, Wigner and Husimi functions using \
+symbolic parameters.\
+\>", "MathCaption",
+ CellID->1276539169,ExpressionUUID->"9506d209-9d66-48ba-82a5-624bf6f23363"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP1DDMX", "[", 
+   RowBox[{"x", ",", " ", "y"}], "]"}], " ", "@", " ", "GWP1DVAL"}]], "Input",\
+
+ CellLabel->"In[16]:=",
+ CellID->1432179853,ExpressionUUID->"f04f953d-83a3-4b95-a17a-d04b4c11d441"],
+
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox["\[ExponentialE]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "\[ImaginaryI]"}], " ", "IA"}], "-", "RA"}], ")"}], " ", 
+     
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", "RX"}], "+", "x"}], ")"}], "2"]}], "+", 
+    FractionBox[
+     RowBox[{"\[ImaginaryI]", " ", "RP", " ", 
+      RowBox[{"(", 
+       RowBox[{"x", "-", "y"}], ")"}]}], "HBAR"], "-", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "\[ImaginaryI]"}], " ", "IA"}], "+", "RA"}], ")"}], " ", 
+     
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", "RX"}], "+", "y"}], ")"}], "2"]}]}]], " ", 
+  SqrtBox[
+   FractionBox["2", "\[Pi]"]], " ", 
+  SqrtBox["RA"]}]], "Output",
+ CellChangeTimes->{3.998237526031743*^9, 3.998853029989997*^9},
+ CellLabel->"Out[16]=",
+ CellID->1897248768,ExpressionUUID->"c0b4ae64-0ae8-4898-9fae-ff6665c80cd8"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP1DDMP", "[", 
+   RowBox[{"p1", ",", " ", "p2"}], "]"}], " ", "@", " ", 
+  "GWP1DVAL"}]], "Input",
+ CellLabel->"In[17]:=",
+ CellID->1650073795,ExpressionUUID->"5c105bc3-07ca-4ea0-8ed2-1f4207369ca8"],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{"-", 
+      FractionBox[
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"p1", "-", "RP"}], ")"}], "2"], 
+       RowBox[{"4", " ", 
+        SuperscriptBox["HBAR", "2"], " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"\[ImaginaryI]", " ", "IA"}], "+", "RA"}], ")"}]}]]}], "-", 
+     
+     FractionBox[
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"p2", "-", "RP"}], ")"}], "2"], 
+      RowBox[{"4", " ", 
+       SuperscriptBox["HBAR", "2"], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", "IA"}], "+", "RA"}], ")"}]}]], 
+     "-", 
+     FractionBox[
+      RowBox[{"\[ImaginaryI]", " ", 
+       RowBox[{"(", 
+        RowBox[{"p1", "-", "p2"}], ")"}], " ", "RX"}], "HBAR"]}]], " ", 
+   SqrtBox[
+    FractionBox["RA", 
+     RowBox[{
+      SuperscriptBox["HBAR", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        SuperscriptBox["IA", "2"], "+", 
+        SuperscriptBox["RA", "2"]}], ")"}]}]]]}], 
+  SqrtBox[
+   RowBox[{"2", " ", "\[Pi]"}]]]], "Output",
+ CellChangeTimes->{3.998237527461631*^9, 3.998853029999277*^9},
+ CellLabel->"Out[17]=",
+ CellID->1222853120,ExpressionUUID->"eca33486-d38a-41b4-8baf-df6e7fd949fb"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP1DWIG", "[", 
+   RowBox[{"x", ",", " ", "p"}], "]"}], " ", "@", " ", "GWP1DVAL"}]], "Input",\
+
+ CellLabel->"In[18]:=",
+ CellID->186455207,ExpressionUUID->"e92113fb-72dc-42de-89e6-52519c14c787"],
+
+Cell[BoxData[
+ FractionBox[
+  SuperscriptBox["\[ExponentialE]", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox[
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"p", "-", "RP"}], ")"}], "2"], 
+      RowBox[{"2", " ", 
+       SuperscriptBox["HBAR", "2"], " ", "RA"}]]}], "-", 
+    FractionBox[
+     RowBox[{"2", " ", "IA", " ", 
+      RowBox[{"(", 
+       RowBox[{"p", "-", "RP"}], ")"}], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", "RX"}], "+", "x"}], ")"}]}], 
+     RowBox[{"HBAR", " ", "RA"}]], "-", 
+    FractionBox[
+     RowBox[{"2", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        SuperscriptBox["IA", "2"], "+", 
+        SuperscriptBox["RA", "2"]}], ")"}], " ", 
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"-", "RX"}], "+", "x"}], ")"}], "2"]}], "RA"]}]], 
+  RowBox[{"HBAR", " ", "\[Pi]"}]]], "Output",
+ CellChangeTimes->{3.9982375291590557`*^9, 3.998853030015213*^9},
+ CellLabel->"Out[18]=",
+ CellID->1073886050,ExpressionUUID->"baecb401-a712-498b-8b9c-2d6452b70e42"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP1DHUSIMI", "[", 
+   RowBox[{"x", ",", " ", "p", ",", " ", "s"}], "]"}], " ", "@", " ", 
+  "GWP1DVAL"}]], "Input",
+ CellLabel->"In[19]:=",
+ CellID->574023076,ExpressionUUID->"2aed004f-5d67-4d29-a073-38dc35e45d02"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP1DHUSIMI", "[", 
+   RowBox[{"x", ",", "p", ",", "s"}], "]"}], "[", 
+  RowBox[{
+  "RA", ",", "IA", ",", "RX", ",", "RP", ",", "RG", ",", "IG", ",", "NORM", ",",
+    "HBAR", ",", "MASS", ",", 
+   RowBox[{"{", 
+    RowBox[{"V0", ",", "V1", ",", "V2"}], "}"}], ",", "INIT"}], 
+  "]"}]], "Output",
+ CellChangeTimes->{3.9982375310477247`*^9, 3.998853030032898*^9},
+ CellLabel->"Out[19]=",
+ CellID->1350272962,ExpressionUUID->"6fd5e384-4a49-4b0e-8de5-8dbbf5a49813"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Evaluate the dynamic 1D Wigner function for a forced harmonic oscillator with \
+resonant sinusoidal driving using non-default parameters.\
+\>", "MathCaption",
+ CellID->1109296008,ExpressionUUID->"1c917a99-078d-417d-9e45-348a3b292a42"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"GWP1DWIG", "[", 
+   RowBox[{"x", ",", " ", "p"}], "]"}], " ", "@", " ", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"GWP1DFHORES", "[", 
+     RowBox[{"1", ",", " ", 
+      RowBox[{"1", "/", "10"}]}], "]"}], "[", "t", "]"}], " ", "@", " ", 
+   RowBox[{"GWP1DPARAM", "[", 
+    RowBox[{
+     RowBox[{"1", "/", "2"}], ",", " ", 
+     RowBox[{"-", "1"}]}], "]"}]}]}]], "Input",
+ CellLabel->"In[20]:=",
+ CellID->1632466849,ExpressionUUID->"b3bed01a-7047-4e56-979d-87d7b3a7bfbb"],
+
+Cell[BoxData[
+ FractionBox[
+  SuperscriptBox["\[ExponentialE]", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox[
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"x", "+", 
+         RowBox[{
+          FractionBox["1", "2"], " ", 
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"-", 
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{"-", "2"}], "-", 
+                 FractionBox["t", "10"]}], ")"}], " ", 
+               RowBox[{"Cos", "[", "t", "]"}]}], ")"}]}], "-", 
+            FractionBox[
+             RowBox[{"Sin", "[", "t", "]"}], "10"]}], ")"}]}]}], ")"}], "2"], 
+      
+      RowBox[{
+       SuperscriptBox[
+        RowBox[{"Cos", "[", "t", "]"}], "2"], "+", 
+       SuperscriptBox[
+        RowBox[{"Sin", "[", "t", "]"}], "2"]}]]}], "-", 
+    RowBox[{
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"p", "-", 
+        RowBox[{
+         FractionBox["1", "2"], " ", 
+         RowBox[{"(", 
+          RowBox[{"2", "+", 
+           FractionBox["t", "10"]}], ")"}], " ", 
+         RowBox[{"Sin", "[", "t", "]"}]}]}], ")"}], "2"], " ", 
+     RowBox[{"(", 
+      RowBox[{
+       SuperscriptBox[
+        RowBox[{"Cos", "[", "t", "]"}], "2"], "+", 
+       SuperscriptBox[
+        RowBox[{"Sin", "[", "t", "]"}], "2"]}], ")"}]}]}]], 
+  "\[Pi]"]], "Output",
+ CellChangeTimes->{3.9982375344327793`*^9, 3.998853030057047*^9},
+ CellLabel->"Out[20]=",
+ CellID->1577974485,ExpressionUUID->"6627577b-a166-44bd-92b1-a403bd86ca54"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Evaluate the Wehrl entropy as a function of the coherent state's uncertainty \
+for a GWP with zero position-momentum covariance and show what happens as it \
+approaches the uncertainty of the packet itself.\
+\>", "MathCaption",
+ CellID->619257071,ExpressionUUID->"e9b5e18b-6c18-4950-a8e6-ec5cdf11d6ea"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"GWP1DWEHRL", "[", 
+    RowBox[{"1", "/", 
+     RowBox[{"(", 
+      RowBox[{"4", " ", 
+       RowBox[{"\[Sigma]", "^", "2"}]}], ")"}]}], "]"}], " ", "@", " ", 
+   RowBox[{"GWP1DPARAM", "[", 
+    RowBox[{"{", 
+     RowBox[{"\"\<Covariance\>\"", ",", " ", "\[CapitalDelta]x", ",", " ", 
+      "0"}], "}"}], "]"}]}], " ", "//", " ", "Simplify"}]], "Input",
+ CellLabel->"In[21]:=",
+ CellID->1147838935,ExpressionUUID->"c4e7d10b-edf5-44af-9de3-18c0bd90a0db"],
+
+Cell[BoxData[
+ RowBox[{"1", "+", 
+  RowBox[{"Log", "[", 
+   FractionBox[
+    SuperscriptBox[
+     RowBox[{"(", 
+      RowBox[{
+       SuperscriptBox["\[CapitalDelta]x", "2"], "+", 
+       SuperscriptBox["\[Sigma]", "2"]}], ")"}], "2"], 
+    RowBox[{"4", " ", 
+     SuperscriptBox["\[CapitalDelta]x", "2"], " ", 
+     SuperscriptBox["\[Sigma]", "2"]}]], "]"}]}]], "Output",
+ CellChangeTimes->{3.9982375370929728`*^9, 3.9988530300866327`*^9},
+ CellLabel->"Out[21]=",
+ CellID->1741612592,ExpressionUUID->"9efabf98-921a-42c6-a77d-0f3c2378def7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Limit", "[", 
+  RowBox[{"%", ",", " ", 
+   RowBox[{"\[Sigma]", " ", "->", " ", "\[CapitalDelta]x"}]}], "]"}]], "Input",\
+
+ CellLabel->"In[22]:=",
+ CellID->883379544,ExpressionUUID->"972bb5a9-1961-4341-8a8a-f5b652fcf3b4"],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{3.99823753822821*^9, 3.998853030112859*^9},
+ CellLabel->"Out[22]=",
+ CellID->1080725134,ExpressionUUID->"17c0a52d-140d-4710-848b-2d9b23175525"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Repeat the example for a GWP with non-zero position-momentum covariance.\
+\>", "MathCaption",
+ CellID->1405544297,ExpressionUUID->"2f683825-ce0b-4306-b231-19f91905df6a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"GWP1DWEHRL", "[", 
+    RowBox[{"1", "/", 
+     RowBox[{"(", 
+      RowBox[{"4", " ", 
+       RowBox[{"\[Sigma]", "^", "2"}]}], ")"}]}], "]"}], " ", "@", " ", 
+   RowBox[{"GWP1DPARAM", "[", 
+    RowBox[{"{", 
+     RowBox[{"\"\<Covariance\>\"", ",", " ", "\[CapitalDelta]x", ",", " ", 
+      "Cxp"}], "}"}], "]"}]}], " ", "//", " ", "Simplify"}]], "Input",
+ CellLabel->"In[23]:=",
+ CellID->662882679,ExpressionUUID->"d995a543-c2ff-455d-b784-e8568a45419a"],
+
+Cell[BoxData[
+ RowBox[{"1", "+", 
+  RowBox[{"Log", "[", 
+   FractionBox[
+    RowBox[{
+     SuperscriptBox["\[CapitalDelta]x", "4"], "+", 
+     RowBox[{"2", " ", 
+      SuperscriptBox["\[CapitalDelta]x", "2"], " ", 
+      SuperscriptBox["\[Sigma]", "2"]}], "+", 
+     SuperscriptBox["\[Sigma]", "4"], "+", 
+     RowBox[{"4", " ", 
+      SuperscriptBox["Cxp", "2"], " ", 
+      SuperscriptBox["\[Sigma]", "4"]}]}], 
+    RowBox[{"4", " ", 
+     SuperscriptBox["\[CapitalDelta]x", "2"], " ", 
+     SuperscriptBox["\[Sigma]", "2"]}]], "]"}]}]], "Output",
+ CellChangeTimes->{3.998237540630526*^9, 3.998853030150083*^9},
+ CellLabel->"Out[23]=",
+ CellID->330640812,ExpressionUUID->"786fc511-b787-4dfb-9b4c-003a95102aad"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Limit", "[", 
+   RowBox[{"%", ",", " ", 
+    RowBox[{"\[Sigma]", " ", "->", " ", "\[CapitalDelta]x"}]}], "]"}], " ", "//",
+   " ", "Simplify"}]], "Input",
+ CellLabel->"In[24]:=",
+ CellID->2071508964,ExpressionUUID->"dc33d4fc-9ab0-492e-88bc-8d9f780404f9"],
+
+Cell[BoxData[
+ RowBox[{"1", "+", 
+  RowBox[{"Log", "[", 
+   RowBox[{"1", "+", 
+    SuperscriptBox["Cxp", "2"]}], "]"}]}]], "Output",
+ CellChangeTimes->{3.998237542586914*^9, 3.99885303017667*^9},
+ CellLabel->"Out[24]=",
+ CellID->1539932495,ExpressionUUID->"a146f2f7-1978-49cd-94b6-72d17377c5cf"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Mathematical Definitions", "Section",
+ CellID->1512484949,ExpressionUUID->"fc101cfa-d551-45cd-9a55-cec65c8a0adb"],
+
+Cell["\<\
+The density matrix, Wigner function, and Husimi Q-distribution provide \
+distinct, complementary representations of a quantum state in phase space. \
+For a pure continuous-variable state, these distributions are derived \
+directly from the spatial wavefunction.  The following subsections provide \
+mathematical definitions used by GWPPhaseSpace to define its functions.\
+\>", "Text",
+ CellChangeTimes->{{3.99822232153168*^9, 3.998222380228047*^9}, {
+  3.998222577072658*^9, 3.998222612956132*^9}, {3.998222783116836*^9, 
+  3.998222811584302*^9}, {3.9982277952474613`*^9, 3.9982278490309753`*^9}, {
+  3.9982287053305893`*^9, 3.998228705927919*^9}, {3.998234431149337*^9, 
+  3.998234432330797*^9}},
+ CellID->802475777,ExpressionUUID->"2d1faccf-b3c0-4db6-b9dd-3ea62b38f184"],
+
+Cell[CellGroupData[{
+
+Cell["1D", "Subsection",
+ CellChangeTimes->{{3.998225627946245*^9, 3.998225628694566*^9}},
+ CellID->1013080879,ExpressionUUID->"b40c3b24-a7a5-4fc1-9475-d35d136fb6fa"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+The position-space density matrix for a pure 1D state is defined as\
+\>", "Text",
+ CellChangeTimes->{{3.998222814425192*^9, 3.9982228672222652`*^9}, {
+  3.998223054061771*^9, 3.998223055989428*^9}, {3.9982253505726624`*^9, 
+  3.998225363050127*^9}},
+ CellID->1599979937,ExpressionUUID->"c9799f84-eb15-4051-94f1-d580d1590466"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[Rho]", "(", 
+    RowBox[{"x", ",", "y", ",", "t"}], ")"}], "=", 
+   RowBox[{
+    RowBox[{"\[Psi]", "(", 
+     RowBox[{"x", ",", "t"}], ")"}], 
+    RowBox[{
+     SuperscriptBox["\[Psi]", "*"], "(", 
+     RowBox[{"y", ",", "t"}], ")"}]}]}], TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998131071123982*^9, 3.998131082495512*^9}, {3.998222219123498*^9, 
+  3.998222219621603*^9}},
+ FontSize->16,
+ CellID->72573425,ExpressionUUID->"bc83cd52-ae0c-4519-b893-9dd5c8b1a80f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["which for a generalized 1D GWP it has the form", "Text",
+ CellChangeTimes->{{3.99822306079812*^9, 3.998223092933551*^9}, 
+   3.9982235155512342`*^9, {3.9982254031957407`*^9, 3.998225466264299*^9}, {
+   3.998228723556304*^9, 3.9982287252100563`*^9}},
+ CellID->2118326126,ExpressionUUID->"05ed033f-033f-4e66-9cfd-a809d801faca"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[Rho]", 
+    RowBox[{"(", 
+     RowBox[{"x", ",", "y", ",", "t"}], ")"}]}], "=", 
+   RowBox[{
+    SqrtBox[
+     FractionBox[
+      RowBox[{"2", 
+       RowBox[{"Re", "(", 
+        SubscriptBox["\[Alpha]", "t"], ")"}]}], "\[Pi]"]], 
+    RowBox[{"exp", "(", 
+     RowBox[{
+      RowBox[{"-", 
+       SuperscriptBox[
+        RowBox[{
+         SubscriptBox["\[Alpha]", "t"], "(", 
+         RowBox[{"x", "-", 
+          SubscriptBox["x", "t"]}], ")"}], "2"]}], "-", 
+      SuperscriptBox[
+       RowBox[{
+        SubsuperscriptBox["\[Alpha]", "t", "*"], "(", 
+        RowBox[{"y", "-", 
+         SubscriptBox["x", "t"]}], ")"}], "2"], "+", 
+      RowBox[{
+       FractionBox["\[ImaginaryI]", "\[HBar]"], 
+       RowBox[{
+        SubscriptBox["p", "t"], "(", 
+        RowBox[{"x", "-", "y"}], ")"}]}]}], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, 
+   3.9982232351493893`*^9, {3.998223533791552*^9, 3.998223570541952*^9}},
+ FontSize->16,
+ CellID->1723299716,ExpressionUUID->"f9a1eca5-dd88-4191-9d86-8d0ffe6891bd"]
+}, Open  ]],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Alpha]", "t"], TraditionalForm]],ExpressionUUID->
+  "21fc3de8-f35a-47a8-a09e-66a09442b042"],
+ " is the complex-valued shape parameter, ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["x", "t"], TraditionalForm]],ExpressionUUID->
+  "bf104271-3bec-4a7d-849c-874a5b934a07"],
+ " is the position center, and ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["p", "t"], TraditionalForm]],ExpressionUUID->
+  "f4dda709-15c9-40f2-9884-9a5ecdc39a50"],
+ " is the momentum center of the 1D GWP.  The global phase parameter ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Gamma]", "t"], TraditionalForm]],ExpressionUUID->
+  "088fcf52-6e63-436b-9a87-657313c937d1"],
+ " cancels out."
+}], "Text",
+ CellChangeTimes->{{3.998225475805332*^9, 3.9982255247557993`*^9}, {
+  3.998234470109626*^9, 3.998234506141135*^9}},
+ CellID->386379723,ExpressionUUID->"a61d5e2c-a941-4680-aa89-94fa7d399474"],
+
+Cell[CellGroupData[{
+
+Cell["The momentum-space density matrix is defined similarly", "Text",
+ CellChangeTimes->{{3.998225385952777*^9, 3.998225396691925*^9}, {
+  3.99822874217785*^9, 3.998228745152645*^9}},
+ CellID->2040939580,ExpressionUUID->"94fb4dab-d1b3-44b4-94b0-5293d3306eac"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    OverscriptBox["\[Rho]", "~"], "(", 
+    RowBox[{"p", ",", 
+     SuperscriptBox["p", "\[Prime]"], ",", "t"}], ")"}], "=", 
+   RowBox[{
+    RowBox[{
+     OverscriptBox["\[Psi]", "~"], "(", 
+     RowBox[{"p", ",", "t"}], ")"}], 
+    RowBox[{
+     SuperscriptBox[
+      OverscriptBox["\[Psi]", "~"], "*"], "(", 
+     RowBox[{
+      SuperscriptBox["p", "\[Prime]"], ",", "t"}], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998131071123982*^9, 3.998131082495512*^9}, {3.998222219123498*^9, 
+  3.998222219621603*^9}, {3.998222390758871*^9, 3.998222403410681*^9}, {
+  3.9982228804528913`*^9, 3.998222925724607*^9}},
+ FontSize->16,
+ CellID->315227529,ExpressionUUID->"c6cf1b8b-94c0-4856-b2f2-fd00d143a0ea"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["and has the following form for 1D GWP", "Text",
+ CellChangeTimes->{{3.998225555835558*^9, 3.998225566176895*^9}, {
+  3.9982287518412027`*^9, 3.9982287662962008`*^9}},
+ CellID->186922754,ExpressionUUID->"9bc8ab89-960b-41c6-82f9-4d5661b0c423"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    OverscriptBox["\[Rho]", "~"], "(", 
+    RowBox[{"p", ",", 
+     SuperscriptBox["p", "\[Prime]"], ",", "t"}], ")"}], "=", 
+   RowBox[{
+    SqrtBox[
+     FractionBox[
+      RowBox[{"Re", "(", 
+       SubscriptBox["\[Alpha]", "t"], ")"}], 
+      RowBox[{"2", "\[Pi]", " ", 
+       SuperscriptBox["\[HBar]", "2"], 
+       SuperscriptBox[
+        RowBox[{"\[LeftBracketingBar]", 
+         SubscriptBox["\[Alpha]", "t"], "\[RightBracketingBar]"}], "2"]}]]], 
+    RowBox[{"exp", "(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["1", 
+         RowBox[{"4", 
+          SuperscriptBox["\[HBar]", "2"], " ", 
+          SubscriptBox["\[Alpha]", "t"]}]]}], 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"p", "-", 
+          SubscriptBox["p", "t"]}], ")"}], "2"]}], "-", 
+      RowBox[{
+       FractionBox["1", 
+        RowBox[{"4", 
+         SuperscriptBox["\[HBar]", "2"], " ", 
+         SubsuperscriptBox["\[Alpha]", "t", "*"]}]], 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{
+          SuperscriptBox["p", "\[Prime]"], "-", 
+          SubscriptBox["p", "t"]}], ")"}], "2"]}], "-", 
+      RowBox[{
+       FractionBox["\[ImaginaryI]", "\[HBar]"], 
+       RowBox[{
+        SubscriptBox["x", "t"], "(", 
+        RowBox[{"p", "-", 
+         SuperscriptBox["p", "\[Prime]"]}], ")"}]}]}], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998223240637331*^9, 3.998223415762762*^9}, {3.998223572958939*^9, 
+  3.9982235756360197`*^9}, {3.9982255336422577`*^9, 3.99822554117208*^9}},
+ FontSize->16,
+ CellID->1989634564,ExpressionUUID->"76856cb9-b367-4339-9eee-de1486ae7024"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["The purity of the density matrix", "Text",
+ CellChangeTimes->{{3.9982338591404943`*^9, 3.998233900356876*^9}, {
+   3.998233931934026*^9, 3.9982339863773623`*^9}, 3.998234035980091*^9, {
+   3.99823463822678*^9, 3.998234668372879*^9}},
+ CellID->1320249711,ExpressionUUID->"36d3e2f4-d5fd-47d5-8361-e02fd98a83b3"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"P", "(", "t", ")"}], "=", 
+   RowBox[{
+    RowBox[{"Tr", "(", 
+     SuperscriptBox[
+      OverscriptBox["\[Rho]", "^"], "2"], ")"}], "=", 
+    RowBox[{
+     SubsuperscriptBox["\[Integral]", 
+      RowBox[{"-", "\[Infinity]"}], "\[Infinity]"], 
+     RowBox[{
+      SubsuperscriptBox["\[Integral]", 
+       RowBox[{"-", "\[Infinity]"}], "\[Infinity]"], 
+      RowBox[{
+       SuperscriptBox[
+        RowBox[{"\[LeftBracketingBar]", 
+         RowBox[{"\[Rho]", "(", 
+          RowBox[{"x", ",", "y", ",", "t"}], ")"}], "\[RightBracketingBar]"}],
+         "2"], 
+       RowBox[{"\[DifferentialD]", "x"}], 
+       RowBox[{"\[DifferentialD]", "y"}]}]}]}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998131071123982*^9, 3.99813130962996*^9}, {3.998131702058853*^9, 
+  3.998131767229809*^9}, {3.998131996000864*^9, 3.998132005236846*^9}, {
+  3.998232688498809*^9, 3.998232688658558*^9}, {3.9982339627172337`*^9, 
+  3.998233978021433*^9}},
+ FontSize->16,
+ CellID->1635851973,ExpressionUUID->"c4b4f0c6-8161-4bab-8915-501534748517"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["and the von Neumann entropy", "Text",
+ CellChangeTimes->{{3.998234039829198*^9, 3.998234047590785*^9}, {
+  3.998234537100281*^9, 3.998234537545156*^9}},
+ CellID->1678461317,ExpressionUUID->"4cd1f629-ae88-4239-9395-e8922c79d366"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["S", "vN"], "(", "t", ")"}], "=", 
+   RowBox[{"-", 
+    RowBox[{"Tr", "(", 
+     RowBox[{
+      OverscriptBox["\[Rho]", "^"], " ", "ln", " ", 
+      OverscriptBox["\[Rho]", "^"]}], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+   3.998131071123982*^9, 3.998131329175075*^9}, {3.998131975582714*^9, 
+   3.998131992129344*^9}, {3.998132135837463*^9, 3.99813217591006*^9}, {
+   3.998232690624845*^9, 3.998232691148642*^9}, 3.998234057375228*^9},
+ FontSize->16,
+ CellID->554167827,ExpressionUUID->"a521e91c-4d57-48cb-9763-fd5289e2901a"]
+}, Open  ]],
+
+Cell["\<\
+are trivially 1 and 0, respectively, for any pure state, including a 1D GWP.\
+\>", "Text",
+ CellChangeTimes->{{3.998233943243555*^9, 3.9982339512965317`*^9}, {
+  3.9982340616528683`*^9, 3.998234062376045*^9}, {3.9982346864299583`*^9, 
+  3.9982347010979147`*^9}},
+ CellID->262091350,ExpressionUUID->"9f4f6c55-4905-4f19-8c36-e518ef7f78c0"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+The Wigner quasi-probability distribution function for a 1D pure state is \
+formally defined by\
+\>", "Text",
+ CellChangeTimes->{{3.998222955989472*^9, 3.998222965958034*^9}, {
+  3.998223021814662*^9, 3.9982230383387423`*^9}, {3.9982287980539017`*^9, 
+  3.9982287991642942`*^9}},
+ CellID->480359453,ExpressionUUID->"35ce2176-91ca-4341-a489-46e054802a49"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"W", "(", 
+    RowBox[{"x", ",", "p", ",", "t"}], ")"}], "=", 
+   RowBox[{
+    FractionBox["1", 
+     RowBox[{"\[Pi]", " ", "\[HBar]"}]], 
+    RowBox[{
+     SubsuperscriptBox["\[Integral]", 
+      RowBox[{"-", "\[Infinity]"}], "\[Infinity]"], 
+     RowBox[{
+      RowBox[{"\[Rho]", "(", 
+       RowBox[{
+        RowBox[{"x", "-", "y"}], ",", 
+        RowBox[{"x", "+", "y"}], ",", "t"}], ")"}], 
+      RowBox[{"exp", "(", 
+       RowBox[{
+        FractionBox[
+         RowBox[{"2", "\[ImaginaryI]"}], "\[HBar]"], "p", " ", "y"}], ")"}], 
+      RowBox[{"\[DifferentialD]", "y"}]}]}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998131071123982*^9, 3.998131195326498*^9}, {3.998223561306938*^9, 
+  3.998223565330819*^9}, {3.998242632010099*^9, 3.998242633855513*^9}},
+ FontSize->16,
+ CellID->1010297498,ExpressionUUID->"89407ae5-f7e2-469b-aa04-2bb0fe48803b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["and for the 1D GWP we have", "Text",
+ CellChangeTimes->{{3.998225722170331*^9, 3.9982257304367733`*^9}},
+ CellID->2064335704,ExpressionUUID->"434bce7a-8988-40d3-95b2-b78a2c013149"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"W", "(", 
+    RowBox[{"x", ",", "p", ",", "t"}], ")"}], "=", 
+   RowBox[{
+    FractionBox["1", 
+     RowBox[{"\[Pi]", " ", "\[HBar]"}]], 
+    RowBox[{"exp", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["2", 
+         RowBox[{"Re", "(", 
+          SubscriptBox["\[Alpha]", "t"], ")"}]]}], 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"x", "-", 
+          SubscriptBox["x", "t"]}], ")"}], "2"]}], "-", 
+      RowBox[{
+       FractionBox["1", 
+        RowBox[{"2", 
+         SuperscriptBox["\[HBar]", "2"], 
+         RowBox[{"Re", "(", 
+          SubscriptBox["\[Alpha]", "t"], ")"}]}]], 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"p", "-", 
+          SubscriptBox["p", "t"]}], ")"}], "2"]}], "-", 
+      RowBox[{
+       FractionBox["2", "\[HBar]"], 
+       FractionBox[
+        RowBox[{"Im", "(", 
+         SubscriptBox["\[Sigma]", "t"], ")"}], 
+        RowBox[{"Re", "(", 
+         SubscriptBox["\[Alpha]", "t"], ")"}]], 
+       RowBox[{"(", 
+        RowBox[{"x", "-", 
+         SubscriptBox["x", "t"]}], ")"}], 
+       RowBox[{"(", 
+        RowBox[{"p", "-", 
+         SubscriptBox["p", "t"]}], ")"}]}]}], "]"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998073607464367*^9, 3.9980737306440277`*^9}},
+ FontSize->16,
+ CellID->544376196,ExpressionUUID->"67a38749-17b8-4355-8ea2-bd3c1a5c848c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "The Husimi Q-distribution is the convolution of the \
+system\[CloseCurlyQuote]s Wigner function with a reference Wigner function \
+for a coherent state GWP with shape parameter ",
+ Cell[BoxData[
+  FormBox["s", TraditionalForm]],ExpressionUUID->
+  "c0b7668d-b72e-4877-8ed8-cd7d660d9761"]
+}], "Text",
+ CellChangeTimes->{{3.998229490325574*^9, 3.998229541413261*^9}, {
+  3.998230227921377*^9, 3.998230290471406*^9}, {3.998230990094541*^9, 
+  3.998230993639028*^9}, {3.9982324698392267`*^9, 3.998232487741681*^9}, {
+  3.998234734617742*^9, 3.998234738456092*^9}},
+ CellID->1050389952,ExpressionUUID->"7b22e110-682e-4bfb-abac-0335b3eabfd1"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"Q", "(", 
+    RowBox[{"x", ",", "p", ",", 
+     RowBox[{"t", ";", "s"}]}], ")"}], "=", 
+   RowBox[{
+    SubsuperscriptBox["\[Integral]", 
+     RowBox[{"-", "\[Infinity]"}], "\[Infinity]"], 
+    RowBox[{
+     SubsuperscriptBox["\[Integral]", 
+      RowBox[{"-", "\[Infinity]"}], "\[Infinity]"], 
+     RowBox[{
+      RowBox[{"W", "(", 
+       RowBox[{
+        SuperscriptBox["x", "\[Prime]"], ",", 
+        SuperscriptBox["p", "\[Prime]"], ",", "t"}], ")"}], 
+      RowBox[{
+       SubscriptBox["W", "ref"], "(", 
+       RowBox[{
+        RowBox[{"x", "-", 
+         SuperscriptBox["x", "\[Prime]"]}], ",", 
+        RowBox[{"p", "-", 
+         SuperscriptBox["p", "\[Prime]"]}]}], ")"}], 
+      RowBox[{"\[DifferentialD]", 
+       SuperscriptBox["x", "\[Prime]"]}], 
+      RowBox[{"\[DifferentialD]", 
+       SuperscriptBox["p", "\[Prime]"]}]}]}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+   3.998131071123982*^9, 3.998131250439789*^9}, {3.998131551202243*^9, 
+   3.998131645698913*^9}, 3.9982222329248543`*^9, {3.998225748625824*^9, 
+   3.99822574892668*^9}, {3.998230306556625*^9, 3.9982303126972437`*^9}, {
+   3.998230344446857*^9, 3.998230427543689*^9}, {3.998232407323249*^9, 
+   3.998232422896937*^9}, {3.998232503402174*^9, 3.998232524106387*^9}, 
+   3.9982325599212713`*^9},
+ FontSize->16,
+ CellID->1588344924,ExpressionUUID->"9f9cf768-b7c0-459a-8213-3d9f008b8c0e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["where", "Text",
+ CellChangeTimes->{{3.998232564748664*^9, 3.998232565159328*^9}},
+ CellID->2091405458,ExpressionUUID->"85901da2-f58f-4cc5-ae2e-88725c85d291"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["W", "ref"], "(", 
+    RowBox[{"x", ",", "p"}], ")"}], "=", 
+   RowBox[{
+    FractionBox["1", 
+     RowBox[{"\[Pi]", " ", "\[HBar]"}]], 
+    RowBox[{"exp", "(", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "2"}], "s", " ", 
+       SuperscriptBox["x", "2"]}], "-", 
+      RowBox[{
+       FractionBox["1", 
+        RowBox[{"2", "s", " ", 
+         SuperscriptBox["\[HBar]", "2"]}]], 
+       SuperscriptBox["p", "2"]}]}], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+   3.998131071123982*^9, 3.998131250439789*^9}, {3.998131551202243*^9, 
+   3.998131645698913*^9}, 3.9982222329248543`*^9, {3.998225748625824*^9, 
+   3.99822574892668*^9}, {3.998230306556625*^9, 3.9982303126972437`*^9}, {
+   3.998230344446857*^9, 3.998230427543689*^9}, {3.998232407323249*^9, 
+   3.998232422896937*^9}, {3.998232571049748*^9, 3.99823262567461*^9}},
+ FontSize->16,
+ CellID->239198510,ExpressionUUID->"cc4c6fdc-35ea-4a2d-a874-f5224b0846f1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["For a 1D GWP, the Husimi Q-function is given by", "Text",
+ CellChangeTimes->{{3.9982326374607763`*^9, 3.998232666498788*^9}},
+ CellID->119970386,ExpressionUUID->"db7962a0-8ae8-4cf2-a94e-f41415eccac0"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"Q", "(", 
+    RowBox[{"x", ",", "p", ",", 
+     RowBox[{"t", ";", " ", "s"}]}], ")"}], "=", 
+   RowBox[{
+    FractionBox["1", 
+     RowBox[{"\[Pi]", " ", "\[HBar]"}]], 
+    SqrtBox[
+     RowBox[{" ", 
+      FractionBox[
+       RowBox[{
+        RowBox[{"Re", "(", 
+         SubscriptBox["\[Alpha]", "t"], ")"}], "s"}], 
+       RowBox[{"\[LeftBracketingBar]", 
+        RowBox[{
+         SubscriptBox["\[Alpha]", "t"], "+", "s"}], 
+        "\[RightBracketingBar]"}]]}]], 
+    RowBox[{"exp", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox[
+         RowBox[{"2", 
+          RowBox[{"s", "(", 
+           RowBox[{
+            RowBox[{"\[LeftBracketingBar]", 
+             SubscriptBox["\[Alpha]", "t"], "\[RightBracketingBar]"}], "+", 
+            RowBox[{"s", " ", "Re", 
+             RowBox[{"(", 
+              SubscriptBox["\[Alpha]", "t"], ")"}]}]}], ")"}]}], 
+         SuperscriptBox[
+          RowBox[{"\[LeftBracketingBar]", 
+           RowBox[{
+            SubscriptBox["\[Alpha]", "t"], "+", "s"}], 
+           "\[RightBracketingBar]"}], "2"]]}], 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"x", "-", 
+          SubscriptBox["x", "t"]}], ")"}], "2"]}], "-", 
+      RowBox[{
+       FractionBox[
+        RowBox[{
+         RowBox[{"Re", "(", 
+          SubscriptBox["\[Alpha]", "t"], ")"}], "+", "s"}], 
+        RowBox[{"2", 
+         SuperscriptBox["\[HBar]", "2"], 
+         SuperscriptBox[
+          RowBox[{"\[LeftBracketingBar]", 
+           RowBox[{
+            SubscriptBox["\[Alpha]", "t"], "+", "s"}], 
+           "\[RightBracketingBar]"}], "2"]}]], 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"p", "-", 
+          SubscriptBox["p", "t"]}], ")"}], "2"]}], "+", 
+      RowBox[{
+       FractionBox["2", "\[HBar]"], 
+       FractionBox[
+        RowBox[{"s", " ", "Im", 
+         RowBox[{"(", 
+          SubscriptBox["\[Alpha]", "t"], ")"}]}], 
+        SuperscriptBox[
+         RowBox[{"\[LeftBracketingBar]", 
+          RowBox[{
+           SubscriptBox["\[Alpha]", "t"], "+", "s"}], 
+          "\[RightBracketingBar]"}], "2"]], 
+       RowBox[{"(", 
+        RowBox[{"x", "-", 
+         SubscriptBox["x", "t"]}], ")"}], 
+       RowBox[{"(", 
+        RowBox[{"p", "-", 
+         SubscriptBox["p", "t"]}], ")"}]}]}], "]"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998073607464367*^9, 3.998073920485319*^9}, {3.99813220466905*^9, 
+  3.99813227770875*^9}, {3.9982320110908737`*^9, 3.9982320526627417`*^9}, {
+  3.9982320883313093`*^9, 3.998232215381299*^9}, {3.998232257807362*^9, 
+  3.9982323164712353`*^9}},
+ FontSize->16,
+ CellID->2002616616,ExpressionUUID->"1be9e458-8910-42e7-9c0d-f48e79c29049"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+The Wehrl entropy measures phase space localization and is given by \
+\>", "Text",
+ CellChangeTimes->{{3.998233221489709*^9, 3.998233230336501*^9}, {
+  3.9982342846971273`*^9, 3.998234296906304*^9}},
+ CellID->466265681,ExpressionUUID->"1791e7f8-0687-4c2b-9a56-8d49ddb4df78"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["S", "Wehrl"], "(", 
+    RowBox[{"t", ";", "s"}], ")"}], "=", 
+   RowBox[{"-", 
+    RowBox[{
+     SubsuperscriptBox["\[Integral]", 
+      RowBox[{"-", "\[Infinity]"}], "\[Infinity]"], 
+     RowBox[{
+      SubsuperscriptBox["\[Integral]", 
+       RowBox[{"-", "\[Infinity]"}], "\[Infinity]"], 
+      RowBox[{
+       RowBox[{"Q", "(", 
+        RowBox[{"x", ",", "p", ",", 
+         RowBox[{"t", ";", "s"}]}], ")"}], "ln", " ", 
+       RowBox[{"Q", "(", 
+        RowBox[{"x", ",", "p", ",", 
+         RowBox[{"t", ";", "s"}]}], ")"}], 
+       RowBox[{"\[DifferentialD]", "x"}], 
+       RowBox[{"\[DifferentialD]", "p"}]}]}]}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+   3.998131071123982*^9, 3.998131404971504*^9}, 3.998131506559403*^9, {
+   3.99822224459339*^9, 3.9982222650518017`*^9}, {3.998234304822351*^9, 
+   3.998234305116994*^9}, {3.998234343480987*^9, 3.998234344629352*^9}},
+ FontSize->16,
+ CellID->359472664,ExpressionUUID->"1f4fdb39-cadf-425e-a6a3-63c4f49f14d0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["which for a 1D GWP, has the form", "Text",
+ CellChangeTimes->{{3.998234299485187*^9, 3.998234351050873*^9}, {
+  3.998235730969429*^9, 3.99823573533493*^9}},
+ CellID->785564837,ExpressionUUID->"5db06d71-3ae6-446e-ba27-c28f8f5c64a4"],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["S", "Wehrl"], "(", 
+    RowBox[{"t", ";", "s"}], ")"}], "=", 
+   RowBox[{"1", "+", 
+    RowBox[{"ln", "(", 
+     FractionBox[
+      SuperscriptBox[
+       RowBox[{"\[LeftBracketingBar]", 
+        RowBox[{
+         SubscriptBox["\[Alpha]", "t"], "+", "s"}], "\[RightBracketingBar]"}],
+        "2"], 
+      RowBox[{"4", "s", " ", 
+       RowBox[{"Re", "(", 
+        SubscriptBox["\[Alpha]", "t"], ")"}]}]], ")"}]}]}], 
+  TraditionalForm]], "DisplayFormula",
+ CellMargins->{{30, Inherited}, {Inherited, Inherited}},
+ CellChangeTimes->{{3.9980734596742992`*^9, 3.998073543881957*^9}, {
+  3.998073607464367*^9, 3.998073920485319*^9}, {3.998132210404374*^9, 
+  3.9981322433686657`*^9}, {3.9981322837551117`*^9, 3.99813229742669*^9}, {
+  3.998222271410706*^9, 3.998222274564951*^9}, {3.998233007329152*^9, 
+  3.998233008058353*^9}, {3.998234309356189*^9, 3.9982343096004467`*^9}},
+ FontSize->16,
+ CellID->258753703,ExpressionUUID->"f4402873-a1eb-47bc-a6ec-8677085cdcf8"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "TutorialMoreAboutSection",
+ CellID->168346996,ExpressionUUID->"5dd6acce-8278-4927-b27c-4c6b2cf984dd"],
+
+Cell[TextData[ButtonBox["GWPTools",
+ BaseStyle->"Link",
+ ButtonData->"paclet:GWPTools/guide/GWPTools"]], "TutorialMoreAbout",
+ CellChangeTimes->{{3.998846538412146*^9, 3.998846540590272*^9}, 
+   3.9988465869151278`*^9},
+ CellID->1171998673,ExpressionUUID->"9a2e59fa-d11f-49b4-be63-b4923e489521"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Tech Notes", "RelatedTutorialsSection",
+ CellID->1061686827,ExpressionUUID->"a2f4ef80-3b7d-4eff-bb6e-4233b2a190bc"],
+
+Cell[TextData[ButtonBox["GWPUser",
+ BaseStyle->"Link",
+ ButtonData->"paclet:GWPTools/tutorial/GWPUser"]], "RelatedTutorials",
+ CellChangeTimes->{{3.998846544485574*^9, 3.998846551618993*^9}, 
+   3.9988465969715548`*^9},
+ CellID->328878466,ExpressionUUID->"d2521ead-5e50-4734-9306-3c10d89e28ef"],
+
+Cell[TextData[ButtonBox["GWPEngine1D",
+ BaseStyle->"Link",
+ ButtonData->"paclet:GWPTools/tutorial/GWPEngine1D"]], "RelatedTutorials",
+ CellChangeTimes->{{3.998846544485574*^9, 3.998846561071519*^9}, 
+   3.998846686561582*^9},
+ CellID->2026821214,ExpressionUUID->"cd1d5930-7b52-49f0-922e-a009761ac595"],
+
+Cell[TextData[ButtonBox["GWPHydrodynamics",
+ BaseStyle->"Link",
+ ButtonData->"paclet:GWPTools/tutorial/GWPHydrodynamics"]], "RelatedTutorials",\
+
+ CellChangeTimes->{{3.998846544485574*^9, 3.998846561071519*^9}, {
+   3.9988466552885923`*^9, 3.998846657566177*^9}, 3.9988467007180977`*^9},
+ CellID->1957665206,ExpressionUUID->"0b39cad2-7a7d-4937-84ec-c8bfd3fdf167"],
+
+Cell[TextData[ButtonBox["GWPDeveloper",
+ BaseStyle->"Link",
+ ButtonData->"paclet:GWPTools/tutorial/GWPDeveloper"]], "RelatedTutorials",
+ CellChangeTimes->{{3.9988461381497793`*^9, 3.998846151289411*^9}, 
+   3.998846192667746*^9},
+ CellID->941271174,ExpressionUUID->"f13de430-fd9c-4a1a-bc5b-5a0266929cf3"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->53310644,ExpressionUUID->"26b0981d-28a0-4937-90d3-b54be40fde80"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"d9040141-277a-4231-bc85-cf826aa244da"],
+ " | Modified in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"c0c97167-7866-4b34-bcbd-3f83ee706d99"],
+ " | Obsolete in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4e7b50d5-6923-43ae-bf71-174de8380afd"]
+}], "History",
+ CellID->491312909,ExpressionUUID->"6be5c9ba-2a98-43bd-9b22-b39e756cce05"],
+
+Cell[CellGroupData[{
+
+Cell["Categorization", "CategorizationSection",
+ CellID->421438848,ExpressionUUID->"df88311c-fee1-4cb3-ac2f-91314beaeb55"],
+
+Cell["Tech Note", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->721650530,ExpressionUUID->"a124ad41-6450-4cb1-9d72-de22ab4ebe24"],
+
+Cell["GWPTools", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->1940303101,ExpressionUUID->"600690a0-5ea2-4283-807c-2004cbea4712"],
+
+Cell["GWPTools`", "Categorization",
+ CellLabel->"Context",
+ CellID->1135038812,ExpressionUUID->"0621fec0-8688-49a6-90b0-cd01ee70e916"],
+
+Cell["GWPTools/tutorial/GWPPhaseSpace", "Categorization",
+ CellLabel->"URI",
+ CellID->500076983,ExpressionUUID->"e321953b-ee89-4827-8309-9e768f7b30c5"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Keywords", "KeywordsSection",
+ CellID->1690342570,ExpressionUUID->"0efba3b0-4f98-438f-befa-722f362f8e7d"],
+
+Cell["XXXX", "Keywords",
+ CellID->526407827,ExpressionUUID->"ce7716a5-7435-4ae1-8894-7dd768fbc754"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1019, 770},
+WindowMargins->{{140, Automatic}, {32, Automatic}},
+TaggingRules-><|"Paclet" -> "GWPTools"|>,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "TechNotePageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"ffbd7dfb-0039-4731-8b72-d5c6e8ac8d04"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 105, 1, 112, "Title",ExpressionUUID->"af3a2553-2f92-4bda-9cf4-c49b5d601f91",
+ CellID->979287279],
+Cell[684, 25, 850, 13, 134, "Text",ExpressionUUID->"a62b7ec2-2af3-4e56-9423-51878d7a8052",
+ CellID->1366658017],
+Cell[1537, 40, 275, 5, 42, "Text",ExpressionUUID->"78137920-c935-43eb-96a3-90d45a1caf6c",
+ CellID->2083687054],
+Cell[CellGroupData[{
+Cell[1837, 49, 109, 1, 44, "Section",ExpressionUUID->"27640a85-d271-41df-8369-0d1e757cad16",
+ CellID->1699281473],
+Cell[CellGroupData[{
+Cell[1971, 54, 175, 3, 24, "Text",ExpressionUUID->"213dbc55-655d-4bcb-82af-b76eed6b429f",
+ CellID->438695258],
+Cell[2149, 59, 317, 5, 63, "Input",ExpressionUUID->"80ef1376-4494-466f-90d2-219cd16f80f8",
+ CellID->839841055]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2515, 70, 132, 1, 44, "Section",ExpressionUUID->"4e00e705-69df-45df-a50d-a7935def7c0c",
+ CellID->1946083301],
+Cell[2650, 73, 472, 7, 79, "Text",ExpressionUUID->"31ded197-c3b7-4607-95cd-3459636565c3",
+ CellID->1646096097],
+Cell[CellGroupData[{
+Cell[3147, 84, 118, 1, 40, "Subsection",ExpressionUUID->"ce057643-1c55-4ae2-b898-6c3ee802bba2",
+ CellID->2052761625],
+Cell[CellGroupData[{
+Cell[3290, 89, 290, 7, 26, "Input",ExpressionUUID->"4cb7cb51-6d83-44a9-9fea-855eaf0e04f8",
+ CellID->1439842320],
+Cell[3583, 98, 49606, 930, 223, "Output",ExpressionUUID->"5f010300-43bc-4211-8fd6-508b97d38e4f",
+ CellID->375594903]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53238, 1034, 106, 1, 40, "Subsection",ExpressionUUID->"0ca0af4d-41e8-4f52-8f3d-1df7a962a0df",
+ CellID->1584137844],
+Cell[CellGroupData[{
+Cell[53369, 1039, 168, 3, 39, "MathCaption",ExpressionUUID->"139d0517-8d1e-4c2f-b3a5-8c1773322c76",
+ CellID->102488602],
+Cell[CellGroupData[{
+Cell[53562, 1046, 258, 6, 26, "Input",ExpressionUUID->"ea004395-cbee-4366-aa3e-de5e27dcd0cd",
+ CellID->244048920],
+Cell[53823, 1054, 482, 14, 55, "Output",ExpressionUUID->"d8f829a6-b9dd-4fb6-b3d8-196eec54a041",
+ CellID->1169096188]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[54354, 1074, 168, 3, 39, "MathCaption",ExpressionUUID->"bf681d67-b8f2-4d64-97c0-fe932ed0199e",
+ CellID->36432670],
+Cell[CellGroupData[{
+Cell[54547, 1081, 260, 6, 26, "Input",ExpressionUUID->"4a08b311-a3ee-4604-8775-073d65c84cce",
+ CellID->291045295],
+Cell[54810, 1089, 436, 12, 45, "Output",ExpressionUUID->"7708fe9e-6bbf-47ce-b0a8-897ad29b537d",
+ CellID->1671745313]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55295, 1107, 186, 4, 39, "MathCaption",ExpressionUUID->"6fcf4f04-de52-4343-ae23-364630fd80d7",
+ CellID->1778008846],
+Cell[CellGroupData[{
+Cell[55506, 1115, 370, 9, 26, "Input",ExpressionUUID->"c00437d2-da38-483d-9b7c-d94e2dbc2caf",
+ CellID->759726717],
+Cell[55879, 1126, 1576, 50, 103, "Output",ExpressionUUID->"1aeefe52-5928-457d-8664-5cb1baee078d",
+ CellID->1494921890]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[57504, 1182, 183, 3, 39, "MathCaption",ExpressionUUID->"badef7bc-5e97-428c-ae1d-d670b367df92",
+ CellID->1936651204],
+Cell[CellGroupData[{
+Cell[57712, 1189, 441, 11, 26, "Input",ExpressionUUID->"c4e43955-8f0f-456b-b3a7-15b93cc8a79f",
+ CellID->2034631696],
+Cell[58156, 1202, 975, 30, 56, "Output",ExpressionUUID->"f55ea4bb-de8b-44ab-8c60-58b60a4d735c",
+ CellID->1741018977]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[59180, 1238, 217, 4, 55, "MathCaption",ExpressionUUID->"9c76e3f2-03e9-4412-ac28-5188633b705b",
+ CellID->1672803491],
+Cell[CellGroupData[{
+Cell[59422, 1246, 539, 14, 26, "Input",ExpressionUUID->"f519be22-a7ee-4dae-9bf4-811bab27b76e",
+ CellID->2099850360],
+Cell[59964, 1262, 1721, 54, 56, "Output",ExpressionUUID->"27395967-80e6-4a96-b605-e9341e0f62e2",
+ CellID->1841256064]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[61734, 1322, 172, 3, 39, "MathCaption",ExpressionUUID->"59e5f292-3cef-436e-ac1e-bf1203d45a08",
+ CellID->438745722],
+Cell[CellGroupData[{
+Cell[61931, 1329, 209, 5, 26, "Input",ExpressionUUID->"903f3d3c-aaf7-47de-9f8d-c68f63e88ae1",
+ CellID->1687989503],
+Cell[62143, 1336, 239, 4, 25, "Output",ExpressionUUID->"c652cd9a-0d22-4974-8c08-44f962c11ce3",
+ CellID->751314378]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[62419, 1345, 213, 5, 26, "Input",ExpressionUUID->"047e3828-2253-4ade-b9d9-c0c1e8f03b94",
+ CellID->1780600051],
+Cell[62635, 1352, 238, 4, 25, "Output",ExpressionUUID->"39d9f934-5e86-4678-bea1-691703691bf4",
+ CellID->136906686]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[62922, 1362, 231, 4, 55, "MathCaption",ExpressionUUID->"6ffdbaa7-37f7-4022-9029-0b30863f32e4",
+ CellID->1360436212],
+Cell[CellGroupData[{
+Cell[63178, 1370, 347, 7, 26, "Input",ExpressionUUID->"d3379397-d62b-4f6f-8ffe-e54ba9480bfb",
+ CellID->593025475],
+Cell[63528, 1379, 499, 13, 47, "Output",ExpressionUUID->"b6c79931-2c6c-436e-8435-71f5264dec6c",
+ CellID->1035685665]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[64064, 1397, 207, 5, 26, "Input",ExpressionUUID->"27086474-fcd1-453b-ad54-999e926cb563",
+ CellID->507552598],
+Cell[64274, 1404, 367, 8, 38, "Output",ExpressionUUID->"6b1a69d5-cd49-441f-bb75-6c8b6960d079",
+ CellID->1414012720]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[64714, 1420, 134, 1, 44, "Section",ExpressionUUID->"7fdce6d2-41bb-40fc-98ce-5d5088e99b9f",
+ CellID->631468702],
+Cell[64851, 1423, 540, 8, 97, "Text",ExpressionUUID->"dd3dbcc2-a7e6-401b-945b-b306db1618cc",
+ CellID->230291040],
+Cell[CellGroupData[{
+Cell[65416, 1435, 127, 1, 40, "Subsection",ExpressionUUID->"41c5037b-b32b-44d5-bd63-4000db163eb6",
+ CellID->735977386],
+Cell[CellGroupData[{
+Cell[65568, 1440, 286, 7, 26, "Input",ExpressionUUID->"184e6633-5a83-437d-998d-ec56cfc703c2",
+ CellID->66119782],
+Cell[65857, 1449, 4224, 109, 176, "Output",ExpressionUUID->"31270458-4ab9-4dad-bb52-c757fd42fbf8",
+ CellID->1257747338]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70130, 1564, 117, 1, 40, "Subsection",ExpressionUUID->"b75e061d-046a-43e5-96ec-e36630e4baa1",
+ CellID->1026130575],
+Cell[CellGroupData[{
+Cell[70272, 1569, 319, 5, 42, "Text",ExpressionUUID->"51b8119f-02c7-4c0b-8cbc-1241f64544ad",
+ CellID->1882888615],
+Cell[CellGroupData[{
+Cell[70616, 1578, 273, 7, 26, "Input",ExpressionUUID->"bdaf77ca-d9ad-45e7-aeca-ef0e443c45d0",
+ CellID->389930113],
+Cell[70892, 1587, 3414, 90, 143, "Output",ExpressionUUID->"2916056a-865c-4f24-899f-15e15d78f7cb",
+ CellID->1277972345]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[74367, 1684, 106, 1, 40, "Subsection",ExpressionUUID->"68024ddd-4c61-40a9-932f-aadb81fd7468",
+ CellID->1582802194],
+Cell[CellGroupData[{
+Cell[74498, 1689, 204, 4, 55, "MathCaption",ExpressionUUID->"9506d209-9d66-48ba-82a5-624bf6f23363",
+ CellID->1276539169],
+Cell[CellGroupData[{
+Cell[74727, 1697, 232, 6, 26, "Input",ExpressionUUID->"f04f953d-83a3-4b95-a17a-d04b4c11d441",
+ CellID->1432179853],
+Cell[74962, 1705, 991, 33, 45, "Output",ExpressionUUID->"c0b4ae64-0ae8-4898-9fae-ff6665c80cd8",
+ CellID->1897248768]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[75990, 1743, 235, 6, 26, "Input",ExpressionUUID->"5c105bc3-07ca-4ea0-8ed2-1f4207369ca8",
+ CellID->1650073795],
+Cell[76228, 1751, 1326, 43, 70, "Output",ExpressionUUID->"eca33486-d38a-41b4-8baf-df6e7fd949fb",
+ CellID->1222853120]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[77591, 1799, 231, 6, 26, "Input",ExpressionUUID->"e92113fb-72dc-42de-89e6-52519c14c787",
+ CellID->186455207],
+Cell[77825, 1807, 1040, 32, 57, "Output",ExpressionUUID->"baecb401-a712-498b-8b9c-2d6452b70e42",
+ CellID->1073886050]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[78902, 1844, 250, 6, 26, "Input",ExpressionUUID->"2aed004f-5d67-4d29-a073-38dc35e45d02",
+ CellID->574023076],
+Cell[79155, 1852, 496, 12, 25, "Output",ExpressionUUID->"6fd5e384-4a49-4b0e-8de5-8dbbf5a49813",
+ CellID->1350272962]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[79700, 1870, 244, 4, 55, "MathCaption",ExpressionUUID->"1c917a99-078d-417d-9e45-348a3b292a42",
+ CellID->1109296008],
+Cell[CellGroupData[{
+Cell[79969, 1878, 499, 14, 26, "Input",ExpressionUUID->"b3bed01a-7047-4e56-979d-87d7b3a7bfbb",
+ CellID->1632466849],
+Cell[80471, 1894, 1540, 48, 64, "Output",ExpressionUUID->"6627577b-a166-44bd-92b1-a403bd86ca54",
+ CellID->1577974485]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[82060, 1948, 312, 5, 71, "MathCaption",ExpressionUUID->"e9b5e18b-6c18-4950-a8e6-ec5cdf11d6ea",
+ CellID->619257071],
+Cell[CellGroupData[{
+Cell[82397, 1957, 499, 13, 26, "Input",ExpressionUUID->"c4e7d10b-edf5-44af-9de3-18c0bd90a0db",
+ CellID->1147838935],
+Cell[82899, 1972, 540, 14, 43, "Output",ExpressionUUID->"9efabf98-921a-42c6-a77d-0f3c2378def7",
+ CellID->1741612592]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[83476, 1991, 244, 6, 26, "Input",ExpressionUUID->"972bb5a9-1961-4341-8a8a-f5b652fcf3b4",
+ CellID->883379544],
+Cell[83723, 1999, 191, 3, 25, "Output",ExpressionUUID->"17c0a52d-140d-4710-848b-2d9b23175525",
+ CellID->1080725134]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[83963, 2008, 179, 3, 39, "MathCaption",ExpressionUUID->"2f683825-ce0b-4306-b231-19f91905df6a",
+ CellID->1405544297],
+Cell[CellGroupData[{
+Cell[84167, 2015, 500, 13, 26, "Input",ExpressionUUID->"d995a543-c2ff-455d-b784-e8568a45419a",
+ CellID->662882679],
+Cell[84670, 2030, 712, 18, 41, "Output",ExpressionUUID->"786fc511-b787-4dfb-9b4c-003a95102aad",
+ CellID->330640812]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[85419, 2053, 289, 7, 26, "Input",ExpressionUUID->"dc33d4fc-9ab0-492e-88bc-8d9f780404f9",
+ CellID->2071508964],
+Cell[85711, 2062, 295, 7, 26, "Output",ExpressionUUID->"a146f2f7-1978-49cd-94b6-72d17377c5cf",
+ CellID->1539932495]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[86079, 2077, 119, 1, 44, "Section",ExpressionUUID->"fc101cfa-d551-45cd-9a55-cec65c8a0adb",
+ CellID->1512484949],
+Cell[86201, 2080, 782, 12, 79, "Text",ExpressionUUID->"2d1faccf-b3c0-4db6-b9dd-3ea62b38f184",
+ CellID->802475777],
+Cell[CellGroupData[{
+Cell[87008, 2096, 166, 2, 40, "Subsection",ExpressionUUID->"b40c3b24-a7a5-4fc1-9475-d35d136fb6fa",
+ CellID->1013080879],
+Cell[CellGroupData[{
+Cell[87199, 2102, 335, 6, 24, "Text",ExpressionUUID->"c9799f84-eb15-4051-94f1-d580d1590466",
+ CellID->1599979937],
+Cell[87537, 2110, 636, 16, 24, "DisplayFormula",ExpressionUUID->"bc83cd52-ae0c-4519-b893-9dd5c8b1a80f",
+ CellID->72573425]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[88210, 2131, 331, 4, 24, "Text",ExpressionUUID->"05ed033f-033f-4e66-9cfd-a809d801faca",
+ CellID->2118326126],
+Cell[88544, 2137, 1186, 35, 52, "DisplayFormula",ExpressionUUID->"f9a1eca5-dd88-4191-9d86-8d0ffe6891bd",
+ CellID->1723299716]
+}, Open  ]],
+Cell[89745, 2175, 936, 25, 42, "Text",ExpressionUUID->"a61d5e2c-a941-4680-aa89-94fa7d399474",
+ CellID->386379723],
+Cell[CellGroupData[{
+Cell[90706, 2204, 260, 3, 24, "Text",ExpressionUUID->"94fb4dab-d1b3-44b4-94b0-5293d3306eac",
+ CellID->2040939580],
+Cell[90969, 2209, 884, 23, 25, "DisplayFormula",ExpressionUUID->"c6cf1b8b-94c0-4856-b2f2-fd00d143a0ea",
+ CellID->315227529]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[91890, 2237, 247, 3, 24, "Text",ExpressionUUID->"9bc8ab89-960b-41c6-82f9-4d5661b0c423",
+ CellID->186922754],
+Cell[92140, 2242, 1798, 51, 55, "DisplayFormula",ExpressionUUID->"76856cb9-b367-4339-9eee-de1486ae7024",
+ CellID->1989634564]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[93975, 2298, 315, 4, 24, "Text",ExpressionUUID->"36d3e2f4-d5fd-47d5-8361-e02fd98a83b3",
+ CellID->1320249711],
+Cell[94293, 2304, 1199, 30, 41, "DisplayFormula",ExpressionUUID->"c4b4f0c6-8161-4bab-8915-501534748517",
+ CellID->1635851973]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[95529, 2339, 234, 3, 24, "Text",ExpressionUUID->"4cd1f629-ae88-4239-9395-e8922c79d366",
+ CellID->1678461317],
+Cell[95766, 2344, 727, 17, 24, "DisplayFormula",ExpressionUUID->"a521e91c-4d57-48cb-9763-fd5289e2901a",
+ CellID->554167827]
+}, Open  ]],
+Cell[96508, 2364, 347, 6, 24, "Text",ExpressionUUID->"9f4f6c55-4905-4f19-8c36-e518ef7f78c0",
+ CellID->262091350],
+Cell[CellGroupData[{
+Cell[96880, 2374, 364, 7, 24, "Text",ExpressionUUID->"35ce2176-91ca-4341-a489-46e054802a49",
+ CellID->480359453],
+Cell[97247, 2383, 1032, 27, 43, "DisplayFormula",ExpressionUUID->"89407ae5-f7e2-469b-aa04-2bb0fe48803b",
+ CellID->1010297498]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[98316, 2415, 186, 2, 24, "Text",ExpressionUUID->"434bce7a-8988-40d3-95b2-b78a2c013149",
+ CellID->2064335704],
+Cell[98505, 2419, 1538, 47, 45, "DisplayFormula",ExpressionUUID->"67a38749-17b8-4355-8ea2-bd3c1a5c848c",
+ CellID->544376196]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[100080, 2471, 653, 12, 42, "Text",ExpressionUUID->"7b22e110-682e-4bfb-abac-0335b3eabfd1",
+ CellID->1050389952],
+Cell[100736, 2485, 1546, 38, 41, "DisplayFormula",ExpressionUUID->"9f9cf768-b7c0-459a-8213-3d9f008b8c0e",
+ CellID->1588344924]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[102319, 2528, 163, 2, 24, "Text",ExpressionUUID->"85901da2-f58f-4cc5-ae2e-88725c85d291",
+ CellID->2091405458],
+Cell[102485, 2532, 1119, 28, 43, "DisplayFormula",ExpressionUUID->"cc4c6fdc-35ea-4a2d-a874-f5224b0846f1",
+ CellID->239198510]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[103641, 2565, 206, 2, 24, "Text",ExpressionUUID->"db7962a0-8ae8-4cf2-a94e-f41415eccac0",
+ CellID->119970386],
+Cell[103850, 2569, 2849, 82, 99, "DisplayFormula",ExpressionUUID->"1be9e458-8910-42e7-9c0d-f48e79c29049",
+ CellID->2002616616]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[106736, 2656, 284, 5, 24, "Text",ExpressionUUID->"1791e7f8-0687-4c2b-9a56-8d49ddb4df78",
+ CellID->466265681],
+Cell[107023, 2663, 1165, 29, 41, "DisplayFormula",ExpressionUUID->"1f4fdb39-cadf-425e-a6a3-63c4f49f14d0",
+ CellID->359472664]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[108225, 2697, 237, 3, 24, "Text",ExpressionUUID->"5db06d71-3ae6-446e-ba27-c28f8f5c64a4",
+ CellID->785564837],
+Cell[108465, 2702, 1028, 25, 49, "DisplayFormula",ExpressionUUID->"f4402873-a1eb-47bc-a6ec-8677085cdcf8",
+ CellID->258753703]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[109554, 2734, 125, 1, 73, "TutorialMoreAboutSection",ExpressionUUID->"5dd6acce-8278-4927-b27c-4c6b2cf984dd",
+ CellID->168346996],
+Cell[109682, 2737, 295, 5, 23, "TutorialMoreAbout",ExpressionUUID->"9a2e59fa-d11f-49b4-be63-b4923e489521",
+ CellID->1171998673]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[110014, 2747, 129, 1, 73, "RelatedTutorialsSection",ExpressionUUID->"a2f4ef80-3b7d-4eff-bb6e-4233b2a190bc",
+ CellID->1061686827],
+Cell[110146, 2750, 294, 5, 23, "RelatedTutorials",ExpressionUUID->"d2521ead-5e50-4734-9306-3c10d89e28ef",
+ CellID->328878466],
+Cell[110443, 2757, 301, 5, 23, "RelatedTutorials",ExpressionUUID->"cd1d5930-7b52-49f0-922e-a009761ac595",
+ CellID->2026821214],
+Cell[110747, 2764, 363, 6, 23, "RelatedTutorials",ExpressionUUID->"0b39cad2-7a7d-4937-84ec-c8bfd3fdf167",
+ CellID->1957665206],
+Cell[111113, 2772, 304, 5, 23, "RelatedTutorials",ExpressionUUID->"f13de430-fd9c-4a1a-bc5b-5a0266929cf3",
+ CellID->941271174]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[111466, 2783, 109, 1, 71, "MetadataSection",ExpressionUUID->"26b0981d-28a0-4937-90d3-b54be40fde80",
+ CellID->53310644],
+Cell[111578, 2786, 478, 12, 25, "History",ExpressionUUID->"6be5c9ba-2a98-43bd-9b22-b39e756cce05",
+ CellID->491312909],
+Cell[CellGroupData[{
+Cell[112081, 2802, 122, 1, 20, "CategorizationSection",ExpressionUUID->"df88311c-fee1-4cb3-ac2f-91314beaeb55",
+ CellID->421438848],
+Cell[112206, 2805, 137, 2, 32, "Categorization",ExpressionUUID->"a124ad41-6450-4cb1-9d72-de22ab4ebe24",
+ CellID->721650530],
+Cell[112346, 2809, 137, 2, 32, "Categorization",ExpressionUUID->"600690a0-5ea2-4283-807c-2004cbea4712",
+ CellID->1940303101],
+Cell[112486, 2813, 134, 2, 32, "Categorization",ExpressionUUID->"0621fec0-8688-49a6-90b0-cd01ee70e916",
+ CellID->1135038812],
+Cell[112623, 2817, 151, 2, 32, "Categorization",ExpressionUUID->"e321953b-ee89-4827-8309-9e768f7b30c5",
+ CellID->500076983]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[112811, 2824, 111, 1, 30, "KeywordsSection",ExpressionUUID->"0efba3b0-4f98-438f-befa-722f362f8e7d",
+ CellID->1690342570],
+Cell[112925, 2827, 99, 1, 19, "Keywords",ExpressionUUID->"ce7716a5-7435-4ae1-8894-7dd768fbc754",
+ CellID->526407827]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

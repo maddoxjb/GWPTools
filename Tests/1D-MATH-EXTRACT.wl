@@ -2,8 +2,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 02-GWPEXTRACT.wl                                            *)
-(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* FILE        : 1D-MATH-EXTRACT.wl                                          *)
+(* DESCRIPTION : Tests Parameters section of GWPEngine1D.wl                  *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -28,63 +28,63 @@ VerificationTest[
 ]
 
 VerificationTest[
-  GWPRA@PARAM == RA, 
-  TestID -> "GWPEXTRACT-01-RA"
+  GWP1DRA@PARAM == RA, 
+  TestID -> "GWP1DEXTRACT-01-RA"
 ]
 
 VerificationTest[
-  GWPIA@PARAM == IA, 
-  TestID -> "GWPEXTRACT-02-IA"
+  GWP1DIA@PARAM == IA, 
+  TestID -> "GWP1DEXTRACT-02-IA"
 ]
 
 VerificationTest[
-  GWPRX@PARAM == RX, 
-  TestID -> "GWPEXTRACT-03-RX"
+  GWP1DRX@PARAM == RX, 
+  TestID -> "GWP1DEXTRACT-03-RX"
 ]
 
 VerificationTest[
-  GWPRP@PARAM == RP, 
-  TestID -> "GWPEXTRACT-04-RP"
+  GWP1DRP@PARAM == RP, 
+  TestID -> "GWP1DEXTRACT-04-RP"
 ]
 
 VerificationTest[
-  GWPRG@PARAM == RG, 
-  TestID -> "GWPEXTRACT-05-RG"
+  GWP1DRG@PARAM == RG, 
+  TestID -> "GWP1DEXTRACT-05-RG"
 ]
 
 VerificationTest[
-  GWPIG@PARAM == IG, 
-  TestID -> "GWPEXTRACT-06-IG"
+  GWP1DIG@PARAM == IG, 
+  TestID -> "GWP1DEXTRACT-06-IG"
 ]
 
 VerificationTest[
-  GWPNORM@PARAM == NORM, 
-  TestID -> "GWPEXTRACT-07-NORM"
+  GWP1DNORM@PARAM == NORM, 
+  TestID -> "GWP1DEXTRACT-07-NORM"
 ]
 
 VerificationTest[
-  GWPHBAR@PARAM == HBAR, 
-  TestID -> "GWPEXTRACT-08-HBAR"
+  GWP1DHBAR@PARAM == HBAR, 
+  TestID -> "GWP1DEXTRACT-08-HBAR"
 ]
 
 VerificationTest[
-  GWPMASS@PARAM == MASS, 
-  TestID -> "GWPEXTRACT-09-MASS"
+  GWP1DMASS@PARAM == MASS, 
+  TestID -> "GWP1DEXTRACT-09-MASS"
 ]
 
 VerificationTest[
-  GWPPECOEFF@PARAM == {V0, V1, V2}, 
-  TestID -> "GWPEXTRACT-10-PECOEFF"
+  GWP1DPECOEFF@PARAM == {V0, V1, V2}, 
+  TestID -> "GWP1DEXTRACT-10-PECOEFF"
 ]
 
 VerificationTest[
-  GWPINPUT@PARAM == INIT, 
-  TestID -> "GWPEXTRACT-11-INPUT"
+  GWP1DINPUT@PARAM == INIT, 
+  TestID -> "GWP1DEXTRACT-11-INPUT"
 ]
 
 VerificationTest[
-  GWPINIT@PARAM == {RA, IA, RX, RP, RG, IG},
-  TestID -> "GWPEXTRACT-12-INIT"
+  GWP1DINIT@PARAM == {RA, IA, RX, RP, RG, IG},
+  TestID -> "GWP1DEXTRACT-12-INIT"
 ]
 
 (* ========================================================== *)

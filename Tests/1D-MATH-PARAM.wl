@@ -2,8 +2,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 01-GWPAPARAM.wl                                             *)
-(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* FILE        : 1D-MATH-PARAM.wl                                            *)
+(* DESCRIPTION : Tests Parameters section of GWPEngine1D.wl                  *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -14,8 +14,8 @@ Needs["GWPTools`GWPDiagnostics`"]
 (* ========================================================== *)
 
 (* Store the function's definitions in a temporary variable and clear it *)
-storedGWP486 = DownValues[GWP486];
-Clear[GWP486];
+storedGWP1D486 = DownValues[GWP1D486];
+Clear[GWP1D486];
 
 (* Define sequence strings for MetaInformation and evaluate them *)
 ToExpression[STR1 = "OPT=Sequence[\"HBAR\"->HBAR,\"MASS\"->MASS]"];
@@ -30,32 +30,32 @@ ToExpression[STR6 = "ARG4=Sequence[AA,XX,PP,GG]"];
 (* ========================================================== *)
 
 VerificationTest[
-  GWPPARAM[ARG0] == GWP486[1/4, 0, 0, 0, 1, 1], 
-  TestID -> "GWPPARAM-01-Default", 
+  GWP1DPARAM[ARG0] == GWP1D486[1/4, 0, 0, 0, 1, 1], 
+  TestID -> "GWP1DPARAM-01-Default", 
   MetaInformation -> STR2
 ]
 
 VerificationTest[
-  GWPPARAM[ARG1] == GWP486[ARG1, 0, 0, 0, 1, 1], 
-  TestID -> "GWPPARAM-02-A", 
+  GWP1DPARAM[ARG1] == GWP1D486[ARG1, 0, 0, 0, 1, 1], 
+  TestID -> "GWP1DPARAM-02-A", 
   MetaInformation -> STR3
 ]
 
 VerificationTest[
-  GWPPARAM[ARG2] == GWP486[ARG2, 0, 0, 1, 1], 
-  TestID -> "GWPPARAM-03-AX", 
+  GWP1DPARAM[ARG2] == GWP1D486[ARG2, 0, 0, 1, 1], 
+  TestID -> "GWP1DPARAM-03-AX", 
   MetaInformation -> STR4
 ]
 
 VerificationTest[
-  GWPPARAM[ARG3] == GWP486[ARG3, 0, 1, 1], 
-  TestID -> "GWPPARAM-04-AXP", 
+  GWP1DPARAM[ARG3] == GWP1D486[ARG3, 0, 1, 1], 
+  TestID -> "GWP1DPARAM-04-AXP", 
   MetaInformation -> STR5
 ]
 
 VerificationTest[
-  GWPPARAM[ARG4] == GWP486[ARG4, 1, 1], 
-  TestID -> "GWPPARAM-05-AXPG", 
+  GWP1DPARAM[ARG4] == GWP1D486[ARG4, 1, 1], 
+  TestID -> "GWP1DPARAM-05-AXPG", 
   MetaInformation -> STR6
 ]
 
@@ -67,42 +67,42 @@ VerificationTest[
 ]
 
 VerificationTest[
-  GWPPARAM[ARG0, OPT] == GWP486[1/4, 0, 0, 0, HBAR, MASS], 
-  TestID -> "GWPPARAM-06-Default-Opts"
+  GWP1DPARAM[ARG0, OPT] == GWP1D486[1/4, 0, 0, 0, HBAR, MASS], 
+  TestID -> "GWP1DPARAM-06-Default-Opts"
 ]
 
 VerificationTest[
-  GWPPARAM[ARG1, OPT] == GWP486[ARG1, 0, 0, 0, HBAR, MASS], 
-  TestID -> "GWPPARAM-07-A-Opts"
+  GWP1DPARAM[ARG1, OPT] == GWP1D486[ARG1, 0, 0, 0, HBAR, MASS], 
+  TestID -> "GWP1DPARAM-07-A-Opts"
 ]
 
 VerificationTest[
-  GWPPARAM[ARG2, OPT] == GWP486[ARG2, 0, 0, HBAR, MASS], 
-  TestID -> "GWPPARAM-08-AX-Opts"
+  GWP1DPARAM[ARG2, OPT] == GWP1D486[ARG2, 0, 0, HBAR, MASS], 
+  TestID -> "GWP1DPARAM-08-AX-Opts"
 ]
 
 VerificationTest[
-  GWPPARAM[ARG3, OPT] == GWP486[ARG3, 0, HBAR, MASS], 
-  TestID -> "GWPPARAM-09-AXP-Opts"
+  GWP1DPARAM[ARG3, OPT] == GWP1D486[ARG3, 0, HBAR, MASS], 
+  TestID -> "GWP1DPARAM-09-AXP-Opts"
 ]
 
 VerificationTest[
-  GWPPARAM[ARG4, OPT] == GWP486[ARG4, HBAR, MASS], 
-  TestID -> "GWPPARAM-10-AXPG-Opts"
+  GWP1DPARAM[ARG4, OPT] == GWP1D486[ARG4, HBAR, MASS], 
+  TestID -> "GWP1DPARAM-10-AXPG-Opts"
 ]
 
 VerificationTest[
-  GWPPARAM[ARG0, "HBAR" -> {1, 2}] === $Failed, 
+  GWP1DPARAM[ARG0, "HBAR" -> {1, 2}] === $Failed, 
   True, 
-  {GWPPARAM::posval},
-  TestID -> "GWPPARAM-11-HBAR-List-Fail"
+  {GWP1DPARAM::posval},
+  TestID -> "GWP1DPARAM-11-HBAR-List-Fail"
 ]
 
 VerificationTest[
-  GWPPARAM[ARG0, "MASS" -> {1, 2}] === $Failed, 
+  GWP1DPARAM[ARG0, "MASS" -> {1, 2}] === $Failed, 
   True, 
-  {GWPPARAM::posval},
-  TestID -> "GWPPARAM-12-MASS-List-Fail"
+  {GWP1DPARAM::posval},
+  TestID -> "GWP1DPARAM-12-MASS-List-Fail"
 ]
 
 
@@ -111,9 +111,9 @@ VerificationTest[
 (* ========================================================== *)
 
 (* Put the definitions back! *)
-DownValues[GWP486] = storedGWP486;
+DownValues[GWP1D486] = storedGWP1D486;
 (* Remove the temporary storage variable completely *)
-Remove[storedGWP486];
+Remove[storedGWP1D486];
 
 (* Clear the values of dynamically generated strings and options *)
 ClearAll["STR*"];

@@ -2,8 +2,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 04-GWPASSUMPTIONS.wl                                        *)
-(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* FILE        : 1D-MATH-ASSUMPTIONS.wl                                      *)
+(* DESCRIPTION : Tests Parameters section of GWPEngine1D.wl                  *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -43,63 +43,63 @@ VerificationTest[True, TestID -> "Definition", MetaInformation -> DEF01]
 VerificationTest[True, TestID -> "Definition", MetaInformation -> DEF02]
 
 VerificationTest[
-  Simplify[COND01, GWPASSUMPTIONS[PAR, OPT]], 
-  TestID -> "GWPASSUMPTIONS-01-Variables", MetaInformation -> STR01
+  Simplify[COND01, GWP1DASSUMPTIONS[PAR, OPT]], 
+  TestID -> "GWP1DASSUMPTIONS-01-Variables", MetaInformation -> STR01
 ]
 
 VerificationTest[
-  Simplify[COND02, GWPASSUMPTIONS[PAR, OPT]], 
-  TestID -> "GWPASSUMPTIONS-02-Parameters", MetaInformation -> STR02
+  Simplify[COND02, GWP1DASSUMPTIONS[PAR, OPT]], 
+  TestID -> "GWP1DASSUMPTIONS-02-Parameters", MetaInformation -> STR02
 ]
 
 VerificationTest[
-  Simplify[COND03, GWPASSUMPTIONS[PAR, OPT]], 
-  TestID -> "GWPASSUMPTIONS-03-Opts", MetaInformation -> STR03
+  Simplify[COND03, GWP1DASSUMPTIONS[PAR, OPT]], 
+  TestID -> "GWP1DASSUMPTIONS-03-Opts", MetaInformation -> STR03
 ]
 
 VerificationTest[
-  Simplify[COND04, GWPASSUMPTIONS[PAR, OPT]], 
-  TestID -> "GWPASSUMPTIONS-04-e", MetaInformation -> STR04
+  Simplify[COND04, GWP1DASSUMPTIONS[PAR, OPT]], 
+  TestID -> "GWP1DASSUMPTIONS-04-e", MetaInformation -> STR04
 ]
 
 VerificationTest[
-  Simplify[COND05, GWPASSUMPTIONS[PAR, OPT]], 
-  TestID -> "GWPASSUMPTIONS-05-c", MetaInformation -> STR05
+  Simplify[COND05, GWP1DASSUMPTIONS[PAR, OPT]], 
+  TestID -> "GWP1DASSUMPTIONS-05-c", MetaInformation -> STR05
 ]
 
 VerificationTest[
-  Simplify[COND06, GWPASSUMPTIONS@GWPPARAM[{"Covariance", UX, COVXP}]], 
-  TestID -> "GWPASSUMPTIONS-06-UX", MetaInformation -> STR06
+  Simplify[COND06, GWP1DASSUMPTIONS@GWP1DPARAM[{"Covariance", UX, COVXP}]], 
+  TestID -> "GWP1DASSUMPTIONS-06-UX", MetaInformation -> STR06
 ]
 
 VerificationTest[
-  Simplify[COND07, GWPASSUMPTIONS@GWPPARAM[{"Covariance", UX, COVXP}]], 
-  TestID -> "GWPASSUMPTIONS-07-UX-COVXP", MetaInformation -> STR07
+  Simplify[COND07, GWP1DASSUMPTIONS@GWP1DPARAM[{"Covariance", UX, COVXP}]], 
+  TestID -> "GWP1DASSUMPTIONS-07-UX-COVXP", MetaInformation -> STR07
 ]
 
 VerificationTest[
-  Simplify[COND08, GWPASSUMPTIONS@GWPPARAM[{"Uncertainty", UX, UP, 1}]], 
-  TestID -> "GWPASSUMPTIONS-08-UX-UP", MetaInformation -> STR08
+  Simplify[COND08, GWP1DASSUMPTIONS@GWP1DPARAM[{"Uncertainty", UX, UP, 1}]], 
+  TestID -> "GWP1DASSUMPTIONS-08-UX-UP", MetaInformation -> STR08
 ]
 
 VerificationTest[
-  Simplify[COND09, GWPASSUMPTIONS@GWPPARAM[{"Uncertainty", UX, UP, 1}, "HBAR" -> HBAR]], 
-  TestID -> "GWPASSUMPTIONS-09-Uncertainty", MetaInformation -> STR09
+  Simplify[COND09, GWP1DASSUMPTIONS@GWP1DPARAM[{"Uncertainty", UX, UP, 1}, "HBAR" -> HBAR]], 
+  TestID -> "GWP1DASSUMPTIONS-09-Uncertainty", MetaInformation -> STR09
 ]
 
 VerificationTest[
-  Simplify[COND10, GWPASSUMPTIONS@GWPPARAM[1/4, 0, 0, {"Action", S}]], 
-  TestID -> "GWPASSUMPTIONS-10-Action", MetaInformation -> STR10
+  Simplify[COND10, GWP1DASSUMPTIONS@GWP1DPARAM[1/4, 0, 0, {"Action", S}]], 
+  TestID -> "GWP1DASSUMPTIONS-10-Action", MetaInformation -> STR10
 ]
 
 VerificationTest[
-  Simplify[COND11, GWPASSUMPTIONS@GWPPARAM[1/4, 0, 0, {"Coefficient", PHI, WT}]], 
-  TestID -> "GWPASSUMPTIONS-11-PhaseAmp", MetaInformation -> STR11
+  Simplify[COND11, GWP1DASSUMPTIONS@GWP1DPARAM[1/4, 0, 0, {"Coefficient", PHI, WT}]], 
+  TestID -> "GWP1DASSUMPTIONS-11-PhaseAmp", MetaInformation -> STR11
 ]
 
 VerificationTest[
-  Simplify[COND12, GWPASSUMPTIONS@GWPPARAM[1/4, 0, 0, {"Evolution", EN, TT}]], 
-  TestID -> "GWPASSUMPTIONS-12-EnergyTime", MetaInformation -> STR12
+  Simplify[COND12, GWP1DASSUMPTIONS@GWP1DPARAM[1/4, 0, 0, {"Evolution", EN, TT}]], 
+  TestID -> "GWP1DASSUMPTIONS-12-EnergyTime", MetaInformation -> STR12
 ]
 
 (* ---------------------------------------------------------- *)
@@ -107,13 +107,13 @@ VerificationTest[
 (* ---------------------------------------------------------- *)
 
 VerificationTest[
-  Simplify[COND13, GWPASSUMPTIONS@GWPPARAM[1/4, 0, 0, {"Action", S, MU}]], 
-  TestID -> "GWPASSUMPTIONS-13-MaslovReal", MetaInformation -> STR13
+  Simplify[COND13, GWP1DASSUMPTIONS@GWP1DPARAM[1/4, 0, 0, {"Action", S, MU}]], 
+  TestID -> "GWP1DASSUMPTIONS-13-MaslovReal", MetaInformation -> STR13
 ]
 
 VerificationTest[
-  Simplify[COND14, GWPASSUMPTIONS[GWPPARAM[1/4, 0, 0, {"Action", S, MU}], "IntegerVariables" -> MU]], 
-  TestID -> "GWPASSUMPTIONS-14-MaslovInteger", MetaInformation -> STR14
+  Simplify[COND14, GWP1DASSUMPTIONS[GWP1DPARAM[1/4, 0, 0, {"Action", S, MU}], "IntegerVariables" -> MU]], 
+  TestID -> "GWP1DASSUMPTIONS-14-MaslovInteger", MetaInformation -> STR14
 ]
 
 (* ---------------------------------------------------------- *)
@@ -123,15 +123,15 @@ VerificationTest[
 VerificationTest[True, TestID -> "Definition", MetaInformation -> DEF03]
 
 VerificationTest[
-  GWPASSUMPTIONS@NUM, 
-  TestID -> "GWPASSUMPTIONS-15-NumericFallback"
+  GWP1DASSUMPTIONS@NUM, 
+  TestID -> "GWP1DASSUMPTIONS-15-NumericFallback"
 ]
 
 VerificationTest[
-  GWPASSUMPTIONS[NUM, "RP2Sign" -> -1], 
+  GWP1DASSUMPTIONS[NUM, "RP2Sign" -> -1], 
   $Failed, 
-  {GWPASSUMPTIONS::rp2conflict}, 
-  TestID -> "GWPASSUMPTIONS-16-RP2Conflict"
+  {GWP1DASSUMPTIONS::rp2conflict}, 
+  TestID -> "GWP1DASSUMPTIONS-16-RP2Conflict"
 ]
 
 (* ========================================================== *)

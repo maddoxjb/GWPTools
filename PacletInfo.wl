@@ -1,8 +1,11 @@
+(* ::Package:: *)
+
 PacletObject[
     <|
         "Name" -> "GWPTools",
-        "Version" -> "0.0.1",
+        "Version" -> "1.0.0",
         "WolframVersion" -> "14.+",
+        "License" -> "MIT",
         "Extensions" ->
             {
                 {
@@ -13,6 +16,10 @@ PacletObject[
                 {
                     "Documentation",
                     "Language" -> "English"
+                },
+                {
+                    "Asset",
+                    "Assets" -> {{"Tests", "Tests"}}
                 }
             }
     |>

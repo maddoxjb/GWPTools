@@ -4,7 +4,7 @@
 (*GWPDiagnostics Package*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*BeginPackage*)
 
 
@@ -16,7 +16,6 @@
 
 BeginPackage["GWPTools`GWPDiagnostics`", {
   "GWPTools`",
-  "GWPTools`GWPEngine`",
   "GWPTools`GWPHydrodynamics`",
   "GWPTools`GWPDeveloper`"
 }]
@@ -87,7 +86,7 @@ GWPTestReport[keys___String, opts:OptionsPattern[]] := Module[
   ];
 
   (* 3. Find all .wl test files and extract base names *)
-  allFiles = FileNames["*.wl", testDir];
+  allFiles = FileNames["*.wl", testDir, Infinity];
   availableKeys = FileBaseName /@ allFiles;
   
   (* 4. BEHAVIOR: No Keys Provided -> Return a list of available tests *)

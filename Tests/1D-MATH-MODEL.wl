@@ -6,8 +6,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 07-GWPSYSTEMS.wl                                            *)
-(* DESCRIPTION : Tests Potential Models section of GWPDeveloper.wl           *)
+(* FILE        : 1D-MATH-MODEL.wl                                            *)
+(* DESCRIPTION : Tests Potential Models section of GWPEngine1D.wl            *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -20,28 +20,28 @@ Needs["GWPTools`GWPDiagnostics`"]
 (* Save the user's current global assumptions before modifying them *)
 $userAssumptions = $Assumptions;
 
-ToExpression[STR0 = "PAR=GWPPARAM[RA+I*IA,RX+I*IX,RP+I*IP,RG+I*IG,\"HBAR\"->HBAR,\"MASS\"->MASS]"];
-ToExpression[STR00 = "$Assumptions=GWPASSUMPTIONS[PAR,\"Time\"->t]"];
+ToExpression[STR0 = "PAR=GWP1DPARAM[RA+I*IA,RX+I*IX,RP+I*IP,RG+I*IG,\"HBAR\"->HBAR,\"MASS\"->MASS]"];
+ToExpression[STR00 = "$Assumptions=GWP1DASSUMPTIONS[PAR,\"Time\"->t]"];
 
 (* Explicitly define the internal mathematical potential signatures for the test generator *)
 systemTemplates = {
-  "FREE", 
-  "HO", 
-  "LINEAR[FK]", 
-  "HARMONIC[OMEGA]", 
-  "PARABOLIC[OMEGA]", 
-  "FHOLIN[OMEGA, AK]", 
-  "FHORES[OMEGA, AK]", 
-  "FHONON[OMEGA, AK, OMEGA1]"
+  "GWP1DFREE", 
+  "GWP1DHO", 
+  "GWP1DLINEAR[FK]", 
+  "GWP1DHARMONIC[OMEGA]", 
+  "GWP1DPARABOLIC[OMEGA]", 
+  "GWP1DFHOLIN[OMEGA, AK]", 
+  "GWP1DFHORES[OMEGA, AK]", 
+  "GWP1DFHONON[OMEGA, AK, OMEGA1]"
 };
 
 components = {
-  {"01-RA", "GWPRA", "GWPRATD"},
-  {"02-IA", "GWPIA", "GWPIATD"},
-  {"03-RX", "GWPRX", "GWPRXTD"},
-  {"04-RP", "GWPRP", "GWPRPTD"},
-  {"05-RG", "GWPRG", "GWPRGTD"},
-  {"06-IG", "GWPIG", "GWPIGTD"}
+  {"01-RA", "GWP1DRA", "GWP1DRATD"},
+  {"02-IA", "GWP1DIA", "GWP1DIATD"},
+  {"03-RX", "GWP1DRX", "GWP1DRXTD"},
+  {"04-RP", "GWP1DRP", "GWP1DRPTD"},
+  {"05-RG", "GWP1DRG", "GWP1DRGTD"},
+  {"06-IG", "GWP1DIG", "GWP1DIGTD"}
 };
 
 (* ========================================================== *)
@@ -57,10 +57,10 @@ sysIndex = 1;
 Do[
   Module[{sysName, sysStr, proxy, compID, func, funcTD, eqStr, idStr, metaStr, fullTestStr},
     
-    (* Extract the clean head name (e.g., "FHOLIN[OMEGA, AK]" -> "FHOLIN") *)
+    (* Extract the clean head name (e.g., "GWP1DFHOLIN[OMEGA, AK]" -> "FHOLIN") *)
     sysName = StringReplace[sysInput, "[" ~~ ___ ~~ "]" -> ""];
     
-    (* Construct the evaluation string (e.g., "FHOLIN[OMEGA, AK][t][PAR]") *)
+    (* Construct the evaluation string (e.g., "GWP1DFHOLIN[OMEGA, AK][t][PAR]") *)
     sysStr  = sysInput <> "[t][PAR]";
     
     proxy   = "SYS" <> ToString[sysIndex];

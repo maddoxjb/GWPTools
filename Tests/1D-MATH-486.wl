@@ -2,8 +2,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 05-GWP486.wl                                                *)
-(* DESCRIPTION : Tests Parameters section of GWPDeveloper.wl                 *)
+(* FILE        : 1D-MATH-486.wl                                              *)
+(* DESCRIPTION : Tests Parameters section of GWPEngine1D.wl                  *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -24,51 +24,51 @@ ToExpression[STR06 = "PE={0,0,0}"];
 ToExpression[STR07 = "INITVAR={RA1,IA1,RX1,IX1,RP1,IP1,RG1,IG1}"];
 
 (* ========================================================== *)
-(* GWP486 CORE ENGINE VERIFICATION TESTS                      *)
+(* GWP1D486 CORE ENGINE VERIFICATION TESTS                      *)
 (* ========================================================== *)
 
 VerificationTest[True, TestID -> "Definition", MetaInformation -> DEF01]
 
-VerificationTest[GWPRA@GWP486[ARG] == RA1, TestID -> "GWP486-01-RA2"]
-VerificationTest[GWPIA@GWP486[ARG] == IA1, TestID -> "GWP486-02-IA2"]
+VerificationTest[GWP1DRA@GWP1D486[ARG] == RA1, TestID -> "GWP1D486-01-RA2"]
+VerificationTest[GWP1DIA@GWP1D486[ARG] == IA1, TestID -> "GWP1D486-02-IA2"]
 
 VerificationTest[
-  Simplify[GWPRX@GWP486[ARG] - RX2] == 0, 
-  TestID -> "GWP486-03-RX2", MetaInformation -> STR01
+  Simplify[GWP1DRX@GWP1D486[ARG] - RX2] == 0, 
+  TestID -> "GWP1D486-03-RX2", MetaInformation -> STR01
 ]
 
 VerificationTest[
-  Simplify[GWPRP@GWP486[ARG] - RP2] == 0, 
-  TestID -> "GWP486-04-RP2", MetaInformation -> STR02
+  Simplify[GWP1DRP@GWP1D486[ARG] - RP2] == 0, 
+  TestID -> "GWP1D486-04-RP2", MetaInformation -> STR02
 ]
 
 VerificationTest[
-  Simplify[GWPRG@GWP486[ARG] - RG2] == 0, 
-  TestID -> "GWP486-05-RG2", MetaInformation -> STR03
+  Simplify[GWP1DRG@GWP1D486[ARG] - RG2] == 0, 
+  TestID -> "GWP1D486-05-RG2", MetaInformation -> STR03
 ]
 
 VerificationTest[
-  Simplify[GWPIG@GWP486[ARG] - IG2] == 0, 
-  TestID -> "GWP486-06-IG2", MetaInformation -> STR04
+  Simplify[GWP1DIG@GWP1D486[ARG] - IG2] == 0, 
+  TestID -> "GWP1D486-06-IG2", MetaInformation -> STR04
 ]
 
 VerificationTest[
-  Simplify[GWPNORM@GWP486[ARG] - NORM2] == 0, 
-  TestID -> "GWP486-07-NORM", MetaInformation -> STR05
+  Simplify[GWP1DNORM@GWP1D486[ARG] - NORM2] == 0, 
+  TestID -> "GWP1D486-07-NORM", MetaInformation -> STR05
 ]
 
 (* Completeness and Persistence Tests *)
-VerificationTest[GWPHBAR@GWP486[ARG] == HBAR, TestID -> "GWP486-08-HBAR"]
-VerificationTest[GWPMASS@GWP486[ARG] == MASS, TestID -> "GWP486-09-MASS"]
+VerificationTest[GWP1DHBAR@GWP1D486[ARG] == HBAR, TestID -> "GWP1D486-08-HBAR"]
+VerificationTest[GWP1DMASS@GWP1D486[ARG] == MASS, TestID -> "GWP1D486-09-MASS"]
 
 VerificationTest[
-  GWPPECOEFF@GWP486[ARG] == PE, 
-  TestID -> "GWP486-10-PECOEFF", MetaInformation -> STR06
+  GWP1DPECOEFF@GWP1D486[ARG] == PE, 
+  TestID -> "GWP1D486-10-PECOEFF", MetaInformation -> STR06
 ]
 
 VerificationTest[
-  GWPINPUT@GWP486[ARG] == INITVAR, 
-  TestID -> "GWP486-11-INPUT", MetaInformation -> STR07
+  GWP1DINPUT@GWP1D486[ARG] == INITVAR, 
+  TestID -> "GWP1D486-11-INPUT", MetaInformation -> STR07
 ]
 
 (* ========================================================== *)

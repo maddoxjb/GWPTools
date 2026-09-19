@@ -2,8 +2,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 09-GWPDENSITY.wl                                            *)
-(* DESCRIPTION : Tests Probabilities section of GWPDeveloper.wl              *)
+(* FILE        : 1D-MATH-DENSITY.wl                                          *)
+(* DESCRIPTION : Tests Probabilities section of GWPEngine1D.wl               *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -16,17 +16,17 @@ Needs["GWPTools`GWPDiagnostics`"]
 (* Save the user's current global assumptions before modifying them *)
 $userAssumptions = $Assumptions;
 
-ToExpression[DEF01 = "PAR=GWPPARAM[RA+I*IA,RX+I*IX,RP+I*IP,RG+I*IG,\"HBAR\"->HBAR,\"MASS\"->MASS]"];
+ToExpression[DEF01 = "PAR=GWP1DPARAM[RA+I*IA,RX+I*IX,RP+I*IP,RG+I*IG,\"HBAR\"->HBAR,\"MASS\"->MASS]"];
 (* --- Alternate faster testing sequences --- *)
-(* ToExpression[DEF01="PAR=GWPPARAM[RA+I*IA,RX,RP,RG+I*IG,\"HBAR\"->HBAR,\"MASS\"->MASS]"]; *)
-(* ToExpression[DEF01="PAR=GWPPARAM[RA,RX,RP,RG,\"HBAR\"->HBAR,\"MASS\"->MASS]"]; *)
-(* ToExpression[DEF01="PAR=GWPPARAM[\"HBAR\"->HBAR,\"MASS\"->MASS]"]; *)
+(* ToExpression[DEF01="PAR=GWP1DPARAM[RA+I*IA,RX,RP,RG+I*IG,\"HBAR\"->HBAR,\"MASS\"->MASS]"]; *)
+(* ToExpression[DEF01="PAR=GWP1DPARAM[RA,RX,RP,RG,\"HBAR\"->HBAR,\"MASS\"->MASS]"]; *)
+(* ToExpression[DEF01="PAR=GWP1DPARAM[\"HBAR\"->HBAR,\"MASS\"->MASS]"]; *)
 
-ToExpression[DEF02 = "$Assumptions=GWPASSUMPTIONS[PAR]"];
+ToExpression[DEF02 = "$Assumptions=GWP1DASSUMPTIONS[PAR]"];
 
-ToExpression[STR01 = "RHOX0=GWPRHOX[x][PAR]"];
-ToExpression[STR02 = "RHOP0=GWPRHOP[p][PAR]"];
-ToExpression[STR03 = "RHOE0=GWPRHOE[e][PAR]"];
+ToExpression[STR01 = "RHOX0=GWP1DRHOX[x][PAR]"];
+ToExpression[STR02 = "RHOP0=GWP1DRHOP[p][PAR]"];
+ToExpression[STR03 = "RHOE0=GWP1DRHOE[e][PAR]"];
 
 (* ========================================================== *)
 (* PROBABILITY DENSITY VERIFICATION TESTS                     *)
@@ -41,32 +41,32 @@ VerificationTest[True, TestID -> "Definition", MetaInformation -> DEF02]
 (* 2. Position Space Density                                  *)
 (* ---------------------------------------------------------- *)
 VerificationTest[
-  And @@ Table[Simplify[GWPRHOX[n][x][PAR] - D[RHOX0, {x, n}]] == 0, {n, 0, 6}],
-  TestID -> "GWPRHOX-01-Deriv", MetaInformation -> STR01
+  And @@ Table[Simplify[GWP1DRHOX[n][x][PAR] - D[RHOX0, {x, n}]] == 0, {n, 0, 6}],
+  TestID -> "GWP1DRHOX-01-Deriv", MetaInformation -> STR01
 ]
 VerificationTest[
   Simplify[Integrate[RHOX0, {x, -Infinity, Infinity}] - 1] == 0,
-  TestID -> "GWPRHOX-02-Norm"
+  TestID -> "GWP1DRHOX-02-Norm"
 ]
 VerificationTest[
-  Simplify[Integrate[x*RHOX0, {x, -Infinity, Infinity}] - (GWPRX[PAR])] == 0,
-  TestID -> "GWPRHOX-03-ExpX"
+  Simplify[Integrate[x*RHOX0, {x, -Infinity, Infinity}] - (GWP1DRX[PAR])] == 0,
+  TestID -> "GWP1DRHOX-03-ExpX"
 ]
 
 (* ---------------------------------------------------------- *)
 (* 3. Momentum Space Density                                  *)
 (* ---------------------------------------------------------- *)
 VerificationTest[
-  And @@ Table[Simplify[GWPRHOP[n][p][PAR] - D[RHOP0, {p, n}]] == 0, {n, 0, 6}],
-  TestID -> "GWPRHOP-01-Deriv", MetaInformation -> STR02
+  And @@ Table[Simplify[GWP1DRHOP[n][p][PAR] - D[RHOP0, {p, n}]] == 0, {n, 0, 6}],
+  TestID -> "GWP1DRHOP-01-Deriv", MetaInformation -> STR02
 ]
 VerificationTest[
   Simplify[Integrate[RHOP0, {p, -Infinity, Infinity}] - 1] == 0,
-  TestID -> "GWPRHOP-02-Norm"
+  TestID -> "GWP1DRHOP-02-Norm"
 ]
 VerificationTest[
-  Simplify[Integrate[p*RHOP0, {p, -Infinity, Infinity}] - (GWPRP[PAR])] == 0,
-  TestID -> "GWPRHOP-03-ExpP"
+  Simplify[Integrate[p*RHOP0, {p, -Infinity, Infinity}] - (GWP1DRP[PAR])] == 0,
+  TestID -> "GWP1DRHOP-03-ExpP"
 ]
 
 (* ---------------------------------------------------------- *)
@@ -78,16 +78,16 @@ $tempAssumptions = $Assumptions;
 $Assumptions = True;
 
 VerificationTest[
-  Simplify[Integrate[RHOE0, {e, 0, Infinity}, Assumptions -> GWPASSUMPTIONS[PAR, "RP2Sign" -> 0]] - 1] == 0,
-  TestID -> "GWPRHOE-01-Norm", MetaInformation -> STR03
+  Simplify[Integrate[RHOE0, {e, 0, Infinity}, Assumptions -> GWP1DASSUMPTIONS[PAR, "RP2Sign" -> 0]] - 1] == 0,
+  TestID -> "GWP1DRHOE-01-Norm", MetaInformation -> STR03
 ]
 VerificationTest[
-  Simplify[Integrate[RHOE0, {e, 0, Infinity}, Assumptions -> GWPASSUMPTIONS[PAR, "RP2Sign" -> 1]] - 1] == 0,
-  TestID -> "GWPRHOE-02-Norm"
+  Simplify[Integrate[RHOE0, {e, 0, Infinity}, Assumptions -> GWP1DASSUMPTIONS[PAR, "RP2Sign" -> 1]] - 1] == 0,
+  TestID -> "GWP1DRHOE-02-Norm"
 ]
 VerificationTest[
-  Simplify[Integrate[RHOE0, {e, 0, Infinity}, Assumptions -> GWPASSUMPTIONS[PAR, "RP2Sign" -> -1]] - 1] == 0,
-  TestID -> "GWPRHOE-03-Norm"
+  Simplify[Integrate[RHOE0, {e, 0, Infinity}, Assumptions -> GWP1DASSUMPTIONS[PAR, "RP2Sign" -> -1]] - 1] == 0,
+  TestID -> "GWP1DRHOE-03-Norm"
 ]
 
 $Assumptions = $tempAssumptions;

@@ -5,10 +5,14 @@
 *.mx
 
 # Ignore unreleased development subpackages
-Kernel/GWPSS.wl
+
+# Ignor build artifacts (compiled paclets)
+build/
 
 # Ignore all scratch work in Notebooks...
 Archive/*
-Develop/*
+Developer/*
 Notebooks/*
+
 # ...BUT explicitly allow these two specific examples to upload
+

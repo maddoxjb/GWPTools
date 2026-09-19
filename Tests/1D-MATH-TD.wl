@@ -2,8 +2,8 @@
 
 (* ========================================================================= *)
 (* TEST SUITE  : GWPTools (Version 1.0.0)                                    *)
-(* FILE        : 06-GWPTD.wl                                                 *)
-(* DESCRIPTION : Tests Potential Models section of GWPDeveloper.wl           *)
+(* FILE        : 1D-MATH-TD.wl                                               *)
+(* DESCRIPTION : Tests time derivatives section of GWPEngine1D.wl            *)
 (* ========================================================================= *)
 
 (* Load the Master Test Environment *)
@@ -32,33 +32,33 @@ ToExpression[STR08 = "FEXEQ = -V1 - 2*V2*x"];
 VerificationTest[True, TestID -> "Definition", MetaInformation -> DEF01]
 
 VerificationTest[
-  GWPRATD@PAR == DERIV1, 
-  TestID -> "GWPTD-01-RA", MetaInformation -> STR01
+  GWP1DRATD@PAR == DERIV1, 
+  TestID -> "GWP1DTD-01-RA", MetaInformation -> STR01
 ]
 
 VerificationTest[
-  GWPIATD@PAR == DERIV2, 
-  TestID -> "GWPTD-02-IA", MetaInformation -> STR02
+  GWP1DIATD@PAR == DERIV2, 
+  TestID -> "GWP1DTD-02-IA", MetaInformation -> STR02
 ]
 
 VerificationTest[
-  GWPRXTD@PAR == DERIV3, 
-  TestID -> "GWPTD-03-RX", MetaInformation -> STR03
+  GWP1DRXTD@PAR == DERIV3, 
+  TestID -> "GWP1DTD-03-RX", MetaInformation -> STR03
 ]
 
 VerificationTest[
-  GWPRPTD@PAR == DERIV4, 
-  TestID -> "GWPTD-04-RP", MetaInformation -> STR04
+  GWP1DRPTD@PAR == DERIV4, 
+  TestID -> "GWP1DTD-04-RP", MetaInformation -> STR04
 ]
 
 VerificationTest[
-  GWPRGTD@PAR == DERIV5, 
-  TestID -> "GWPTD-05-RG", MetaInformation -> STR05
+  GWP1DRGTD@PAR == DERIV5, 
+  TestID -> "GWP1DTD-05-RG", MetaInformation -> STR05
 ]
 
 VerificationTest[
-  GWPIGTD@PAR == DERIV6, 
-  TestID -> "GWPTD-06-IG", MetaInformation -> STR06
+  GWP1DIGTD@PAR == DERIV6, 
+  TestID -> "GWP1DTD-06-IG", MetaInformation -> STR06
 ]
 
 (* ========================================================== *)
@@ -69,28 +69,28 @@ VerificationTest[
 (* 1. External Potential Energy                               *)
 (* ---------------------------------------------------------- *)
 VerificationTest[
-  Simplify[GWPPEX[x][PAR] - PEXEQ] == 0,
-  TestID -> "GWPPEX-01-Definition", MetaInformation -> STR07
+  Simplify[GWP1DPEX[x][PAR] - PEXEQ] == 0,
+  TestID -> "GWP1DPEX-01-Definition", MetaInformation -> STR07
 ]
 VerificationTest[
-  And @@ Table[Simplify[GWPPEX[n][x][PAR] - D[PEXEQ, {x, n}]] == 0, {n, 0, 4}],
-  TestID -> "GWPPEX-02-Derivatives"
+  And @@ Table[Simplify[GWP1DPEX[n][x][PAR] - D[PEXEQ, {x, n}]] == 0, {n, 0, 4}],
+  TestID -> "GWP1DPEX-02-Derivatives"
 ]
 
 (* ---------------------------------------------------------- *)
 (* 2. External Force                                          *)
 (* ---------------------------------------------------------- *)
 VerificationTest[
-  Simplify[GWPFEX[x][PAR] - FEXEQ] == 0,
-  TestID -> "GWPFEX-01-Definition", MetaInformation -> STR08
+  Simplify[GWP1DFEX[x][PAR] - FEXEQ] == 0,
+  TestID -> "GWP1DFEX-01-Definition", MetaInformation -> STR08
 ]
 VerificationTest[
-  And @@ Table[Simplify[GWPFEX[n][x][PAR] - D[FEXEQ, {x, n}]] == 0, {n, 0, 4}],
-  TestID -> "GWPFEX-02-Derivatives"
+  And @@ Table[Simplify[GWP1DFEX[n][x][PAR] - D[FEXEQ, {x, n}]] == 0, {n, 0, 4}],
+  TestID -> "GWP1DFEX-02-Derivatives"
 ]
 VerificationTest[
-  And @@ Table[Simplify[GWPFEX[n][x][PAR] + GWPPEX[n + 1][x][PAR]] == 0, {n, 0, 4}],
-  TestID -> "GWPFEX-03-Relationship"
+  And @@ Table[Simplify[GWP1DFEX[n][x][PAR] + GWP1DPEX[n + 1][x][PAR]] == 0, {n, 0, 4}],
+  TestID -> "GWP1DFEX-03-Relationship"
 ]
 
 (* ========================================================== *)
