@@ -4,17 +4,21 @@
 (*GWPEngine2D Package*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*GWPDeveloper Usage Registration*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*BeginPackage*)
 
 
 (* --- 1. Hoist Usage Statements into the Developer Context --- *)
-Get["GWPTools`GWPDeveloper`"]
+Needs["GWPTools`GWPDeveloper`"]
 BeginPackage["GWPTools`GWPDeveloper`"]
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine2D] BeginPackage GWPDeveloper"]];
+
+Off[General::shdw];
 
 
 (* ::Subsection::Closed:: *)
@@ -108,7 +112,11 @@ GWP2DRHOX::usage = "GWP2DRHOX[x, y][param] evaluates the real-valued spatial pro
 (*EndPackage*)
 
 
-EndPackage[]
+Off[General::shdw];
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine2D] EndPackage GWPDeveloper"]];
+
+Quiet[EndPackage[], General::shdw]
 
 (* Scrub the Developer context from the global path immediately *)
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
@@ -124,7 +132,12 @@ $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 (* ========================================================================= *)
 
 BeginPackage["GWPTools`GWPEngine2D`"]
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine2D] BeginPackage"]];
+
 Begin["`Private`"]
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine2D] Begin Private"]];
 
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
@@ -527,10 +540,13 @@ GWPTools`GWPRegistry`GWPRegisterExtension[$reg2D];
 
 
 (* --- End "GWPTools`GWPEngine2D`Private`" --- *)
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine2D] End Private"]];
 End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPEngine2D`*"]], {ReadProtected}];
 
 (* --- End "GWPTools`GWPEngine2D`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine2D] EndPackage"]];
 EndPackage[]

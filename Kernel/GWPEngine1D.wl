@@ -13,8 +13,13 @@
 
 
 (* --- Hoist Usage Statements into the Developer Context --- *)
-Get["GWPTools`GWPDeveloper`"];
+Needs["GWPTools`GWPDeveloper`"];
 BeginPackage["GWPTools`GWPDeveloper`"]
+
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] BeginPackage GWPDeveloper"]];
+
+Off[General::shdw];
 
 
 (* ::Subsection::Closed:: *)
@@ -28,9 +33,7 @@ BeginPackage["GWPTools`GWPDeveloper`"]
 GWP1DARG::usage = "GWP1DARG is the developer macro for the parameter sequence pattern.";
 GWP1DVAL::usage = "GWP1DVAL is the developer macro for the parameter sequence values.";
 
-
-GWP1DScalarQ::usage="GWP1DScalarQ[exp] returns True if exp is a scalar symbol or number."
-
+GWP1DScalarQ::usage="GWP1DScalarQ[exp] returns True if exp is a scalar symbol or number.";
 
 (* --- GWP1D Parameter Generation --- *)
 GWP1DPARAM::usage = "GWP1DPARAM[A, X, P, G] returns a sequence of GWP1D parameters.\n" <>
@@ -92,7 +95,6 @@ GWP1DIATD::usage = "GWP1DIATD[param] computes the time derivative of the imagina
 GWP1DRGTD::usage = "GWP1DRGTD[param] computes the time derivative of the real phase parameter.";
 GWP1DIGTD::usage = "GWP1DIGTD[param] computes the time derivative of the imaginary phase parameter.";
 
-
 (* --- GWP1D Potential Models --- *) 
 GWP1DFREE::usage = "GWP1DFREE[t][param] evaluates the free particle parameters.";
 GWP1DHO::usage = "GWP1DHO[t][param] evaluates the standard harmonic oscillator parameters.";
@@ -117,7 +119,6 @@ GWP1DFEX::usage = "GWP1DFEX[x][param] evaluates the external force.\n" <>
 
 (* --- Recursion Relation for Wavefunctions and Densities --- *)
 GWP1DHermiteEngine::usage = "GWP1DHermiteEngine[n, p1, coeff] generates the nth-order polynomial factor for the generalized Gaussian wavepacket spatial derivatives by implementing a three-term Hermite recurrence relation.";
-
 
 (* --- x-Space Wavefunctions ---*)
 GWP1DPSIX::usage = "GWP1DPSIX[x][param] evaluates the x-space wavefunction.\n" <>
@@ -232,7 +233,11 @@ GWP1DUTE::usage = "GWP1DUTE[param] evaluates the total energy uncertainty.";
 (*End Package*)
 
 
-EndPackage[]
+Off[General::shdw];
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] EndPackage GWPDeveloper"]];
+
+Quiet[EndPackage[], General::shdw]
 
 (* Scrub the Developer context from the global path immediately *)
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
@@ -251,7 +256,11 @@ $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 (* --- Open the Actual Engine Package --- *)
 BeginPackage["GWPTools`GWPEngine1D`"]
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] BeginPackage"]];
+
 Begin["`Private`"]
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] Begin Private"]];
 
 (* Load dependencies strictly internally *)
 Needs["GWPTools`GWPDeveloper`"];
@@ -1289,10 +1298,12 @@ GWPTools`GWPDeveloper`GWP1DUI[data_] := Module[
 
 
 (* --- End "GWPTools`GWPEngine1D`Private`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] End Private"]];
 End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPEngine1D`*"]], {ReadProtected}];
 
 (* --- End "GWPTools`GWPEngine1D`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] EndPackage"]];
 EndPackage[]

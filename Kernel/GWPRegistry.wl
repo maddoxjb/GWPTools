@@ -13,6 +13,7 @@
 (* DESCRIPTION : Tools for property and potential model registration.        *)
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPRegistry`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPRegistry] BeginPackage"]];
 
 (* --- Usage Statements --- *)
 $GWPRegistry::usage = "$GWPRegistry is a flat list storing the raw registration chunks for all active physical properties.";
@@ -24,6 +25,7 @@ GWPRegisterExtension::usage = "GWPRegisterExtension[chunk] parses a formatted li
 GWPRegisterPotentials::usage = "GWPRegisterPotentials[potChunk, type] parses a formatted list of potential models (a potential chunk) and injects them into the unified $GWPPotentials database for the specified engine type.";
 
 Begin["`Private`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPRegistry] Begin Private"]];
 
 
 (* ::Section::Closed:: *)
@@ -96,10 +98,12 @@ GWPRegisterPotentials[potChunk_List, type_String] := Module[{},
 
 
 (* --- End "GWPTools`GWPRegistry`Private`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPRegistry] End Private"]];
 End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPRegistry`*"]], {ReadProtected}];
 
 (* --- End "GWPTools`GWPRegistry`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPRegistry] EndPackage"]];
 EndPackage[]

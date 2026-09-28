@@ -3,8 +3,11 @@
 (* ========================================================================= *)
 (* Usage Registration (Symbol Hoisting)                                      *)
 (* ========================================================================= *)
-Get["GWPTools`GWPDeveloper`"];
+Needs["GWPTools`GWPDeveloper`"];
 BeginPackage["GWPTools`GWPDeveloper`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineCT] BeginPackage GWPDeveloper"]];
+Off[General::shdw];
+
   (* Parameter Bus Macros *)
   GWPCTARG::usage = "Macro for Classical Trajectory argument pattern.";
   GWPCTVAL::usage = "Macro for Classical Trajectory values.";
@@ -22,14 +25,19 @@ BeginPackage["GWPTools`GWPDeveloper`"]
   (* Potentials *)
   GWPCTFREE::usage     = "Propagator for a classical free particle.";
   GWPCTHARMONIC::usage = "Propagator for a classical harmonic oscillator.";
-EndPackage[]
+  
+Off[General::shdw];
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineCT] EndPackage GWPDeveloper"]];
+Quiet[EndPackage[], General::shdw]
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 (* ========================================================================= *)
 (* Private Engine Logic & Registration                                       *)
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPEngineCT`"];
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineCT] BeginPackage"]];
 Begin["`Private`"];
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineCT] Begin Private"]];
   Needs["GWPTools`GWPDeveloper`"];
   Needs["GWPTools`GWPRegistry`"];
 
@@ -96,9 +104,11 @@ Begin["`Private`"];
   };
   GWPRegisterPotentials[$ctPot, "CT"];
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineCT] End Private"]];
 End[];
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPEngineCT`*"]], {ReadProtected}];
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineCT] EndPackage"]];
 EndPackage[];

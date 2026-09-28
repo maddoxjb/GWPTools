@@ -9,11 +9,13 @@
 
 
 BeginPackage["GWPTools`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPDispatcher] BeginPackage GWPTools"]];
 
 (* --- Usage Statements --- *)
 GWP::usage = "GWP[type][parameters, options] returns a GWPObject representing a Gaussian wavepacket with the specified type, parameters, and options.";
 GWPObject::usage = "GWPObject[...] represents the wavepacket data structure.";
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPDispatcher] EndPackage GWPTools"]];
 EndPackage[]
 
 
@@ -28,7 +30,10 @@ EndPackage[]
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPDispatcher`"]
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPDispatcher] BeginPackage"]];
+
 Begin["`Private`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPDispatcher] Begin Private"]];
 
 Needs["GWPTools`"];
 Needs["GWPTools`GWPRegistry`"];
@@ -510,6 +515,7 @@ GWPPropertyDispatch[class_, macro_, type_, data_, badArgs___] := (
 
 
 (* --- End "GWPTools`GWPDispatcher`Private`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPDispatcher] End Private"]];
 End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
@@ -519,4 +525,5 @@ SetAttributes[GWP, {ReadProtected}];
 SetAttributes[GWPObject, {ReadProtected}];
 
 (* --- End "GWPTools`GWPDispatcher`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPDispatcher] EndPackage"]];
 EndPackage[]

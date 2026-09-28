@@ -14,15 +14,14 @@
 (*               Houses the universal parameter dictionary and usage tables. *)
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPDeveloper`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPDeveloper] BeginPackage"]];
 
+(* Suppress parse-time shadowing warnings for same-cell evaluations *)
+Off[General::shdw];
 
 
 (* ::Section::Closed:: *)
 (*Usage Statements*)
-
-
-(* ::Subsection::Closed:: *)
-(*Universal Parameters*)
 
 
 (* ========================================================================= *)
@@ -86,11 +85,6 @@ V20::usage = "V20 2D potential coefficient (x^2 term).";
 V02::usage = "V02 2D potential coefficient (y^2 term).";
 V11::usage = "V11 2D potential coefficient (xy term).";
 
-
-(* ::Subsection::Closed:: *)
-(*Utilities*)
-
-
 (* ========================================================================= *)
 (* DEVELOPER UTILITIES                                                       *)
 (* ========================================================================= *)
@@ -104,8 +98,15 @@ GWP1DScalarQ::usage = "GWP1DScalarQ[exp] returns True if exp is a scalar symbol 
 (*Private*)
 
 
+(* Restore the global message state immediately *)
+On[General::shdw];
+
+
 (* --- Private --- *)
 Begin["`Private`"]
+
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPDeveloper] Begin Private"]];
 
 
 (* ::Section::Closed:: *)
@@ -168,9 +169,13 @@ GWPUsageTable[symbs_List, opts : OptionsPattern[]] :=
 (*End*)
 
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPDeveloper] End Private"]];
+
 End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPDeveloper`*"]], {ReadProtected}];
 
-EndPackage[]
+If[TrueQ[Global`$GWPDebug], Print["[GWPDeveloper] EndPackage"]];
+
+Quiet[EndPackage[], General::shdw]

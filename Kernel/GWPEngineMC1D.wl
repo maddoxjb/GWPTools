@@ -1,7 +1,9 @@
 (* ::Package:: *)
 
-Get["GWPTools`GWPDeveloper`"]
+Needs["GWPTools`GWPDeveloper`"]
 BeginPackage["GWPTools`GWPDeveloper`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineMC1D] BeginPackage GWPDeveloper"]];
+Off[General::shdw];
 
 (* --- MC1D Parameter Bus & Macros --- *)
 GWPMC1DARG::usage = "Sequence macro for MC1D parameters.";
@@ -29,13 +31,17 @@ GWPMC1DEVOLVE::usage = "Applies a system dynamics function to a multi-component 
 GWPMC1DFREE::usage = "Free particle parameters.";
 GWPMC1DHO::usage = "Harmonic oscillator parameters.";
 
-EndPackage[]
+Off[General::shdw];
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineMC1D] EndPackage GWPDeveloper"]];
+Quiet[EndPackage[], General::shdw]
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
 BeginPackage["GWPTools`GWPEngineMC1D`"]
-
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineMC1D] BeginPackage"]];
 Begin["`Private`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineMC1D] Begin Private"]];
+
 Needs["GWPTools`GWPEngine1D`"];
 Needs["GWPTools`GWPEngineSS1D`"];
 
@@ -269,8 +275,14 @@ GWPTools`GWPRegistry`GWPRegisterPotentials[$potentialsMC1D, "MC1D"];
 GWPTools`GWPRegistry`GWPRegisterExtension[$regMC1D];
 
 
-End[];
+(* --- End "GWPTools`GWPEngineMC1D`Private`" --- *)
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineMC1D] End Private"]];
+End[]
+
+(* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPEngineMC1D`*"]], {ReadProtected}];
 
+(* --- End "GWPTools`GWPEngineMC1D`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineMC1D] EndPackage"]];
 EndPackage[]

@@ -4,15 +4,21 @@
 (*GWPPhaseSpace1D Package*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*GWPDeveloper Usage Registration*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*BeginPackage*)
 
 
+Needs["GWPTools`GWPDeveloper`"];
 BeginPackage["GWPTools`GWPDeveloper`"]
+
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPPhaseSpace1D] BeginPackage GWPDeveloper"]];
+
+Off[General::shdw];
 
 
 (* ::Subsection::Closed:: *)
@@ -29,16 +35,21 @@ GWP1DPURITY::usage = "GWP1DPURITY[param] evaluates the state purity.";
 GWP1DVONNEUMANN::usage = "GWP1DVONNEUMANN[param] evaluates the von Neumann entropy.";
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*End*)
 
 
-EndPackage[]
+Off[General::shdw];
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPPhaseSpace1D] EndPackage GWPDeveloper"]];
+
+Quiet[EndPackage[], General::shdw]
+
+(* Scrub the Developer context from the global path immediately *)
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*BeginPackage*)
 
 
@@ -47,9 +58,9 @@ $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 (* DESCRIPTION : 1D Phase space functions for the GWPTools framework.        *)
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPPhaseSpace1D`"]
-
+If[TrueQ[Global`$GWPDebug], Print["[GWPPhaseSpace1D] BeginPackage"]];
 Begin["`Private`"]
-
+If[TrueQ[Global`$GWPDebug], Print["[GWPPhaseSpace1D] Begin Private"]];
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
 Needs["GWPTools`GWPEngine1D`"];
@@ -110,10 +121,14 @@ $regPhaseSpace1D = Join[#, {"PhaseSpace", "1D"}] & /@ {
 GWPTools`GWPRegistry`GWPRegisterExtension[$regPhaseSpace1D];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*End*)
 
 
+(* --- End "GWPTools`GWPPhaseSpace1D`Private`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPPhaseSpace1D] End Private"]];
 End[];
 SetAttributes[Evaluate[Names["GWPTools`GWPPhaseSpace1D`*"]], {ReadProtected}];
+(* --- End "GWPTools`GWPPhaseSpace1D`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPPhaseSpace1D] EndPackage"]];
 EndPackage[]

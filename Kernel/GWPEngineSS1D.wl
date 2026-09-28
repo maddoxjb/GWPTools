@@ -4,16 +4,21 @@
 (*GWPEngineSS1D Package*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*GWPDeveloper Usage Registration*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*BeginPackage*)
 
 
-Get["GWPTools`GWPDeveloper`"]
+Needs["GWPTools`GWPDeveloper`"]
 BeginPackage["GWPTools`GWPDeveloper`"]
+
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineSS1D] BeginPackage GWPDeveloper"]];
+
+Off[General::shdw];
 
 
 (* ::Subsection::Closed:: *)
@@ -78,11 +83,17 @@ GWPSS1DFHONON::usage = "GWPSS1DFHONON[omega, A, omega1][t][param] evaluates the 
 (*End*)
 
 
-EndPackage[]
+Off[General::shdw];
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineSS1D] EndPackage GWPDeveloper"]];
+
+Quiet[EndPackage[], General::shdw]
+
+(* Scrub the Developer context from the global path immediately *)
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*BeginPackage*)
 
 
@@ -91,9 +102,9 @@ $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 (* DESCRIPTION : 1D Superposition of GWPs for the GWPTools framework.        *)
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPEngineSS1D`"]
-
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineSS1D] BeginPackage"]];
 Begin["`Private`"]
-
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineSS1D] Begin Private"]];
 (* LOAD DEPENDENCIES INTERNALLY *)
 Needs["GWPTools`GWPEngine1D`"];
 
@@ -335,10 +346,13 @@ GWPTools`GWPDeveloper`GWPSS1DUI[data_] := Module[
 
 
 (* --- End "GWPTools`GWPEngineSS1D`Private`" --- *)
-End[];
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineSS1D] End Private"]];
+End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPEngineSS1D`*"]], {ReadProtected}];
 
 (* --- End "GWPTools`GWPEngineSS1D`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineSS1D] EndPackage"]];
 EndPackage[]

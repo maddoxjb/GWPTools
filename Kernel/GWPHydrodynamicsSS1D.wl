@@ -4,15 +4,21 @@
 (*GWPHydrodynamicsSS1D Package*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*GWPDeveloper Usage Registration*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*BeginPackage*)
 
 
+Needs["GWPTools`GWPDeveloper"];
 BeginPackage["GWPTools`GWPDeveloper`"]
+
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodyanamicsSS1D] BeginPackage GWPDeveloper"]];
+
+Off[General::shdw];
 
 
 (* ::Subsection::Closed:: *)
@@ -28,12 +34,17 @@ GWPSS1DQFX::usage = "GWPSS1DQFX[x][superParam] evaluates the quantum force for t
 (*End*)
 
 
-EndPackage[]
+Off[General::shdw];
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] EndPackage GWPDeveloper"]];
+
+Quiet[EndPackage[], General::shdw]
+
+(* Scrub the Developer context from the global path immediately *)
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*BeginPackage*)
 
 
@@ -43,9 +54,9 @@ $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 (*               the GWPTools framework.                                     *)
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPHydrodynamicsSS1D`"]
-
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] BeginPackage"]];
 Begin["`Private`"]
-
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] Begin Private"]];
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
 Needs["GWPTools`GWPEngine1D`"];
@@ -100,15 +111,17 @@ $regHydroXSS1D = Join[#, {"HydrodynamicsX", "SS1D"}] & /@ {
 GWPTools`GWPRegistry`GWPRegisterExtension[$regHydroXSS1D];
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*End*)
 
 
 (* --- End "GWPTools`GWPHydrodynamicsSS1D`Private`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] End Private"]];
 End[];
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPHydrodynamicsSS1D`*"]], {ReadProtected}];
 
 (* --- End "GWPTools`GWPHydrodynamicsSS1D" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] EndPackage"]];
 EndPackage[]

@@ -4,15 +4,18 @@
 (*GWPHydrodynamics1D Package*)
 
 
-(* ::Section::Closed:: *)
+(* ::Section:: *)
 (*GWPDeveloper Usage Declarations*)
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*BeginPackage*)
 
 
+Needs["GWPTools`GWPDeveloper`"];
 BeginPackage["GWPTools`GWPDeveloper`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics1D] BeginPackage GWPDeveloper"]];
+Off[General::shdw];
 
 
 (* ::Subsection::Closed:: *)
@@ -116,9 +119,14 @@ GWP1DTEDC::usage = "GWP1DTEDC[c][param] evaluates the C-space total energy densi
 (*End*)
 
 
-EndPackage[]
+Off[General::shdw];
 
-$ContextPath = DeleteCases[$ContextPath, "GWPToolsGWPDeveloper"];
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics1D] EndPackage GWPDeveloper"]];
+
+Quiet[EndPackage[], General::shdw]
+
+(* Scrub the Developer context from the global path immediately *)
+$ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
 (* ::Section::Closed:: *)
@@ -131,7 +139,9 @@ $ContextPath = DeleteCases[$ContextPath, "GWPToolsGWPDeveloper"];
 (*               trajectories for the GWPTools framework.                    *)
 (* ========================================================================= *)
 BeginPackage["GWPTools`GWPHydrodynamics1D`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics1D] BeginPackage"]];
 Begin["`Private`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics1D] Begin Private"]];
 
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
@@ -356,11 +366,14 @@ GWPTools`GWPRegistry`GWPRegisterExtension[Join[$regHydroExp1D, $regHydroX1D, $re
 (*End*)
 
 
-(* --- End "GWPTools`GWPHydrodynamics1D`Private`" --- *)
-End[];
+(* --- End "GWPTools`GWPHydrodynammics1D`Private`" --- *)
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics1D] End Private"]];
+End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPHydrodynamics1D`*"]], {ReadProtected}];
 
 (* --- End "GWPTools`GWPHydrodynamics1D`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics1D] EndPackage"]];
 EndPackage[]

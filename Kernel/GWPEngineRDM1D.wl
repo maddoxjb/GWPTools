@@ -4,8 +4,13 @@
 (**)
 
 
-Get["GWPTools`GWPDeveloper`"]
+Needs["GWPTools`GWPDeveloper`"]
 BeginPackage["GWPTools`GWPDeveloper`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] BeginPackage GWPDeveloper"]];
+
+Off[General::shdw];
+
+
 GWPRDM1DARG::usage = "Sequence macro for RDM1D parameters.";
 GWPRDM1DVAL::usage = "Sequence macro for RDM1D evaluated parameters.";
 GWPRDM1DPARAM::usage = "Generates a sequence of parameters for a Gaussian Reduced Density Matrix.";
@@ -39,12 +44,18 @@ GWPRDM1DHARMONICCL::usage = "GWPRDM1DHARMONICCL[omega, gamma, kT][t][param] eval
 
 GWPRDM1DRHOXX::usage = "Evaluates the spatial density matrix rho(x, y).";
 GWPRDM1DRHOX::usage = "Evaluates the diagonal probability density rho(x, x).";
-EndPackage[]
+
+Off[General::shdw];
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] EndPackage GWPDeveloper"]];
+Quiet[EndPackage[], General::shdw]
 
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 BeginPackage["GWPTools`GWPEngineRDM1D`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] BeginPackage"]];
+
 Begin["`Private`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] Begin Private"]];
 
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
@@ -277,5 +288,17 @@ $potentialsRDM1D = {
 
 GWPTools`GWPRegistry`GWPRegisterPotentials[$potentialsRDM1D, "RDM1D"];
 GWPTools`GWPRegistry`GWPRegisterExtension[$regRDM1D];
-End[];
+
+
+
+(* --- End "GWPTools`GWPEngineRDM1D`Private`" --- *)
+
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] End Private"]];
+End[]
+
+(* Hide internal code for all Developer functions from the ? menu *)
+SetAttributes[Evaluate[Names["GWPTools`GWPEngineRDM1D`*"]], {ReadProtected}];
+
+(* --- End "GWPTools`GWPEngineRDM1D`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] EndPackage"]];
 EndPackage[]
