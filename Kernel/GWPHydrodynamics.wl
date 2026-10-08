@@ -1,33 +1,58 @@
 (* ::Package:: *)
 
+(* ::Title:: *)
+(*GWPHydrodynamics Package*)
+
+
+(* ::Section::Closed:: *)
+(*BeginPackage*)
+
+
 (* ========================================================================= *)
 (* PACKAGE     : GWPTools`GWPHydrodynamics`                                  *)
-(* DESCRIPTION : Master orchestrator for Quantum Fluid Dynamics extensions.  *)
-(*               Dynamically loads subpackages based on active GWP engines.  *)
+(* DESCRIPTION : Master orchestrator for Quantum Hydrodynamics extensions.   *)
 (* ========================================================================= *)
 
 BeginPackage["GWPTools`GWPHydrodynamics`"]
-(* You can place general Master Usage statements here if needed, or leave blank *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics] BeginPackage"]];
 
 Begin["`Private`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics] Begin Private"]];
 
-(* Helper to safely load a subpackage if its parent engine is active *)
+Needs["GWPTools`"];
+Needs["GWPTools`GWPRegistry`"];
+
+
+(* ::Section::Closed:: *)
+(*Load Engine Extensions*)
+
+
 LoadHydroExtension[type_, context_] := Module[{engineParamSymbol, packagePath},
-  (* We check if the engine's core parameter builder exists in the kernel *)
   engineParamSymbol = "GWPTools`GWPDeveloper`GWP" <> type <> "PARAM";
-  
   If[NameQ[engineParamSymbol],
     packagePath = "GWPTools`" <> context <> "`";
+    If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics] Loading Extension: ", packagePath]];
     Quiet[Needs[packagePath]];
   ]
 ];
 
-(* Dynamically load available hydrodynamics modules *)
 LoadHydroExtension["1D", "GWPHydrodynamics1D"];
 LoadHydroExtension["SS1D", "GWPHydrodynamicsSS1D"];
-(*
+LoadHydroExtension["MC1D", "GWPHydrodynamicsMC1D"];
 LoadHydroExtension["2D", "GWPHydrodynamics2D"];
-*)
 
+
+(* ::Section::Closed:: *)
+(*End*)
+
+
+(* --- End "GWPTools`GWPHydrodynamics`Private`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics] End Private"]];
 End[]
+
+(* Hide internal code for all Developer functions from the ? menu *)
+SetAttributes[Evaluate[Names["GWPTools`GWPHydrodynamics`*"]], {ReadProtected}];
+
+(* --- End "GWPTools`GWPHydrodynamics`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics] EndPackage"]];
 EndPackage[]

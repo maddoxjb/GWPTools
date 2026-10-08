@@ -4,11 +4,11 @@
 (*GWPEngineSS1D Package*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*GWPDeveloper Usage Registration*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*BeginPackage*)
 
 
@@ -32,15 +32,7 @@ Off[General::shdw];
 (* --- SS1D Parameter Bus & Macros --- *)
 GWPSS1DARG::usage = "Sequence macro for SS1D parameters.";
 GWPSS1DVAL::usage = "Sequence macro for SS1D evaluated parameters.";
-(*
-PARAM11::usage = "Internal SS1D state 1 parameters.";
-PARAM22::usage = "Internal SS1D state 2 parameters.";
-PARAM12::usage = "Internal SS1D cross-term parameters.";
-RC::usage = "Real superposition coefficient.";
-IC::usage = "Imaginary superposition coefficient.";
-NORM::usage = "Superposition normalization.";
-NORM2::usage = "Squared superposition normalization.";
-*)
+
 (* --- SS1D Core Functions --- *)
 GWPSS1DPARAM::usage = "GWPSS1DPARAM[] returns default superposition parameters.\nGWPSS1DPARAM[alphaList, xList, pList, gammaList] generates a sequence of parameters for a superposition of two GWPs.";
 GWP1DPARAM12::usage = "GWP1DPARAM12[param1][param2] generates the cross-term parameter sequence for the overlap of two GWPs.";
@@ -60,6 +52,11 @@ GWPSS1DCSIX::usage = "GWPSS1DCSIX[x][superParam] evaluates the complex conjugate
 GWPSS1DRHOX::usage = "GWPSS1DRHOX[x][superParam] evaluates the probability density for the superposition.\nGWPSS1DRHOX[n][x][superParam] evaluates the n-th spatial derivative.";
 GWPSS1DCX::usage = "GWPSS1DCX[x][superParam] evaluates the cumulative distribution function for the superposition.";
 
+GWP1DC12::usage = "GWP1DC12[x][crossParam] evaluates the C12 cross-term component of the cumulative distribution function for the overlap of two GWPs.";
+GWP1DC21::usage = "GWP1DC21[x][crossParam] evaluates the C21 cross-term component of the cumulative distribution function for the overlap of two GWPs.";
+
+(* --- UI Builder --- *)
+GWPSS1DUI::usage = "GWPSS1DUI[data] generates the formatted visible and hidden grid elements for the frontend SS1D Summary Box.";
 
 
 (* ::Subsubsection::Closed:: *)
@@ -71,12 +68,12 @@ GWPSS1DEVOLVE::usage = "GWPSS1DEVOLVE[system][superParam] applies a system dynam
 (* --- SS1D Potential Models --- *) 
 GWPSS1DFREE::usage = "GWPSS1DFREE[t][param] evaluates the free particle parameters.";
 GWPSS1DHO::usage = "GWPSS1DHO[t][param] evaluates the standard harmonic oscillator parameters.";
-GWPSS1DLINEAR::usage = "GWPSS1DLINEAR[k][t][param] evaluates the linear potential parameters.";
-GWPSS1DHARMONIC::usage = "GWPSS1DHARMONIC[omega][t][param] evaluates the harmonic oscillator parameters.";
-GWPSS1DPARABOLIC::usage = "GWPSS1DPARABOLIC[omega][t][param] evaluates the parabolic barrier parameters.";
-GWPSS1DFHOLIN::usage = "GWPSS1DFHOLIN[omega, A][t][param] evaluates the linear-driven harmonic oscillator parameters.";
-GWPSS1DFHORES::usage = "GWPSS1DFHORES[omega, A][t][param] evaluates the resonant-driven harmonic oscillator parameters.";
-GWPSS1DFHONON::usage = "GWPSS1DFHONON[omega, A, omega1][t][param] evaluates the non-resonant-driven harmonic oscillator parameters.";
+GWPSS1DLINEAR::usage = "GWPSS1DLINEAR[FK][t][param] evaluates the linear potential parameters.";
+GWPSS1DHARMONIC::usage = "GWPSS1DHARMONIC[OMEGA][t][param] evaluates the harmonic oscillator parameters.";
+GWPSS1DPARABOLIC::usage = "GWPSS1DPARABOLIC[OMEGA][t][param] evaluates the parabolic barrier parameters.";
+GWPSS1DFHOLIN::usage = "GWPSS1DFHOLIN[OMEGA, AK][t][param] evaluates the linear-driven harmonic oscillator parameters.";
+GWPSS1DFHORES::usage = "GWPSS1DFHORES[OMEGA, AK][t][param] evaluates the resonant-driven harmonic oscillator parameters.";
+GWPSS1DFHONON::usage = "GWPSS1DFHONON[OMEGA, AK, OMEGA1][t][param] evaluates the non-resonant-driven harmonic oscillator parameters.";
 
 
 (* ::Subsection::Closed:: *)
@@ -93,7 +90,7 @@ Quiet[EndPackage[], General::shdw]
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*BeginPackage*)
 
 
@@ -225,9 +222,10 @@ GWPSS1DRHOX[n_Integer:0][x_][GWPSS1DARG] := Module[{psi12, cpsi12, real12, imag1
     )
 ];
 
-GWPSS1DPSIX[x_][arg___] /; !MatchQ[Unevaluated[GWPSS1DPSIX[x]], GWPSS1DPSIX[_Integer]] := GWPSS1DPSIX[0][x][arg];
-GWPSS1DCSIX[x_][arg___] /; !MatchQ[Unevaluated[GWPSS1DCSIX[x]], GWPSS1DCSIX[_Integer]] := GWPSS1DCSIX[0][x][arg];
-GWPSS1DRHOX[x_][arg___] /; !MatchQ[Unevaluated[GWPSS1DRHOX[x]], GWPSS1DRHOX[_Integer]] := GWPSS1DRHOX[0][x][arg];
+(* Fallback: Route spatial coordinate queries to the 0th derivative *)
+GWPSS1DPSIX[x_][arg1_, arg2_, rest___] := GWPSS1DPSIX[0][x][arg1, arg2, rest];
+GWPSS1DCSIX[x_][arg1_, arg2_, rest___] := GWPSS1DCSIX[0][x][arg1, arg2, rest];
+GWPSS1DRHOX[x_][arg1_, arg2_, rest___] := GWPSS1DRHOX[0][x][arg1, arg2, rest];
 
 
 (* ::Section::Closed:: *)
@@ -268,6 +266,9 @@ $potentialsSS1D = {
   {"NonResonantForcedHO", GWPSS1DFHONON,    "{\"NonResonantForcedHO\", OMEGA, AK, OMEGA1}", "Parameterized"}
 };
 
+GWPTools`GWPRegistry`GWPRegisterPotentials[$potentialsSS1D, "SS1D"];
+Clear[$potentialsSS1D];
+
 
 (* ::Subsection::Closed:: *)
 (*Property Resolution and Dispatch*)
@@ -292,24 +293,24 @@ $regProbSS1D = Join[#, {"Probabilities", "SS1D"}] & /@ {
 $regSS1D = Join[$regStaticSS1D, $regWaveSS1D, $regProbSS1D];
 Clear[$regStaticSS1D, $regWaveSS1D, $regProbSS1D];
 
-
-(* ::Subsection::Closed:: *)
-(*Register Potentials and Properties*)
-
-
-GWPTools`GWPRegistry`GWPRegisterPotentials[$potentialsSS1D, "SS1D"];
 GWPTools`GWPRegistry`GWPRegisterExtension[$regSS1D];
+Clear[$regSS1D];
 
 
 (* ::Subsection::Closed:: *)
 (*User Interface Builder*)
 
 
-$GWPSS1DLogo = Graphics[{
-    Opacity[0.2], Purple, FilledCurve[BezierCurve[{{-1, 0}, {-0.5, 0}, {-0.2, 1}, {0, 1}, {0.2, 1}, {0.5, 0}, {1, 0}}]],
-    Opacity[1], Thickness[0.08], Purple, Line[Table[{x, Exp[-4(x-0.2)^2] + Exp[-4(x+0.2)^2]}, {x, -1, 1, 0.05}]],
-    Thickness[0.04], Darker[Cyan], Line[Table[{x, 0.3 Sin[20 x] Exp[-4 x^2] - 0.1}, {x, -0.8, 0.8, 0.02}]]
-}, ImageSize -> 32, PlotRange -> {{-1.1, 1.1}, {-0.3, 1.5}}];
+$GWPSS1DLogo=Graphics[{
+Opacity[0.2],Darker@Blue,
+Polygon[{{-1,0},Sequence@@Table[{x,Exp[-15 (x+0.3)^2]},{x,-1,1,0.025}],{1,0}}],
+Polygon[{{-1,0},Sequence@@Table[{x,-Exp[-15 (x-0.3)^2]},{x,-1,1,0.025}],{1,0}}],
+Opacity[1],Thickness[0.025],Darker@Cyan,
+Line[Table[{x,Exp[-15 (x+0.3)^2]},{x,-1,1,0.025}]],
+Line[Table[{x,- Exp[-15 (x-0.3)^2]},{x,-1,1,0.025}]],
+Opacity[1],Thickness[0.04],Darker@Blue,
+Line[Table[{x,Exp[-15 (x+0.3)^2]-Exp[-15 (x-0.3)^2]},{x,-1,1,0.025}]]},
+ImageSize->32,PlotRange->{{-1,1},{-1.1,1.1}},AspectRatio->1];
 
 GWPTools`GWPDeveloper`GWPSS1DUI[data_] := Module[
   {potDisplay, paramsList, h, m, rc, ic, visible, hidden},

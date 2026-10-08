@@ -20,12 +20,15 @@ BeginPackage["GWPTools`GWPDiagnostics`", {
   "GWPTools`GWPDeveloper`"
 }]
 
+If[TrueQ[Global`$GWPDebug], Print["[GWPDiagnostics] BeginPackage"]];
+
+Off[General::shdw];
+
 
 (* ::Section::Closed:: *)
 (*Usage Statements*)
 
 
-(* --- Testing & Diagnostics --- *)
 GWPTestReport::usage = "GWPTestReport[\"key1\", \"key2\", ...] runs test files whose names contain the specified strings.\n" <>
   "GWPTestReport[\"All\"] runs the entire testing suite.\n" <>
   "GWPTestReport[] returns a list of all available test files.";
@@ -39,6 +42,7 @@ GWPFormatReport::usage = "GWPFormatReport[report] formats a TestReportObject int
 
 
 Begin["`Private`"]
+If[TrueQ[Global`$GWPDebug], Print["[GWPDiagnostics] Begin Private"]];
 
 (* Capture Package Directory for test file routing *)
 $PackageDirectory = Quiet[
@@ -178,9 +182,13 @@ GWPFormatReport[reports:{__TestReportObject}, opts:OptionsPattern[]] :=
 (*End*)
 
 
+(* --- End "GWPTools`GWPDiagnostics`Private`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPDiagnostics] End Private"]];
 End[]
 
 (* Hide internal code from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPDiagnostics`*"]], {ReadProtected}];
 
-EndPackage[]
+(* --- End "GWPTools`GWPDiagnostics`" --- *)
+If[TrueQ[Global`$GWPDebug], Print["[GWPDiagnostics] EndPackage"]];
+Quiet[EndPackage[], General::shdw]

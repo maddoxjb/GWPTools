@@ -1,7 +1,7 @@
 (* ::Package:: *)
 
 (* ::Title:: *)
-(*GWPDeveloper*)
+(*GWPDeveloper Package*)
 
 
 (* ::Section::Closed:: *)
@@ -32,20 +32,20 @@ Off[General::shdw];
 (* share the exact same variable spaces for pattern matching.                *)
 (* ========================================================================= *)
 
-(* --- 1. Core Physical Constants --- *)
+(* --- Core Physical Constants --- *)
 NORM::usage = "NORM universal parameter representing the global normalization constant.";
 NORM2::usage = "NORM2 universal parameter representing the squared global normalization constant.";
 HBAR::usage = "HBAR universal parameter representing the reduced Planck constant.";
 MASS::usage = "MASS universal parameter representing the mass of the particle.";
 INIT::usage = "INIT universal metadata cache storing time-origin parameters.";
 
-(* --- 2. Phase Space & Shape Variables (1D, 2D, RDM) --- *)
+(* --- Phase Space & Shape Variables (1D, 2D, RDM) --- *)
 RA::usage = "RA parameter representing the real part of the shape parameter.";
 IA::usage = "IA parameter representing the imaginary part of the shape parameter.";
 RX::usage = "RX parameter representing the real x-position center.";
 IX::usage = "IX parameter representing the imaginary x-position center.";
-RP::usage = "RP parameter representing the real momentum center.";
-IP::usage = "IP parameter representing the real momentum center.";
+RP::usage = "RP parameter representing the real p-momentum center.";
+IP::usage = "IP parameter representing the imaginary p-momentum center.";
 RG::usage = "RG parameter representing the spatially-independent real phase.";
 IG::usage = "IG parameter representing the spatially-independent imaginary phase.";
 
@@ -64,7 +64,7 @@ IPY::usage = "IPY parameter representing the imaginary y-momentum of the wavepac
 
 THETA::usage = "THETA parameter representing the real-valued thermal decoherence width (RDM).";
 
-(* --- 3. Superposition & Multi-State Architecture --- *)
+(* --- Superposition & Multi-State Architecture --- *)
 NSTATES::usage = "NSTATES state-tracking parameter representing the total number of component wavepackets.";
 PACKEDPARAMS::usage = "PACKEDPARAMS is a packed list containing parameter sequences for pure states and cross-terms.";
 PARAM11::usage = "PARAM11 sub-sequence containing the state 1 parameters for an SS1D superposition.";
@@ -74,7 +74,7 @@ RC::usage = "RC parameter representing the real component of a superposition coe
 IC::usage = "IC parameter representing the imaginary component of a superposition coefficient.";
 COEFFS::usage = "COEFFS is a parameter array containing complex weight pairs for multi-component states.";
 
-(* --- 4. External Potential Coefficients --- *)
+(* --- External Potential Coefficients --- *)
 V0::usage = "V0 1D potential coefficient (constant term).";
 V1::usage = "V1 1D potential coefficient (x term).";
 V2::usage = "V2 1D potential coefficient (x^2 term).";
@@ -91,7 +91,7 @@ V11::usage = "V11 2D potential coefficient (xy term).";
 GWPUsageTable::usage = "GWPUsageTable[{sym1, sym2, ...}] formats the usage statements of the specified symbols into a Dataset.\n" <>
   "GWPUsageTable[..., opts] accepts standard Grid options.";
   
-GWP1DScalarQ::usage = "GWP1DScalarQ[exp] returns True if exp is a scalar symbol or number.";
+GWPScalarQ::usage = "GWPScalarQ[exp] returns True if exp is a scalar symbol or number.";
 
 
 (* ::Section::Closed:: *)
@@ -100,17 +100,13 @@ GWP1DScalarQ::usage = "GWP1DScalarQ[exp] returns True if exp is a scalar symbol 
 
 (* Restore the global message state immediately *)
 On[General::shdw];
-
-
 (* --- Private --- *)
 Begin["`Private`"]
-
-
 If[TrueQ[Global`$GWPDebug], Print["[GWPDeveloper] Begin Private"]];
 
 
 (* ::Section::Closed:: *)
-(*GWPUsageTable*)
+(*Developer Utilities*)
 
 
 (* --- Usage Table Utility --- *)
@@ -165,17 +161,20 @@ GWPUsageTable[symbs_List, opts : OptionsPattern[]] :=
     Sequence @@ gridOpts]];
 
 
+GWPScalarQ[val_] := FreeQ[val, List];
+
+
 (* ::Section::Closed:: *)
 (*End*)
 
 
+(* --- End "GWPTools`GWPDeveloper`Private`" --- *)
 If[TrueQ[Global`$GWPDebug], Print["[GWPDeveloper] End Private"]];
-
 End[]
 
 (* Hide internal code for all Developer functions from the ? menu *)
 SetAttributes[Evaluate[Names["GWPTools`GWPDeveloper`*"]], {ReadProtected}];
 
+(* --- End "GWPTools`GWPDeveloper`" --- *)
 If[TrueQ[Global`$GWPDebug], Print["[GWPDeveloper] EndPackage"]];
-
 Quiet[EndPackage[], General::shdw]

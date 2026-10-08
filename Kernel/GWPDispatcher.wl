@@ -290,7 +290,12 @@ GWP[type_String][query_String, arg_String:""] /; GWPTypeQ[type] && Or[MemberQ[$G
          "ParameterizedStaticValue"      -> <| "Category" -> "Static",  "Signature" -> "f[s][params]",         "Returns" -> "Evaluated Value"       |>, 
 
          "ParameterizedBivariate"        -> <| "Category" -> "Dynamic", "Signature" -> "f[s][v1, v2][params]", "Returns" -> "Function[{v1, v2, t}]" |>, 
-         "ParameterizedBivariateSpatial" -> <| "Category" -> "Static",  "Signature" -> "f[s][v1, v2][params]", "Returns" -> "Function[{v1, v2}]"    |>
+         "ParameterizedBivariateSpatial" -> <| "Category" -> "Static",  "Signature" -> "f[s][v1, v2][params]", "Returns" -> "Function[{v1, v2}]"    |>,
+
+         (* --- Vector fields --- *)
+         "BivariateVectorField"        -> <| "Category" -> "Dynamic", "Signature" -> "f[c][v1, v2][params]", "Returns" -> "Function[{v1, v2, t}]" |>, 
+         "BivariateVectorFieldSpatial" -> <| "Category" -> "Static",  "Signature" -> "f[c][v1, v2][params]", "Returns" -> "Function[{v1, v2}]"    |>
+         
         |>,
       
       (* Fallback *)
@@ -463,6 +468,14 @@ GWPPropertyDispatch["ParameterizedTemporal", macro_, type_, data_] :=
 
 GWPPropertyDispatch["ParameterizedTemporal", macro_, type_, data_, s_] := 
   Function[t, Symbol["GWPTools`GWPDeveloper`GWP" <> type <> macro][s][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
+  
+(* Full Vector Return *)
+GWPPropertyDispatch["BivariateVectorField", macro_, type_, data_] := 
+  Function[{v1, v2, t}, Symbol["GWPTools`GWPDeveloper`GWP" <> type <> macro][v1, v2][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
+
+(* Indexed Component Return *)
+GWPPropertyDispatch["BivariateVectorField", macro_, type_, data_, c_Integer] := 
+  Function[{v1, v2, t}, Symbol["GWPTools`GWPDeveloper`GWP" <> type <> macro][c][v1, v2][data["PotentialModel"][t][Sequence @@ data["Parameters"]]]];
 
 
 (* --- Static Classes (Potential -> None) --- *)
@@ -498,6 +511,14 @@ GWPPropertyDispatch["ParameterizedStaticValue", macro_, type_, data_] :=
 
 GWPPropertyDispatch["ParameterizedStaticValue", macro_, type_, data_, s_] := 
   Symbol["GWPTools`GWPDeveloper`GWP" <> type <> macro][s][Sequence @@ data["Parameters"]];
+  
+(* Full Vector Return *)
+GWPPropertyDispatch["BivariateVectorFieldSpatial", macro_, type_, data_] := 
+  Function[{v1, v2}, Symbol["GWPTools`GWPDeveloper`GWP" <> type <> macro][v1, v2][Sequence @@ data["Parameters"]]];
+
+(* Indexed Component Return *)
+GWPPropertyDispatch["BivariateVectorFieldSpatial", macro_, type_, data_, c_Integer] := 
+  Function[{v1, v2}, Symbol["GWPTools`GWPDeveloper`GWP" <> type <> macro][c][v1, v2][Sequence @@ data["Parameters"]]];
 
 
 (* --- Fallbacks --- *)

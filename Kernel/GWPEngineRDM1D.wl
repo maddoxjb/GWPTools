@@ -1,21 +1,40 @@
 (* ::Package:: *)
 
-(* ::Package:: *)
-(**)
+(* ::Title:: *)
+(*GWPEngineRDM1D Package*)
+
+
+(* ::Section::Closed:: *)
+(*GWPDeveloper Usage Registration*)
+
+
+(* ::Subsection::Closed:: *)
+(*BeginPackage*)
 
 
 Needs["GWPTools`GWPDeveloper`"]
 BeginPackage["GWPTools`GWPDeveloper`"]
+
 If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] BeginPackage GWPDeveloper"]];
 
 Off[General::shdw];
 
 
+(* ::Subsection::Closed:: *)
+(*Usage Statements*)
+
+
+(* ::Subsubsection::Closed:: *)
+(*Parameters*)
+
+
+(* --- GWPRDM1D Parameter Bus & Macros --- *)
 GWPRDM1DARG::usage = "Sequence macro for RDM1D parameters.";
 GWPRDM1DVAL::usage = "Sequence macro for RDM1D evaluated parameters.";
+
+(* --- GWPRDM1D Parameter Generation --- *)
 GWPRDM1DPARAM::usage = "Generates a sequence of parameters for a Gaussian Reduced Density Matrix.";
 GWPRDM1D486::usage = "Internal engine for parsing RDM inputs.";
-
 
 (* --- GWPRDM1D Parameter Extraction --- *)
 GWPRDM1DRA::usage = "GWPRDM1DRA[param] extracts the real shape parameter.";
@@ -33,24 +52,53 @@ GWPRDM1DINPUT::usage = "GWPRDM1DINPUT[param] extracts the input parameters.";
 GWPRDM1DINIT::usage = "GWPRDM1DINIT[param] extracts the processed initial parameters.";
 
 
+(* ::Subsubsection::Closed:: *)
+(*Properties & UI*)
+
+
+(* --- RDM1D Core Properties --- *)
+GWPRDM1DRHOXX::usage = "GWPRDM1DRHOXX[x, y][param] evaluates the spatial density matrix rho(x, y).";
+GWPRDM1DRHOX::usage = "GWPRDM1DRHOX[x][param] evaluates the diagonal probability density rho(x, x).";
+
+(* --- UI Builder --- *)
+GWPRDM1DUI::usage = "GWPRDM1DUI[data] generates the formatted visible and hidden grid elements for the frontend RDM1D Summary Box.";
+
+
+(* ::Subsubsection::Closed:: *)
+(*Potential Models*)
+
+
 (* --- RDM1D Potential Models --- *)
 GWPRDM1DFREE::usage = "GWPRDM1DFREE[t][param] evaluates the free particle parameters for the reduced density matrix.";
+GWPRDM1DHARMONIC::usage = "GWPRDM1DHARMONIC[OMEGA][t][param] evaluates the harmonic oscillator parameters for the reduced density matrix.";
 
-GWPRDM1DHARMONIC::usage = "GWPRDM1DHARMONIC[omega][t][param] evaluates the harmonic oscillator parameters for the reduced density matrix.";
+(* --- RDM1D Dissipative Models --- *)
+GWPRDM1DFREECL::usage = "GWPRDM1DFREECL[GAMMA, KT][t][param] evaluates the free particle parameters under Caldeira-Leggett thermal decoherence.";
+GWPRDM1DHARMONICCL::usage = "GWPRDM1DHARMONICCL[OMEGA, GAMMA, KT][t][param] evaluates the harmonic oscillator parameters under Caldeira-Leggett thermal decoherence.";
 
-GWPRDM1DFREECL::usage = "GWPRDM1DFREECL[gamma, kT][t][param] evaluates the free particle parameters under Caldeira-Leggett thermal decoherence.";
 
-GWPRDM1DHARMONICCL::usage = "GWPRDM1DHARMONICCL[omega, gamma, kT][t][param] evaluates the harmonic oscillator parameters under Caldeira-Leggett thermal decoherence.";
+(* ::Subsection::Closed:: *)
+(*End*)
 
-GWPRDM1DRHOXX::usage = "Evaluates the spatial density matrix rho(x, y).";
-GWPRDM1DRHOX::usage = "Evaluates the diagonal probability density rho(x, x).";
 
 Off[General::shdw];
+
 If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] EndPackage GWPDeveloper"]];
+
 Quiet[EndPackage[], General::shdw]
 
+(* Scrub the Developer context from the global path immediately *)
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
+
+(* ::Section::Closed:: *)
+(*BeginPackage*)
+
+
+(* ========================================================================= *)
+(* PACKAGE     : GWPTools`GWPEngineRDM1D`                                    *)
+(* DESCRIPTION : 1D Reduced Density Matrix Core Engine                       *)
+(* ========================================================================= *)
 BeginPackage["GWPTools`GWPEngineRDM1D`"]
 If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] BeginPackage"]];
 
@@ -60,20 +108,54 @@ If[TrueQ[Global`$GWPDebug], Print["[GWPEngineRDM1D] Begin Private"]];
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
 
+
+(* ::Section::Closed:: *)
+(*Parameters*)
+
+
+(* ::Subsection::Closed:: *)
+(*GWPRDM1DARG/GWPRDM1DVAL*)
+
+
 (* --- 1. The 12-Element Parameter Bus --- *)
 GWPRDM1DARG = Sequence[RA_, IA_, RX_, RP_, RG_, IG_, THETA_, NORM_, HBAR_, MASS_, {V0_, V1_, V2_}, INIT_];
 GWPRDM1DVAL = Sequence[RA,  IA,  RX,  RP,  RG,  IG,  THETA,  NORM,  HBAR,  MASS,  {V0,  V1,  V2},  INIT];
 
+
+(* ::Subsection::Closed:: *)
+(*GWPRDM1DPARAM*)
+
+
 Options[GWPRDM1DPARAM] = {"HBAR" -> 1, "MASS" -> 1};
+
+GWPRDM1DPARAM::posval = "The value of option `1` -> `2` must be strictly positive.";
 
 GWPRDM1DPARAM[
   AA_: 1/4, XX_: 0, PP_: 0, GG_: 0, TT_: 0, 
   opts: OptionsPattern[]
-] := Module[{h, m},
+] := Module[{h, m, invalidOpts},
+
+  (* Catch Unknown Options *)
+  invalidOpts = FilterRules[{opts}, Except[Options[GWPRDM1DPARAM]]];
+  If[Length[invalidOpts] > 0,
+    Message[General::optx, First[First[invalidOpts]], HoldForm[GWPRDM1DPARAM]];
+    Return[$Failed]
+  ];
+
   h = OptionValue["HBAR"];
   m = OptionValue["MASS"];
+  
+  (* Enforce strictly positive physical constants and completely reject lists *)
+  If[!GWPScalarQ[h] || TrueQ[h <= 0], Message[GWPRDM1DPARAM::posval, "HBAR", h]; Return[$Failed]];
+  If[!GWPScalarQ[m] || TrueQ[m <= 0], Message[GWPRDM1DPARAM::posval, "MASS", m]; Return[$Failed]];
+
   GWPRDM1D486[AA, XX, PP, GG, TT, h, m]
 ];
+
+
+(* ::Subsection::Closed:: *)
+(*GWPRDM1D486*)
+
 
 GWPRDM1D486[A1_, X1_, P1_, G1_, T1_, HBAR_, MASS_] := Module[{
   RA1, IA1, RX1, RP1, RG1, IG1, THETA1, NORM1, PECOEFF, INIT1, PARAM
@@ -92,6 +174,10 @@ GWPRDM1D486[A1_, X1_, P1_, G1_, T1_, HBAR_, MASS_] := Module[{
 ];
 
 
+(* ::Subsection::Closed:: *)
+(*Parameter Extractors*)
+
+
 (* --- GWPRDM1D Parameter Extraction ---*)
 GWPRDM1DRA[GWPRDM1DARG] = RA;
 GWPRDM1DIA[GWPRDM1DARG] = IA;
@@ -107,10 +193,10 @@ GWPRDM1DPECOEFF[GWPRDM1DARG] = {V0, V1, V2};
 GWPRDM1DINPUT[GWPRDM1DARG] = INIT;
 GWPRDM1DINIT[GWPRDM1DARG] = {RA, IA, RX, RP, RG, IG, THETA};
 
-(* --- 2. Density Matrices --- *)
-GWPRDM1DRHOXX[x_, y_][GWPRDM1DARG] := Exp[-RA*(x - RX)^2 - RA*(y - RX)^2 - THETA*(x - y)^2 + I/HBAR * RP*(x - y) + I*IA*(x - RX)^2 - I*IA*(y - RX)^2 + 2*RG];
 
-GWPRDM1DRHOX[x_][GWPRDM1DARG] := Exp[-2*RA*(x - RX)^2 + 2*RG];
+(* ::Section::Closed:: *)
+(*Potential Models*)
+
 
 (* --- 3. Pure State Fallbacks --- *)
 GWPRDM1DFREE[t_][GWPRDM1DARG] = Module[
@@ -140,6 +226,7 @@ GWPRDM1DFREE[t_][GWPRDM1DARG] = Module[
   Sequence @@ {RAT, IAT, RXT, RPT, RGT, IG, THETAT, NORM, HBAR, MASS, {0, 0, 0}, INIT}
 ];
 
+
 GWPRDM1DHARMONIC[OMEGA_][t_][GWPRDM1DARG] = Module[
   {SXX0, SXP0, SPP0, SXXT, SXPT, SPPT, RXT, RPT, RAT, IAT, THETAT, RGT},
   
@@ -164,6 +251,7 @@ GWPRDM1DHARMONIC[OMEGA_][t_][GWPRDM1DARG] = Module[
   
   Sequence @@ {RAT, IAT, RXT, RPT, RGT, IG, THETAT, NORM, HBAR, MASS, {0, 0, MASS*OMEGA^2/2}, INIT}
 ];
+
 
 (* --- 4. Caldeira-Leggett Dissipative Flavors --- *)
 GWPRDM1DFREECL[GAMMA_, KT_][t_][GWPRDM1DARG] = Module[
@@ -191,6 +279,7 @@ GWPRDM1DFREECL[GAMMA_, KT_][t_][GWPRDM1DARG] = Module[
   
   Sequence @@ {RAT, IAT, RXT, RPT, RGT, IG, THETAT, NORM, HBAR, MASS, {0, 0, 0}, INIT}
 ];
+
 
 GWPRDM1DHARMONICCL[OMEGA_, GAMMA_, KT_][t_][GWPRDM1DARG] := Module[
   {DD, SXX0, SXP0, SPP0, SXXT, SXPT, SPPT, OMEGA1, RAT, IAT, RXT, RPT, RGT, THETAT},  
@@ -247,6 +336,41 @@ GWPRDM1DHARMONICCL[OMEGA_, GAMMA_, KT_][t_][GWPRDM1DARG] := Module[
 ];
 
 
+(* ::Section::Closed:: *)
+(*Properties*)
+
+
+(* --- 2. Density Matrices --- *)
+GWPRDM1DRHOXX[x_, y_][GWPRDM1DARG] := Exp[-RA*(x - RX)^2 - RA*(y - RX)^2 - THETA*(x - y)^2 + I/HBAR * RP*(x - y) + I*IA*(x - RX)^2 - I*IA*(y - RX)^2 + 2*RG];
+
+GWPRDM1DRHOX[x_][GWPRDM1DARG] := Exp[-2*RA*(x - RX)^2 + 2*RG];
+
+
+(* ::Section::Closed:: *)
+(*GWPObject Registration*)
+
+
+(* ::Subsection::Closed:: *)
+(*Potential Model Resolution*)
+
+
+(* --- Unified Potential Registry Chunk --- *)
+(* Format: {StringName, BackendSymbol, Template, Category} *)
+$potentialsRDM1D = {
+  {"Free",       GWPRDM1DFREE,       "\"Free\"",                           "Named"},
+  {"Harmonic",   GWPRDM1DHARMONIC,   "{\"Harmonic\", OMEGA}",              "Parameterized"},
+  {"FreeCL",     GWPRDM1DFREECL,     "{\"FreeCL\", GAMMA, KT}",            "Parameterized"},
+  {"HarmonicCL", GWPRDM1DHARMONICCL, "{\"HarmonicCL\", OMEGA, GAMMA, KT}", "Parameterized"}
+};
+
+GWPTools`GWPRegistry`GWPRegisterPotentials[$potentialsRDM1D, "RDM1D"];
+Clear[$potentialsRDM1D];
+
+
+(* ::Subsection::Closed:: *)
+(*Property Resolution and Dispatch*)
+
+
 (* --- Property Registration --- *)
 $regStaticRDM1D = Join[#, {"StaticParameters", "RDM1D"}] & /@ {
   {"Normalization",         "NORM",  "Static", "Static"},
@@ -273,22 +397,64 @@ $regProbRDM1D = Join[#, {"Probabilities", "RDM1D"}] & /@ {
   {"DensityX",        "RHOX",  "Field",     "Spatial"}
 };
 
+
 (* --- Registry Assembly --- *)
 $regRDM1D = Join[$regStaticRDM1D, $regDynamicRDM1D, $regProbRDM1D];
 Clear[$regStaticRDM1D, $regDynamicRDM1D, $regProbRDM1D];
 
-(* --- Unified Potential Registry Chunk --- *)
-(* Format: {StringName, BackendSymbol, Template, Category} *)
-$potentialsRDM1D = {
-  {"Free",       GWPRDM1DFREE,       "\"Free\"",                           "Named"},
-  {"Harmonic",   GWPRDM1DHARMONIC,   "{\"Harmonic\", OMEGA}",              "Parameterized"},
-  {"FreeCL",     GWPRDM1DFREECL,     "{\"FreeCL\", GAMMA, KT}",            "Parameterized"},
-  {"HarmonicCL", GWPRDM1DHARMONICCL, "{\"HarmonicCL\", OMEGA, GAMMA, KT}", "Parameterized"}
-};
-
-GWPTools`GWPRegistry`GWPRegisterPotentials[$potentialsRDM1D, "RDM1D"];
 GWPTools`GWPRegistry`GWPRegisterExtension[$regRDM1D];
+Clear[$regRDM1D];
 
+
+(* ::Subsection::Closed:: *)
+(*User Interface Builder*)
+
+
+(* ========================================================================= *)
+(* FRONT-END FORMATTING (UI Builder)                                         *)
+(* ========================================================================= *)
+
+$GWPRDM1DLogo=Graphics[{
+Opacity[0.3],Darker@Blue,
+Polygon[{{-1,0},Sequence@@Table[{x,1.0 Exp[-20 x^2]},{x,-1,1,0.05}],{1,0}}],
+Opacity[0.2],Darker@Cyan,
+Polygon[{{-1,0},Sequence@@Table[{x,0.4 Exp[-2 x^2]},{x,-1,1,0.05}],{1,0}}],
+Opacity[1],Thickness[0.04],Darker@Blue,
+Line[Table[{x,1.0 Exp[-20 x^2]},{x,-1,1,0.02}]],
+Opacity[1],Thickness[0.04],Darker@Cyan,
+Line[Table[{x,0.4 Exp[-2 x^2]},{x,-1,1,0.05}]]
+},ImageSize->32,PlotRange->{{-1.1,1.1},{-0.1,1.1}},AspectRatio->1];
+
+GWPTools`GWPDeveloper`GWPRDM1DUI[data_] := Module[
+  {potDisplay, paramsList, h, m, theta, init, visible, hidden},
+  
+  potDisplay = data["Potential"];
+  paramsList = data["Parameters"];
+  
+  If[Length[paramsList] >= 12,
+    h = paramsList[[9]]; m = paramsList[[10]]; theta = paramsList[[7]]; init = paramsList[[12]];
+  ,
+    h = "?"; m = "?"; theta = "?"; init = "?";
+  ];
+  
+  visible = {Grid[{
+    {Style["Attributes", Bold], Style["Values", Bold]},
+    {"Initial State: ", InputForm[init]},
+    {"Potential: ", potDisplay}
+  }, Alignment -> Left]};
+  
+  hidden = {Grid[{
+    {"Mass: ", m},
+    {"HBar: ", h},
+    {"Decoherence: ", theta}
+  }, Alignment -> Left]};
+  
+  {$GWPRDM1DLogo, visible, hidden}
+];
+
+
+(* ::Section::Closed:: *)
+(*End*)
 
 
 (* --- End "GWPTools`GWPEngineRDM1D`Private`" --- *)

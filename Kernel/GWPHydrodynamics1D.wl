@@ -4,11 +4,11 @@
 (*GWPHydrodynamics1D Package*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*GWPDeveloper Usage Declarations*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*BeginPackage*)
 
 
@@ -238,7 +238,9 @@ GWP1DXC[n_Integer /; n > 0][c_][GWP1DARG] := Module[{u, dudz, poly},
   poly = GWP1DInverseGaussianEngine[n, u]; 
   poly * (2^n / Sqrt[2*RA]) * (dudz^n)
 ];
-GWP1DXC[c_][arg___] /; !MatchQ[Unevaluated[GWP1DXC[c]], GWP1DXC[_Integer]] := GWP1DXC[0][c][arg];
+
+(* Fallback: Route position coordinate queries to the 0th derivative *)
+GWP1DXC[c_][arg1_, arg2_, rest___] := GWP1DXC[0][c][arg1, arg2, rest];
 
 GWP1DPC[0][c_][GWP1DARG] := RP + HBAR * Sqrt[2] * Sqrt[IA^2/RA + RA] * InverseErf[2*c - 1];
 GWP1DPC[n_Integer /; n > 0][c_][GWP1DARG] := Module[{u, dudz, coeffP, poly},
@@ -248,8 +250,8 @@ GWP1DPC[n_Integer /; n > 0][c_][GWP1DARG] := Module[{u, dudz, coeffP, poly},
   poly = GWP1DInverseGaussianEngine[n, u];
   poly * (2^n * coeffP) * (dudz^n)
 ];
-GWP1DPC[c_][arg___] /; !MatchQ[Unevaluated[GWP1DPC[c]], GWP1DPC[_Integer]] := GWP1DPC[0][c][arg];
-
+(* Fallback: Route momentum coordinate queries to the 0th derivative *)
+GWP1DPC[c_][arg1_, arg2_, rest___] := GWP1DPC[0][c][arg1, arg2, rest];
 
 
 (* --- C-Space Hydrodynamic Fields --- *)
@@ -272,13 +274,15 @@ With[{VAL = GWP1DVAL},
     V1 * xDerivs[[n + 1]] + V2 * x2Deriv
   ]
 ];
-GWP1DPEC[c_][arg___] /; !MatchQ[Unevaluated[GWP1DPEC[c]], GWP1DPEC[_Integer]] := GWP1DPEC[0][c][arg];
+(* Fallback: Route coordinate queries to the 0th derivative *)
+GWP1DPEC[c_][arg1_, arg2_, rest___] := GWP1DPEC[0][c][arg1, arg2, rest];
 
 GWP1DFEC[0][c_][GWP1DARG] = GWP1DFEX[0][GWP1DXC[0][c][GWP1DVAL]][GWP1DVAL];
 With[{VAL = GWP1DVAL},
   GWP1DFEC[n_Integer /; n > 0][c_][GWP1DARG] := -2 * V2 * GWP1DXC[n][c][VAL]
 ];
-GWP1DFEC[c_][arg___] /; !MatchQ[Unevaluated[GWP1DFEC[c]], GWP1DFEC[_Integer]] := GWP1DFEC[0][c][arg];
+(* Fallback: Route coordinate queries to the 0th derivative *)
+GWP1DFEC[c_][arg1_, arg2_, rest___] := GWP1DFEC[0][c][arg1, arg2, rest];
 
 GWP1DCKEC[c_][GWP1DARG] = (Sqrt[RA]*(RP - (Sqrt[2]*HBAR*IA*InverseErf[-1 + 2*c])/Sqrt[RA])^2)/(E^InverseErf[-1 + 2*c]^2*MASS*Sqrt[2*Pi]);
 GWP1DIKEC[c_][GWP1DARG] = (HBAR^2*Sqrt[2/Pi]*RA^(3/2)*InverseErf[-1 + 2*c]^2)/(E^InverseErf[-1 + 2*c]^2*MASS);
@@ -359,7 +363,10 @@ $regTraj1D = Join[#, {"BohmianTrajectories", "1D"}] & /@ {
   {"TotalEnergyDensityC",         "TEDC", "Field",     None}
 };
 
-GWPTools`GWPRegistry`GWPRegisterExtension[Join[$regHydroExp1D, $regHydroX1D, $regHydroP1D, $regTraj1D]];
+GWPTools`GWPRegistry`GWPRegisterExtension[Join[$regHydroExp1D,$regHydroX1D, $regHydroP1D,$regTraj1D]];
+
+(* Clean up the registry assembly lists *)
+Clear[$regHydroExp1D,$regHydroX1D, $regHydroP1D,$regTraj1D];
 
 
 (* ::Section::Closed:: *)
@@ -367,7 +374,6 @@ GWPTools`GWPRegistry`GWPRegisterExtension[Join[$regHydroExp1D, $regHydroX1D, $re
 
 
 (* --- End "GWPTools`GWPHydrodynammics1D`Private`" --- *)
-
 If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamics1D] End Private"]];
 End[]
 

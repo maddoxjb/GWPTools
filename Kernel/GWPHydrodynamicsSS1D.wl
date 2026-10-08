@@ -4,19 +4,18 @@
 (*GWPHydrodynamicsSS1D Package*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*GWPDeveloper Usage Registration*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*BeginPackage*)
 
 
-Needs["GWPTools`GWPDeveloper"];
+Needs["GWPTools`GWPDeveloper`"];
 BeginPackage["GWPTools`GWPDeveloper`"]
 
-
-If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodyanamicsSS1D] BeginPackage GWPDeveloper"]];
+If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] BeginPackage GWPDeveloper"]];
 
 Off[General::shdw];
 
@@ -28,10 +27,12 @@ Off[General::shdw];
 (* --- x-Space Hydrodynamic Fields --- *)
 GWPSS1DQPX::usage = "GWPSS1DQPX[x][superParam] evaluates the quantum potential for the superposition.";
 GWPSS1DQFX::usage = "GWPSS1DQFX[x][superParam] evaluates the quantum force for the superposition.";
+GWPSS1DJX::usage = "GWPSS1DJX[x][param] evaluates the x-space probability current density for a 1D superposition.";
+GWPSS1DVX::usage = "GWPSS1DVX[x][param] evaluates the x-space velocity flow field for a 1D superposition.";
 
 
 (* ::Subsection::Closed:: *)
-(*End*)
+(*EndPackage*)
 
 
 Off[General::shdw];
@@ -44,7 +45,7 @@ Quiet[EndPackage[], General::shdw]
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*BeginPackage*)
 
 
@@ -57,6 +58,7 @@ BeginPackage["GWPTools`GWPHydrodynamicsSS1D`"]
 If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] BeginPackage"]];
 Begin["`Private`"]
 If[TrueQ[Global`$GWPDebug], Print["[GWPHydrodynamicsSS1D] Begin Private"]];
+
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
 Needs["GWPTools`GWPEngine1D`"];
@@ -65,7 +67,7 @@ Needs["GWPTools`GWPEngineSS1D`"];
 
 
 (* ::Section::Closed:: *)
-(*Prototype Properties*)
+(*Properties*)
 
 
 (* --- Internal Helpers --- *)
@@ -96,6 +98,32 @@ With[{VAL = GWPSS1DVAL},
 ];
 
 
+(* ==================================================================== *)
+(* x-Space Hydrodynamic Fields (Superposition)                          *)
+(* ==================================================================== *)
+
+With[{VAL = GWPSS1DVAL},
+  GWPSS1DJX[x_][GWPSS1DARG] := Module[{psi, cpsi, dpsi, cdpsi, HBAR, MASS},
+    (* Extract physical constants from the first component *)
+    HBAR = PARAM11[[8]];
+    MASS = PARAM11[[9]];
+    
+    (* Evaluate the zeroth and first spatial derivatives *)
+    psi = GWPSS1DPSIX[0][x][VAL];
+    cpsi = GWPSS1DCSIX[0][x][VAL];
+    dpsi = GWPSS1DPSIX[1][x][VAL];
+    cdpsi = GWPSS1DCSIX[1][x][VAL];
+    
+    (* J(x) = (HBAR / 2 m i) * (Psi^* dPsi - Psi dPsi^ *)
+    Re[(HBAR / (2 * I * MASS)) * (cpsi * dpsi - psi * cdpsi)]
+  ]
+];
+  
+With[{VAL = GWPSS1DVAL},
+  GWPSS1DVX[x_][GWPSS1DARG] := GWPSS1DJX[x][VAL] / GWPSS1DRHOX[0][x][VAL];
+];
+
+
 (* ::Section::Closed:: *)
 (*GWPObject Registration*)
 
@@ -103,15 +131,17 @@ With[{VAL = GWPSS1DVAL},
 (* --- GWPObject Registry (SS1D Hydrodynamics) --- *)
 $regHydroXSS1D = Join[#, {"HydrodynamicsX", "SS1D"}] & /@ {
   {"QuantumPotentialX", "QPX", "Field", "Spatial"},
-  {"QuantumForceX",     "QFX", "Field", "Spatial"}
+  {"QuantumForceX",     "QFX", "Field", "Spatial"},
+  {"CurrentX",  "JX", "Field", "Spatial"},
+  {"VelocityX", "VX", "Field", "Spatial"}
 };
-
 
 (* Inject into the central registry *)
 GWPTools`GWPRegistry`GWPRegisterExtension[$regHydroXSS1D];
+Clear[$regHydroXSS1D];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*End*)
 
 

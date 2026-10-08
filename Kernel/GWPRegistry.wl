@@ -24,6 +24,11 @@ $GWPPotentials::usage = "$GWPPotentials is a nested Association mapping each eng
 GWPRegisterExtension::usage = "GWPRegisterExtension[chunk] parses a formatted list of physical properties (a registry chunk) and injects them into $GWPRegistry and $GWPInformation.";
 GWPRegisterPotentials::usage = "GWPRegisterPotentials[potChunk, type] parses a formatted list of potential models (a potential chunk) and injects them into the unified $GWPPotentials database for the specified engine type.";
 
+(* --- Messages --- *)
+GWPRegisterExtension::reinit = "Warning: The GWPRegistry is being re-initialized. All previous registrations have been cleared.";
+GWPRegisterExtension::badformat = "Invalid property registration chunk format. Expected 6 elements, but received `1`: `2`";
+GWPRegisterPotentials::badformat = "Invalid potential registration chunk format for engine `1`. Expected 4 elements, but received `2`: `3`";
+
 Begin["`Private`"]
 If[TrueQ[Global`$GWPDebug], Print["[GWPRegistry] Begin Private"]];
 
@@ -31,6 +36,11 @@ If[TrueQ[Global`$GWPDebug], Print["[GWPRegistry] Begin Private"]];
 (* ::Section::Closed:: *)
 (*Initialize Registry*)
 
+
+(* --- Initialize Registry Lists --- *)
+If[ValueQ[$GWPRegistry] && Length[$GWPRegistry] > 0,
+  Message[GWPRegisterExtension::reinit]
+];
 
 (* --- Initialize Registry Lists --- *)
 $GWPRegistry = {};
@@ -51,17 +61,21 @@ GWPRegisterExtension[registryChunk_List] := Module[{},
   
   Scan[
     Function[{row},
-      Module[{long, short, dyn, stat, cat, type},
-        {long, short, dyn, stat, cat, type} = row;
-        
-        If[!KeyExistsQ[$GWPInformation, type], $GWPInformation[type] = Association[]];
-        
-        $GWPInformation[type][long] = Association[
-          "ShortKey"      -> short,
-          "DynamicClass"  -> dyn,
-          "StaticClass"   -> stat,
-          "PropertyClass" -> cat
-        ];
+      If[Length[row] == 6,
+        Module[{long, short, dyn, stat, cat, type},
+          {long, short, dyn, stat, cat, type} = row;
+          
+          If[!KeyExistsQ[$GWPInformation, type], $GWPInformation[type] = Association[]];
+          
+          $GWPInformation[type][long] = Association[
+            "ShortKey"      -> short,
+            "DynamicClass"  -> dyn,
+            "StaticClass"   -> stat,
+            "PropertyClass" -> cat
+          ];
+        ],
+        (* If format is wrong, message and skip *)
+        Message[GWPRegisterExtension::badformat, Length[row], row]
       ]
     ],
     $GWPRegistry
@@ -79,13 +93,17 @@ GWPRegisterPotentials[potChunk_List, type_String] := Module[{},
   
   Scan[
     Function[{row},
-      Module[{name, sym, template, category},
-        {name, sym, template, category} = row;
-        $GWPPotentials[type][name] = Association[
-          "BackendSymbol" -> sym,
-          "Template"      -> template,
-          "Category"      -> category
-        ];
+      If[Length[row] == 4,
+        Module[{name, sym, template, category},
+          {name, sym, template, category} = row;
+          $GWPPotentials[type][name] = Association[
+            "BackendSymbol" -> sym,
+            "Template"      -> template,
+            "Category"      -> category
+          ];
+        ],
+        (* If format is wrong, message and skip *)
+        Message[GWPRegisterPotentials::badformat, type, Length[row], row]
       ]
     ],
     potChunk

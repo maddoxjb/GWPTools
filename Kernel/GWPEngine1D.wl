@@ -16,7 +16,6 @@
 Needs["GWPTools`GWPDeveloper`"];
 BeginPackage["GWPTools`GWPDeveloper`"]
 
-
 If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] BeginPackage GWPDeveloper"]];
 
 Off[General::shdw];
@@ -30,10 +29,9 @@ Off[General::shdw];
 (*Parameters*)
 
 
+(* --- GWP1D Paramater Bus --- *)
 GWP1DARG::usage = "GWP1DARG is the developer macro for the parameter sequence pattern.";
 GWP1DVAL::usage = "GWP1DVAL is the developer macro for the parameter sequence values.";
-
-GWP1DScalarQ::usage="GWP1DScalarQ[exp] returns True if exp is a scalar symbol or number.";
 
 (* --- GWP1D Parameter Generation --- *)
 GWP1DPARAM::usage = "GWP1DPARAM[A, X, P, G] returns a sequence of GWP1D parameters.\n" <>
@@ -101,9 +99,9 @@ GWP1DHO::usage = "GWP1DHO[t][param] evaluates the standard harmonic oscillator p
 GWP1DLINEAR::usage = "GWP1DLINEAR[k][t][param] evaluates the linear potential parameters.";
 GWP1DHARMONIC::usage = "GWP1DHARMONIC[omega][t][param] evaluates the harmonic oscillator parameters.";
 GWP1DPARABOLIC::usage = "GWP1DPARABOLIC[omega][t][param] evaluates the parabolic barrier parameters.";
-GWP1DFHOLIN::usage = "GWP1DFHOLIN[omega, A][t][param] evaluates the linear-driven harmonic oscillator parameters.";
-GWP1DFHORES::usage = "GWP1DFHORES[omega, A][t][param] evaluates the resonant-driven harmonic oscillator parameters.";
-GWP1DFHONON::usage = "GWP1DFHONON[omega, A, omega1][t][param] evaluates the non-resonant-driven harmonic oscillator parameters.";
+GWP1DFHOLIN::usage = "GWP1DFHOLIN[omega, AK][t][param] evaluates the linear-driven harmonic oscillator parameters.";
+GWP1DFHORES::usage = "GWP1DFHORES[omega, AK][t][param] evaluates the resonant-driven harmonic oscillator parameters.";
+GWP1DFHONON::usage = "GWP1DFHONON[omega, AK, omega1][t][param] evaluates the non-resonant-driven harmonic oscillator parameters.";
 
 (* --- GWP1D Potential Energy and Force Functions --- *)
 GWP1DPEX::usage = "GWP1DPEX[x][param] evaluates the external potential energy.\n" <>
@@ -221,7 +219,7 @@ GWP1DETE::usage = "GWP1DETE[param] evaluates the total energy expectation value.
 GWP1DETE1::usage = "GWP1DETE1[param] evaluates the total energy (Hamiltonian) expectation value.";
 GWP1DETE2::usage = "GWP1DETE2[param] evaluates the squared total energy expectation value.";
 GWP1DETE3::usage = "GWP1DETE3[param] evaluates the cubed total energy expectation value.";
-GWP1DETE4::usage = "GWP1DETE3[param] evaluates the fourth-order total energy expectation value.";
+GWP1DETE4::usage = "GWP1DETE4[param] evaluates the fourth-order total energy expectation value.";
 
 (* --- Energy Uncertainty --- *)
 GWP1DUKE::usage = "GWP1DUKE[param] evaluates the kinetic energy uncertainty.";
@@ -230,7 +228,7 @@ GWP1DUTE::usage = "GWP1DUTE[param] evaluates the total energy uncertainty.";
 
 
 (* ::Subsection::Closed:: *)
-(*End Package*)
+(*EndPackage*)
 
 
 Off[General::shdw];
@@ -255,14 +253,11 @@ $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 (* --- Open the Actual Engine Package --- *)
 BeginPackage["GWPTools`GWPEngine1D`"]
-
 If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] BeginPackage"]];
 
 Begin["`Private`"]
-
 If[TrueQ[Global`$GWPDebug], Print["[GWPEngine1D] Begin Private"]];
 
-(* Load dependencies strictly internally *)
 Needs["GWPTools`GWPDeveloper`"];
 Needs["GWPTools`GWPRegistry`"];
 
@@ -307,10 +302,6 @@ GWP1DARG = Sequence[RA_, IA_, RX_, RP_, RG_, IG_, NORM_, HBAR_, MASS_, {V0_, V1_
 GWP1DVAL = Sequence[RA,  IA,  RX,  RP,  RG,  IG,  NORM,  HBAR,  MASS,  {V0,  V1,  V2},  INIT];
 
 
-(* --- Helper Pattern for Strict Scalar/Symbol Enforcement --- *)
-GWP1DScalarQ[val_] := FreeQ[val, List];
-
-
 (* ::Subsection::Closed:: *)
 (*GWP1DPARAM*)
 
@@ -318,10 +309,8 @@ GWP1DScalarQ[val_] := FreeQ[val, List];
 (* --- Default Options --- *)
 Options[GWP1DPARAM] = {"HBAR" -> 1, "MASS" -> 1};
 
-
 (* --- Error Messages --- *)
 GWP1DPARAM::posval = "The value of option `1` -> `2` must be strictly positive.";
-
 
 (* --- Parameter Generator --- *)
 GWP1DPARAM[
@@ -343,14 +332,9 @@ GWP1DPARAM[
   h = OptionValue["HBAR"];
   m = OptionValue["MASS"];
 
-(*    
-  (* Enforce strictly positive physical constants (Safely ignores symbols) *)
-  If[TrueQ[h <= 0], Message[GWP1DPARAM::posval, "HBAR", h]; Return[$Failed]];
-  If[TrueQ[m <= 0], Message[GWP1DPARAM::posval, "MASS", m]; Return[$Failed]];
-*)
  (* Enforce strictly positive physical constants and completely reject lists *)
-  If[!GWP1DScalarQ[h] || TrueQ[h <= 0], Message[GWP1DPARAM::posval, "HBAR", h]; Return[$Failed]];
-  If[!GWP1DScalarQ[m] || TrueQ[m <= 0], Message[GWP1DPARAM::posval, "MASS", m]; Return[$Failed]];
+  If[!GWPScalarQ[h] || TrueQ[h <= 0], Message[GWP1DPARAM::posval, "HBAR", h]; Return[$Failed]];
+  If[!GWPScalarQ[m] || TrueQ[m <= 0], Message[GWP1DPARAM::posval, "MASS", m]; Return[$Failed]];
 
     (* Proceed to engine *)
   GWP1D486[AA, XX, PP, GG, h, m]
@@ -361,14 +345,15 @@ GWP1DPARAM[
 (*GWP1D486*)
 
 
+(* --- Messages --- *)
 GWP1D486::unnorm = "The real shape parameter RA = `1` must be strictly positive.";
 GWP1D486::complexia = "The calculated imaginary shape parameter IA = `1` must be strictly real. Check your uncertainty bounds.";
 
-
+(* --- The Core Parser --- *)
 GWP1D486[A1_, X1_, P1_, G1_, HBAR_, MASS_] := Module[{
   RA1, IA1, RX1, IX1, RP1, IP1, RG1, IG1,
-  RA2, IA2, RX2, RP2, RG2, IG2, NORM, PECOEFF, INIT, PARAM
-},
+  RA2, IA2, RX2, RP2, RG2, IG2, NORM, PECOEFF, INIT, PARAM},
+
   (* --- Complex Expand Input Parameters --- *)
   {RA1, IA1} = GWP1DSHAPE[A1, HBAR, MASS];
   {RX1, IX1} = GWP1DPOSITION[X1];
@@ -419,15 +404,15 @@ GWP1DPHASE::badform = "The phase parameter format `1` is invalid. See documentat
 (* --- Shape Parser --- *)
 GWP1DSHAPE[A1_, HBAR_, MASS_] := Replace[A1, {
   (* Spatial Uncertainty and x-p Covariance *)
-  {"Covariance", ux_?GWP1DScalarQ, covxp_?GWP1DScalarQ} :> 
+  {"Covariance", ux_?GWPScalarQ, covxp_?GWPScalarQ} :> 
     {1 / (4 * ux^2), -covxp / (2 * HBAR * ux^2)},
   
   (* Spatial and Momentum Uncertainties with Chirp Direction (+1 or -1) *)
-  {"Uncertainty", ux_?GWP1DScalarQ, up_?GWP1DScalarQ, chirp_?GWP1DScalarQ} :> 
+  {"Uncertainty", ux_?GWPScalarQ, up_?GWPScalarQ, chirp_?GWPScalarQ} :> 
     {1 / (4 * ux^2), Sign[chirp] * Sqrt[(up^2 / (4 * HBAR^2 * ux^2)) - 1 / (16 * ux^4)]},
   
   (* Restrict fallback to strictly list-free scalar/symbolic expressions *)
-  alpha_?GWP1DScalarQ :> ComplexExpand @ ReIm @ alpha,
+  alpha_?GWPScalarQ :> ComplexExpand @ ReIm @ alpha,
   
   (* Catch everything else (including nested lists) *)
   bad_ :> (Message[GWP1DSHAPE::badform, bad]; {$Failed, $Failed})
@@ -435,37 +420,37 @@ GWP1DSHAPE[A1_, HBAR_, MASS_] := Replace[A1, {
 
 (* --- Position Parser --- *)
 GWP1DPOSITION[X1_] := Replace[X1, {
-  x_?GWP1DScalarQ :> ComplexExpand @ ReIm @ x,
+  x_?GWPScalarQ :> ComplexExpand @ ReIm @ x,
   bad_ :> (Message[GWP1DPOSITION::badform, bad]; {$Failed, $Failed})
 }]
 
 (* --- Momentum Parser --- *)
 GWP1DMOMENTUM[P1_, MASS_] := Replace[P1, {
-  {"KineticEnergy", ek_?GWP1DScalarQ, sign_?GWP1DScalarQ} :> 
+  {"KineticEnergy", ek_?GWPScalarQ, sign_?GWPScalarQ} :> 
     {Sign[sign] * Sqrt[2 * MASS * ek], 0},
   
-  p_?GWP1DScalarQ :> ComplexExpand @ ReIm @ p,
+  p_?GWPScalarQ :> ComplexExpand @ ReIm @ p,
   bad_ :> (Message[GWP1DMOMENTUM::badform, bad]; {$Failed, $Failed})
 }]
 
 (* --- Phase Parser --- *)
 GWP1DPHASE[G1_, HBAR_, RA_, RX_, RP_] := Replace[G1, {
-  {"Action", action_?GWP1DScalarQ, mu_?GWP1DScalarQ} :> 
+  {"Action", action_?GWPScalarQ, mu_?GWPScalarQ} :> 
     {action - HBAR * mu * Pi / 2, -(HBAR / 4) * Log[(2 * RA) / Pi]},
     
-  {"Action", action_?GWP1DScalarQ} :> 
+  {"Action", action_?GWPScalarQ} :> 
     {action, -(HBAR / 4) * Log[(2 * RA) / Pi]},
     
-  {"Displacement", X0_?GWP1DScalarQ, P0_?GWP1DScalarQ} :> 
+  {"Displacement", X0_?GWPScalarQ, P0_?GWPScalarQ} :> 
     {(RX - X0) * (RP - P0) / 2, -(HBAR / 4) * Log[(2 * RA) / Pi]},
     
-  {"Coefficient", phi_?GWP1DScalarQ, weight_?GWP1DScalarQ} :> 
+  {"Coefficient", phi_?GWPScalarQ, weight_?GWPScalarQ} :> 
     {HBAR * phi, -HBAR * Log[weight]},
     
-  {"Evolution", en_?GWP1DScalarQ, t_?GWP1DScalarQ} :> 
+  {"Evolution", en_?GWPScalarQ, t_?GWPScalarQ} :> 
     {-en * t, 0},
     
-  gamma_?GWP1DScalarQ :> ComplexExpand @ ReIm @ gamma,
+  gamma_?GWPScalarQ :> ComplexExpand @ ReIm @ gamma,
   bad_ :> (Message[GWP1DPHASE::badform, bad]; {$Failed, $Failed})
 }]
 
@@ -639,14 +624,13 @@ GWP1DHO[t_][GWP1DARG]=GWP1DHARMONIC[1][t][GWP1DVAL];
 
 GWP1DLINEARFUN={GWP1DLINEARRAT,GWP1DLINEARIAT,GWP1DLINEARRXT,GWP1DLINEARRPT,GWP1DLINEARRGT,GWP1DLINEARIGT};
 SetAttributes[GWP1DLINEARFUN,Listable];
-GWP1DLINEAR[FK_:1][t_][GWP1DARG]=Sequence@@{Sequence@@Through[Through[GWP1DLINEARFUN[t,FK]][GWP1DVAL]],NORM,HBAR,MASS,{0,FK,0},INIT};
+GWP1DLINEAR[FK_:1][t_][GWP1DARG]=Sequence@@{Sequence@@Through[Through[GWP1DLINEARFUN[t,FK]][GWP1DVAL]],NORM,HBAR,MASS,{0,-FK,0},INIT};
 GWP1DLINEARRAT[t_,FK_][GWP1DARG]=(MASS^2*RA)/(MASS^2 - 4*HBAR*IA*MASS*t + 4*HBAR^2*(IA^2 + RA^2)*t^2);
 GWP1DLINEARIAT[t_,FK_][GWP1DARG]=(MASS*(IA*MASS - 2*HBAR*(IA^2 + RA^2)*t))/(MASS^2 - 4*HBAR*IA*MASS*t + 4*HBAR^2*(IA^2 + RA^2)*t^2);
-GWP1DLINEARRXT[t_,FK_][GWP1DARG]=RX + (RP*t)/MASS - (FK*t^2)/(2*MASS);
-GWP1DLINEARRPT[t_,FK_][GWP1DARG]=RP - FK*t;
-GWP1DLINEARLCT[t_,FK_][GWP1DARG]=(t*(3*RP^2 - 6*FK*RP*t + 2*FK*(-3*MASS*RX + FK*t^2)))/(6*MASS);
+GWP1DLINEARRXT[t_,FK_][GWP1DARG]=RX + (RP*t)/MASS + (FK*t^2)/(2*MASS);
+GWP1DLINEARRPT[t_,FK_][GWP1DARG]=RP + FK*t;
+GWP1DLINEARLCT[t_,FK_][GWP1DARG]=(t*(3*RP^2 + 6*FK*RP*t + 2*FK*(3*MASS*RX + FK*t^2)))/(6*MASS);
 GWP1DLINEARRGT[t_,FK_][GWP1DARG]=RG + GWP1DLINEARLCT[t,FK][GWP1DVAL] - (HBAR*ArcTan[1 - (2*HBAR*IA*t)/MASS, (2*HBAR*RA*t)/MASS])/2;
-(*LINEARIGT[t_,FK_][GWP1DARG]=IG + (HBAR*(-2*Log[MASS] + Log[4*HBAR^2*RA^2*t^2 + (MASS - 2*HBAR*IA*t)^2]))/4;*)
 GWP1DLINEARIGT[t_,FK_][GWP1DARG]=IG + (HBAR*Log[4*HBAR^2*RA^2*t^2/MASS^2 + (MASS - 2*HBAR*IA*t)^2/MASS^2])/4;
 
 
@@ -740,15 +724,14 @@ GWP1DPEX[1][x_][GWP1DARG] := V1 + 2*V2*x;
 GWP1DPEX[2][x_][GWP1DARG] := 2*V2;
 GWP1DPEX[n_Integer][x_][GWP1DARG] /; n >= 3 := 0; 
 (* Fallback: Route GWP1DPEX[x][...] to the 0th derivative *)
-GWP1DPEX[x_][arg___] /; !MatchQ[Unevaluated[GWP1DPEX[x]], GWP1DPEX[_Integer]] := GWP1DPEX[0][x][arg];
-
+GWP1DPEX[x_][arg1_, arg2_, rest___] := GWP1DPEX[0][x][arg1, arg2, rest];
 
 (* --- x-Space External Force Field --- *)
 GWP1DFEX[0][x_][GWP1DARG] := -V1 - 2 * V2 * x;
 GWP1DFEX[1][x_][GWP1DARG] := -2 * V2;
 GWP1DFEX[n_Integer][x_][GWP1DARG] /; n >= 2 := 0;
 (* Fallback: Route GWP1DFEX[x][...] to the 0th derivative *)
-GWP1DFEX[x_][arg___] /; !MatchQ[Unevaluated[GWP1DFEX[x]], GWP1DFEX[_Integer]] := GWP1DFEX[0][x][arg];
+GWP1DFEX[x_][arg1_, arg2_, rest___] := GWP1DFEX[0][x][arg1, arg2, rest];
 
 
 (* ::Section::Closed:: *)
@@ -780,8 +763,9 @@ GWP1DPSIX[n_Integer][x_][GWP1DARG] := Module[{raia, p1, poly},
   poly = GWP1DHermiteEngine[n, p1, raia];
   poly * NORM * Exp[-(RA + I*IA)*(x - RX)^2 + (I/HBAR)*RP*(x - RX) + (I/HBAR)*(RG + I*IG)]
 ];
+
 (* Fallback: Route GWP1DPSIX[x][...] to the 0th derivative *)
-GWP1DPSIX[x_][arg___] /; !MatchQ[Unevaluated[GWP1DPSIX[x]], GWP1DPSIX[_Integer]] := GWP1DPSIX[0][x][arg];
+GWP1DPSIX[x_][arg1_, arg2_, rest___] := GWP1DPSIX[0][x][arg1, arg2, rest];
 
 
 (* --- x-space Complex Conjugate Wavefunction --- *)
@@ -791,8 +775,9 @@ GWP1DCSIX[n_Integer][x_][GWP1DARG] := Module[{raia, p1, poly},
   poly = GWP1DHermiteEngine[n, p1, raia]; 
   poly * NORM * Exp[-(RA - I*IA)*(x - RX)^2 - (I/HBAR)*RP*(x - RX) - (I/HBAR)*(RG - I*IG)]
 ];
+
 (* Fallback: Route GWP1DCSIX[x][...] to the 0th derivative *)
-GWP1DCSIX[x_][arg___] /; !MatchQ[Unevaluated[GWP1DCSIX[x]], GWP1DCSIX[_Integer]] := GWP1DCSIX[0][x][arg];
+GWP1DCSIX[x_][arg1_, arg2_, rest___] := GWP1DCSIX[0][x][arg1, arg2, rest];
 
 
 (* --- x-Space Real and Imaginary Wavefunction Components --- *)
@@ -808,11 +793,12 @@ GWP1DPSIP[n_Integer][p_][GWP1DARG] := Module[{a, b, p1, poly, shift, normP, phas
   p1 = -2 * b * shift - (I * RX) / HBAR;
   poly = GWP1DHermiteEngine[n, p1, b];
   normP = NORM / Sqrt[2 * HBAR * a];
-  phaseP = Exp[-b * shift^2 - (I/HBAR) * RX * p + (I/HBAR) * (RG + I*IG)];     
+  phaseP = Exp[-b * shift^2 - (I/HBAR) * RX * p + (I/HBAR) * (RG + I*IG)];      
   poly * normP * phaseP
 ];
+
 (* Fallback: Route GWP1DPSIP[p][...] to the 0th derivative *)
-GWP1DPSIP[p_][arg___] /; !MatchQ[Unevaluated[GWP1DPSIP[p]], GWP1DPSIP[_Integer]] := GWP1DPSIP[0][p][arg];
+GWP1DPSIP[p_][arg1_, arg2_, rest___] := GWP1DPSIP[0][p][arg1, arg2, rest];
 
 
 (* --- p-Space Complex Conjugate Wavefunction --- *)
@@ -826,8 +812,9 @@ GWP1DCSIP[n_Integer][p_][GWP1DARG] := Module[{a, b, p1, poly, shift, normP, phas
   phaseP = Exp[-b * shift^2 - (-I/HBAR) * RX * p + (-I/HBAR) * (RG - I*IG)];   
   poly * normP * phaseP
 ];
+
 (* Fallback: Route GWP1DCSIP[p][...] to the 0th derivative *)
-GWP1DCSIP[p_][arg___] /; !MatchQ[Unevaluated[GWP1DCSIP[p]], GWP1DCSIP[_Integer]] := GWP1DCSIP[0][p][arg];
+GWP1DCSIP[p_][arg1_, arg2_, rest___] := GWP1DCSIP[0][p][arg1, arg2, rest];
 
 
 (* --- p-Space Real and Imaginary Wavefunction Components --- *)
@@ -848,8 +835,9 @@ GWP1DRHOX[n_Integer][x_][GWP1DARG] := Module[{alpha, p1, shift, poly},
   poly = GWP1DHermiteEngine[n, p1, alpha];  
   poly * (Sqrt[2/Pi] * Sqrt[RA]) * Exp[-2 * RA * (x - RX)^2]
 ];
+
 (* Fallback: Route GWP1DRHOX[x][...] to the 0th derivative *)
-GWP1DRHOX[x_][arg___] /; !MatchQ[Unevaluated[GWP1DRHOX[x]], GWP1DRHOX[_Integer]] := GWP1DRHOX[0][x][arg];
+GWP1DRHOX[x_][arg1_, arg2_, rest___] := GWP1DRHOX[0][x][arg1, arg2, rest];
 
 
 (* --- p-Space Density --- *)
@@ -862,8 +850,9 @@ GWP1DRHOP[n_Integer][p_][GWP1DARG] := Module[{beta, p1, shift, poly},
   
   poly * Sqrt[RA / (2*Pi*HBAR^2*(RA^2 + IA^2))] * Exp[-beta * (p - RP)^2]
 ];
+
 (* Fallback: Route GWP1DRHOP[p][...] to the 0th derivative *)
-GWP1DRHOP[p_][arg___] /; !MatchQ[Unevaluated[GWP1DRHOP[p]], GWP1DRHOP[_Integer]] := GWP1DRHOP[0][p][arg];
+GWP1DRHOP[p_][arg1_, arg2_, rest___] := GWP1DRHOP[0][p][arg1, arg2, rest];
 
 
 (* --- Energy Density --- *)
@@ -900,8 +889,9 @@ GWP1DEX[n_Integer][GWP1DARG] := Sum[
   Binomial[n, 2*k] * (2*k - 1)!! * (1/(4*RA))^k * If[n - 2*k == 0, 1, RX^(n - 2*k)], 
   {k, 0, Floor[n/2]}
 ];
-(* Fallback: Route GWP1DEX[...] to the 1st moment *)
-GWP1DEX[param___] /; !MatchQ[{param}, {_Integer}] := GWP1DEX[1][param];
+
+(* Fallback: Route GWP1DEX[VAL] to the 1st moment *)
+GWP1DEX[arg1_, arg2_, rest___] := GWP1DEX[1][arg1, arg2, rest];
 
 
 (* --- Momentum Expectation Values (Arbitrary Order) --- *)
@@ -909,8 +899,9 @@ GWP1DEP[n_Integer][GWP1DARG] := Sum[
   Binomial[n, 2*k] * (2*k - 1)!! * (HBAR^2*(RA + (IA^2 / RA)))^k * If[n - 2*k == 0, 1, RP^(n - 2*k)], 
   {k, 0, Floor[n/2]}
 ];
-(* Fallback: Route GWP1DEP[...] to the 1st moment *)
-GWP1DEP[param___] /; !MatchQ[{param}, {_Integer}] := GWP1DEP[1][param];
+
+(* Fallback: Route GWP1DEP[VAL] to the 1st moment *)
+GWP1DEP[arg1_, arg2_, rest___] := GWP1DEP[1][arg1, arg2, rest];
 
 
 (* --- Position-Momentum Uncertainty --- *)
@@ -939,7 +930,8 @@ With[{VAL = GWP1DVAL},
 ];
 
 (* Fallback: Route default calls to m=1, n=1 *)
-GWP1DEXP[args___] /; !MatchQ[{args}, {_Integer, _Integer}] := GWP1DEXP[1, 1][args];
+(* Matches 3 or more arguments to definitively identify the parameter bus sequence *)
+GWP1DEXP[arg1_, arg2_, arg3_, rest___] := GWP1DEXP[1, 1][arg1, arg2, arg3, rest];
 
 
 (* --- Mometum-Position Expectation Values (Arbitrary Orders) --- *)
@@ -963,7 +955,8 @@ With[{VAL = GWP1DVAL},
 ];
 
 (* Fallback: Route default calls to m=1, n=1 *)
-GWP1DEPX[args___] /; !MatchQ[{args}, {_Integer, _Integer}] := GWP1DEPX[1, 1][args];
+(* Matches 3 or more arguments to definitively identify the parameter bus sequence *)
+GWP1DEPX[arg1_, arg2_, arg3_, rest___] := GWP1DEPX[1, 1][arg1, arg2, arg3, rest];
 
 
 (* --- Position-Momentum Covariance --- *)
@@ -994,7 +987,7 @@ With[{VAL = GWP1DVAL},
 ];
 
 (* Fallback: Route default calls to the 1st moment *)
-GWP1DEKE[args___] /; !MatchQ[{args}, {_Integer}] := GWP1DEKE[1][args];
+GWP1DEKE[arg1_, arg2_, rest___] := GWP1DEKE[1][arg1, arg2, rest];
 
 
 (* --- Potential Energy Expectation Values (arbitrary order) --- *)
@@ -1013,7 +1006,7 @@ With[{VAL = GWP1DVAL},
 ];
 
 (* Fallback: Route default calls to the 1st moment *)
-GWP1DEPE[args___] /; !MatchQ[{args}, {_Integer}] := GWP1DEPE[1][args];
+GWP1DEPE[arg1_, arg2_, rest___] := GWP1DEPE[1][arg1, arg2, rest];
 
 
 (* --- Kinetic-Potential Energy Cross-Correlations --- *)
@@ -1040,6 +1033,9 @@ With[{VAL = GWP1DVAL},
   ];
 ];
 
+(* Fallback: Route default calls to m=1, n=1 *)
+GWP1DEKEPE[arg1_, arg2_, arg3_, rest___] := GWP1DEKEPE[1, 1][arg1, arg2, arg3, rest];
+
 With[{VAL = GWP1DVAL},
   GWP1DEPEKE[m_Integer /; m >= 0, n_Integer /; n >= 0][GWP1DARG] := Module[{moments},
     moments = Table[GWP1DEXP[k, 2 * n][VAL], {k, 0, 2 * m}];
@@ -1053,6 +1049,9 @@ With[{VAL = GWP1DVAL},
     ] / (2 * MASS)^n
   ];
 ];
+
+(* Fallback: Route default calls to m=1, n=1 *)
+GWP1DEPEKE[arg1_, arg2_, arg3_, rest___] := GWP1DEPEKE[1, 1][arg1, arg2, arg3, rest];
 
 
 (* --- Total Energy Expectation Values (Arbitrary Order Router) --- *)
@@ -1070,7 +1069,7 @@ With[{VAL = GWP1DVAL},
 ];
 
 (* Fallback: Route default calls to the 1st moment *)
-GWP1DETE[args___] /; !MatchQ[{args}, {_Integer}] := GWP1DETE[1][args];
+GWP1DETE[arg1_, arg2_, rest___] := GWP1DETE[1][arg1, arg2, rest];
 
 
 (* --- Total Energy Expectation Values --- *)
@@ -1142,6 +1141,10 @@ $potentials1D = {
   {"ResonantForcedHO",    GWP1DFHORES,    "{\"ResonantForcedHO\", OMEGA, AK}",            "Parameterized"},
   {"NonResonantForcedHO", GWP1DFHONON,    "{\"NonResonantForcedHO\", OMEGA, AK, OMEGA1}", "Parameterized"}
 };
+
+
+GWPTools`GWPRegistry`GWPRegisterPotentials[$potentials1D, "1D"];
+Clear[$potentials1D];
 
 
 (* ::Subsection::Closed:: *)
@@ -1244,12 +1247,8 @@ $reg1D = Join[$regStatic, $regDynamic, $regWave, $regProb, $regExp, $regEng];
 Clear[$regStatic, $regDynamic, $regWave, $regProb, $regExp, $regEng];
 
 
-(* ::Subsection::Closed:: *)
-(*Register Potentials and Properties *)
-
-
-GWPTools`GWPRegistry`GWPRegisterPotentials[$potentials1D, "1D"];
 GWPTools`GWPRegistry`GWPRegisterExtension[$reg1D];
+Clear[$reg1D];
 
 
 (* ::Subsection::Closed:: *)
@@ -1260,11 +1259,14 @@ GWPTools`GWPRegistry`GWPRegisterExtension[$reg1D];
 (* FRONT-END FORMATTING (UI Builder)                                         *)
 (* ========================================================================= *)
 
-$GWP1DLogo = Graphics[{
-    Opacity[0.2], Blue, FilledCurve[BezierCurve[{{-1, 0}, {-0.5, 0}, {-0.2, 1}, {0, 1}, {0.2, 1}, {0.5, 0}, {1, 0}}]],
-    Opacity[1], Thickness[0.08], Blue, Line[Table[{x, Exp[-4 x^2]}, {x, -1, 1, 0.05}]],
-    Thickness[0.04], Darker[Cyan], Line[Table[{x, 0.2 Sin[15 x] Exp[-4 x^2] - 0.1}, {x, -0.8, 0.8, 0.02}]]
-}, ImageSize -> 32, PlotRange -> {{-1.1, 1.1}, {-0.3, 1.1}}];
+$GWP1DLogo=Graphics[{
+Opacity[0.2],Darker@Blue,Polygon[{{-1,0},Sequence@@Table[{x,Exp[-4 x^2]},{x,-1.1,1.1,0.05}],{1,0}}],
+Opacity[0.2],Darker@Blue,Polygon[{{-1,0},Sequence@@Table[{x,-Exp[-4 x^2]},{x,-1.1,1.1,0.05}],{1,0}}],
+Opacity[1],Thickness[0.025],Darker[Cyan],Line[Table[{x,9/10Cos[20 x] Exp[-4 x^2]},{x,-1.1,1.1,0.005}]],
+Opacity[1],Thickness[0.04],Darker@Blue,Line[Table[{x,Exp[-4 x^2]},{x,-1.1,1.1,0.025}]],
+Opacity[1],Thickness[0.04],Darker@Blue,Line[Table[{x,-Exp[-4 x^2]},{x,-1.1,1.1,0.025}]]
+},
+ImageSize->32,PlotRange->{{-1.1,1.1},{-1.1,1.1}}];
 
 GWPTools`GWPDeveloper`GWP1DUI[data_] := Module[
   {potDisplay, paramsList, h, m, init, visible, hidden},
@@ -1280,7 +1282,7 @@ GWPTools`GWPDeveloper`GWP1DUI[data_] := Module[
   
   visible = {Grid[{
     {Style["Attributes", Bold], Style["Values", Bold]},
-    {"Input: ", InputForm[init]},
+    {"Initial State: ", InputForm[init]},
     {"Potential: ", potDisplay}
   }, Alignment -> Left]};
   

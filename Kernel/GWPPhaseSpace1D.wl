@@ -4,11 +4,11 @@
 (*GWPPhaseSpace1D Package*)
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*GWPDeveloper Usage Registration*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*BeginPackage*)
 
 
@@ -35,7 +35,7 @@ GWP1DPURITY::usage = "GWP1DPURITY[param] evaluates the state purity.";
 GWP1DVONNEUMANN::usage = "GWP1DVONNEUMANN[param] evaluates the von Neumann entropy.";
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*End*)
 
 
@@ -49,7 +49,7 @@ Quiet[EndPackage[], General::shdw]
 $ContextPath = DeleteCases[$ContextPath, "GWPTools`GWPDeveloper`"];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*BeginPackage*)
 
 
@@ -81,7 +81,7 @@ GWP1DWIG[x_, p_][GWP1DARG] = 1/(Pi*HBAR) * Exp[-((2*(RA^2 + IA^2)*(x - RX)^2)/RA
 (* --- Phase Space Distributions --- *)
 
 (* Husimi Q-Distribution (Requires reference coherent state width 's') *)
-GWP1DHUSIMI[s_?GWP1DScalarQ][x_, p_][GWP1DARG] = (1 / (2*Pi*HBAR)) * (2*Sqrt[RA*s] / Sqrt[(RA + s)^2 + IA^2]) * 
+GWP1DHUSIMI[s_?GWPScalarQ][x_, p_][GWP1DARG] = (1 / (2*Pi*HBAR)) * (2*Sqrt[RA*s] / Sqrt[(RA + s)^2 + IA^2]) * 
   Exp[-((2*s*(RA^2 + IA^2 + s*RA)*(x - RX)^2 + ((RA + s)/(2*HBAR^2))*(p - RP)^2 + (2*s*IA/HBAR)*(x - RX)*(p - RP)) / ((RA + s)^2 + IA^2))];
 
 (* Fallback: If no shape parameter is provided, default to s = 1/2 *)
@@ -90,10 +90,10 @@ GWP1DHUSIMI[x_, p_][args___] := GWP1DHUSIMI[1/2][x, p][args];
 (* --- Phase Space Metrics --- *)
 
 (* Wehrl Entropy (Entropy of the Husimi Q-Distribution) *)
-GWP1DWEHRL[s_?GWP1DScalarQ][GWP1DARG] = 1 + Log[((RA + s)^2 + IA^2) / (4*RA*s)];
+GWP1DWEHRL[s_?GWPScalarQ][GWP1DARG] = 1 + Log[((RA + s)^2 + IA^2) / (4*RA*s)];
 
 (* Fallback: If pre-argument sequence does not match a single scalar, route to 1/2 *)
-GWP1DWEHRL[param___] /; !MatchQ[{param}, {_?GWP1DScalarQ}] := GWP1DWEHRL[1/2][param];
+GWP1DWEHRL[param___] /; !MatchQ[{param}, {_?GWPScalarQ}] := GWP1DWEHRL[1/2][param];
 
 (* Purity (Trivially 1 for pure states) *)
 GWP1DPURITY[GWP1DARG] = 1;
@@ -119,9 +119,10 @@ $regPhaseSpace1D = Join[#, {"PhaseSpace", "1D"}] & /@ {
 
 (* Inject into the central registry *)
 GWPTools`GWPRegistry`GWPRegisterExtension[$regPhaseSpace1D];
+Clear[$regPhaseSpace1D];
 
 
-(* ::Section:: *)
+(* ::Section::Closed:: *)
 (*End*)
 
 
